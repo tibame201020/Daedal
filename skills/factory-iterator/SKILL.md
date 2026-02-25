@@ -36,7 +36,10 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 >
 > 當無法避免路徑重疊時，必須在 `tracker.json` 中建立明確的 `depends_on` 依賴關係。
 
-### Step 3: 規格校驗 (Spec Integrity Check)
+### Step 3: 規格校驗與願景對齊 (Integrity & Reverse-Chain Audit)
+- 🛡️ **反向鏈審計 (Reverse-Chain Audit)**：對照產出的 Specs 與原始 `RFP.md` 願景。
+  - **自我探詢**：這跟兩步驟前的 RFP 願景是否衝突？是否遺失了核心功能？
+  - **判定**：若無法給出具備邏輯論據的回答，則禁止提交，並發起 Resync 流程。
 - 確認每個任務的 `spec_ref` 指向實際存在的 YAML 檔案。
 - 確認 `tracker.json` 中的 task ID 與 spec 檔案名稱一致。
 - 確認 Phase 間的依賴順序合理。

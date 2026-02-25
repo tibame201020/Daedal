@@ -16,6 +16,16 @@ acceptance_criteria:
   - "[禁令] 絕對不可以做ＯＯＯ"
   - "[Fallback] API Key 必須設定預設值"
 
+# ⚖️ 治理與風險控制 (Governance & Risk Control)
+grounding:
+  allowed_paths: # 🛠️ 物理邊界（Ikaros 嚴禁飛出此範圍）
+    - "src/modules/target_module/*"
+  collision_map:
+    risk_index: "LOW/MEDIUM/HIGH" # 基於路徑重疊情境的風險評級
+    warning: "⚠️ 衝突預警：此任務寫入路徑與 A 任務重疊。"
+  global_change_event: "是否觸發斷點重同步？(false/true)"
+  reverse_chain_proof: "簡述此任務如何對齊 RFP 中的 ＯＯＯ 要求"
+
 # ECC-Inspired fields
 success_criteria:
   - "定義量化指標 (如：Lighthouse 效能 > 90)"

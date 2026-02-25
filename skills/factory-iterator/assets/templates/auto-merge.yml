@@ -45,17 +45,30 @@ jobs:
       # 🛡️ Task Status Guard: 防止 Worker 漏更新 tracker 就提 PR
       - name: Verify Task Completion in Tracker
         run: |
+          set -x  # 啟用詳細日誌，讓自動化透明
           BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          echo "Processing branch: $BRANCH_NAME"
+          
           # 分支格式: {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
-          # 例如: jules/main/task-task_1_1_1 → 萃取 task_1_1_1
-          # sed 's|.*/task-||' 使用貪婪匹配，三層路徑也能正確萃取
           TASK_ID=$(echo "$BRANCH_NAME" | sed 's|.*/task-||' || echo "")
+          
           if [ -z "$TASK_ID" ]; then
-            echo "Warning: Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
+            echo "::warning title=Task ID Extraction Failed::Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
           else
-            TASK_STATUS=$(jq -r --arg tid "$TASK_ID" '.phases[].tasks[] | select(.id == $tid) | .status' .{{AGENT_NAME}}/tracker.json 2>/dev/null || echo "not_found")
+            echo "Checking status for Task ID: $TASK_ID"
+            # 增加錯誤輸出與 debug 資訊
+            TRACKER_PATH=".{{AGENT_NAME}}/tracker.json"
+            if [ ! -f "$TRACKER_PATH" ]; then
+              echo "::error title=Tracker Missing::File $TRACKER_PATH not found."
+              exit 1
+            fi
+
+            TASK_STATUS=$(jq -r --arg tid "$TASK_ID" '.phases[].tasks[] | select(.id == $tid) | .status' "$TRACKER_PATH" 2>/dev/null || echo "not_found")
+            echo "Task Status detected: $TASK_STATUS"
+
             if [ "$TASK_STATUS" != "completed" ]; then
-              echo "Error: Task '${TASK_ID}' status is '${TASK_STATUS}', expected 'completed'. Worker must update tracker before PR can merge."
+              echo "::error title=Task Not Completed::Task '${TASK_ID}' status is '${TASK_STATUS}', expected 'completed'."
+              echo "Worker must update tracker.json status to 'completed' before PR can be merged."
               exit 1
             fi
             echo "Task '${TASK_ID}' status verified as 'completed'."

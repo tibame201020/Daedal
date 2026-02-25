@@ -22,13 +22,23 @@ def _api_key(args):
 def _headers(key):
     return {"x-goog-api-key": key, "Content-Type": "application/json"}
 
-def _get(key, path, params=None):
-    r = requests.get(f"{API_BASE}{path}", headers=_headers(key), params=params, timeout=60)
+def _get(key, path, params=None, verbose=False):
+    url = f"{API_BASE}{path}"
+    if verbose:
+        print(f"DEBUG: [GET] {url} params={params}", file=sys.stderr)
+    r = requests.get(url, headers=_headers(key), params=params, timeout=60)
+    if verbose:
+        print(f"DEBUG: [RESPONSE] {r.status_code} body={r.text}", file=sys.stderr)
     r.raise_for_status()
     return r.json() if r.text.strip() else {}
 
-def _post(key, path, payload=None):
-    r = requests.post(f"{API_BASE}{path}", headers=_headers(key), json=(payload or {}), timeout=60)
+def _post(key, path, payload=None, verbose=False):
+    url = f"{API_BASE}{path}"
+    if verbose:
+        print(f"DEBUG: [POST] {url} payload={json.dumps(payload, ensure_ascii=False)}", file=sys.stderr)
+    r = requests.post(url, headers=_headers(key), json=(payload or {}), timeout=60)
+    if verbose:
+        print(f"DEBUG: [RESPONSE] {r.status_code} body={r.text}", file=sys.stderr)
     r.raise_for_status()
     return r.json() if r.text.strip() else {}
 
@@ -54,13 +64,13 @@ def _load_state():
 
 def cmd_list_sources(args):
     key = _api_key(args)
-    data = _get(key, "/sources")
+    data = _get(key, "/sources", verbose=args.verbose)
     sources = data.get("sources", [])
     if args.filter:
         sources = [s for s in sources if args.filter.lower() in s.get("name", "").lower()]
     print(json.dumps({"sources": sources}, ensure_ascii=False, indent=2))
 
-def _create_session(key, source, prompt, title, branch, automation_mode="AUTO_CREATE_PR"):
+def _create_session(key, source, prompt, title, branch, automation_mode="AUTO_CREATE_PR", verbose=False):
     payload = {
         "prompt": prompt,
         "sourceContext": {
@@ -70,16 +80,26 @@ def _create_session(key, source, prompt, title, branch, automation_mode="AUTO_CR
         "automationMode": automation_mode,
         "title": title,
     }
-    return _post(key, "/sessions", payload)
+    return _post(key, "/sessions", payload, verbose=verbose)
+
+def _resolve_prompt(args):
+    if args.prompt:
+        return args.prompt
+    if args.prompt_file:
+        return Path(args.prompt_file).read_text(encoding="utf-8")
+    return None
 
 def cmd_trigger(args):
     key = _api_key(args)
-    sess = _create_session(key, args.source, args.prompt, args.title, args.branch, args.automation_mode)
+    prompt = _resolve_prompt(args)
+    if not prompt:
+        raise SystemExit("Missing prompt: Provide --prompt or --prompt-file")
+    sess = _create_session(key, args.source, prompt, args.title, args.branch, args.automation_mode, verbose=args.verbose)
     _save_state({"lastSession": sess.get("name"), "source": args.source})
     print(json.dumps(sess, ensure_ascii=False, indent=2))
 
-def _list_sessions(key, page_size=50):
-    data = _get(key, "/sessions", {"pageSize": page_size})
+def _list_sessions(key, page_size=50, verbose=False):
+    data = _get(key, "/sessions", {"pageSize": page_size}, verbose=verbose)
     return data.get("sessions", [])
 
 def _session_source_name(s):
@@ -104,10 +124,12 @@ def _latest_for_source(key, source):
 
 def cmd_latest(args):
     key = _api_key(args)
-    s = _latest_for_source(key, args.source)
-    if not s:
+    sessions = _list_sessions(key, verbose=args.verbose)
+    filtered = [s for s in sessions if _session_source_name(s) == args.source]
+    if not filtered:
         print(json.dumps({"found": False, "source": args.source}, ensure_ascii=False, indent=2))
         return
+    s = filtered[0]
     out = {
         "found": True,
         "name": s.get("name"),
@@ -131,7 +153,12 @@ def _merge_pr(pr_url, method="squash"):
 
 def cmd_cycle(args):
     key = _api_key(args)
-    latest = _latest_for_source(key, args.source)
+    sessions = _list_sessions(key, verbose=args.verbose)
+    latest = None
+    filtered = [s for s in sessions if _session_source_name(s) == args.source]
+    if filtered:
+        latest = filtered[0]
+
     status = {
         "source": args.source,
         "latestSession": latest.get("name") if latest else None,
@@ -143,17 +170,15 @@ def cmd_cycle(args):
     pr_urls = _extract_pr_urls(latest) if latest else []
 
     if args.merge == "yes" and pr_urls:
-        # Merge at most one PR per cycle (minimal-step policy). 
-        # This is intentional to ensure each change is fully verified by subsequent cycles.
         merge_result = _merge_pr(pr_urls[0], method=args.merge_method)
         status["merged"].append({"pr": pr_urls[0], **merge_result})
     elif args.merge == "yes":
         status["note"] = "No PR found from latest Jules session."
 
-    # Always trigger one new async request when next_prompt provided
-    if args.next_prompt:
+    next_prompt = _resolve_prompt(args)
+    if next_prompt:
         title = args.title or "jules-next-step"
-        created = _create_session(key, args.source, args.next_prompt, title, args.branch, args.automation_mode)
+        created = _create_session(key, args.source, next_prompt, title, args.branch, args.automation_mode, verbose=args.verbose)
         status["triggered"] = {"name": created.get("name"), "id": created.get("id"), "title": created.get("title")}
         _save_state({"lastSession": created.get("name"), "source": args.source})
 
@@ -161,6 +186,7 @@ def cmd_cycle(args):
 
 def build_parser():
     p = argparse.ArgumentParser(description="Jules API helper for async trigger/check/merge cycle")
+    p.add_argument("--verbose", action="store_true", help="Enable verbose debug logging")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     ps = sub.add_parser("list-sources")
@@ -171,7 +197,9 @@ def build_parser():
     pt = sub.add_parser("trigger")
     pt.add_argument("--api-key")
     pt.add_argument("--source", required=True)
-    pt.add_argument("--prompt", required=True)
+    mg = pt.add_mutually_exclusive_group(required=True)
+    mg.add_argument("--prompt")
+    mg.add_argument("--prompt-file", help="Read prompt from this file")
     pt.add_argument("--title", default="jules-task")
     pt.add_argument("--branch", default="main")
     pt.add_argument("--automation-mode", default="AUTO_CREATE_PR")
@@ -187,7 +215,9 @@ def build_parser():
     pc.add_argument("--repo", help="owner/repo (for bookkeeping)")
     pc.add_argument("--source", required=True)
     pc.add_argument("--branch", default="main")
-    pc.add_argument("--next-prompt")
+    mgc = pc.add_mutually_exclusive_group()
+    mgc.add_argument("--next-prompt")
+    mgc.add_argument("--prompt-file", help="Read next prompt from this file")
     pc.add_argument("--title")
     pc.add_argument("--automation-mode", default="AUTO_CREATE_PR")
     pc.add_argument("--merge", choices=["yes", "no"], default="yes")

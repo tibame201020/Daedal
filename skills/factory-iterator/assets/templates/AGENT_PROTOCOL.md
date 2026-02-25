@@ -15,14 +15,17 @@
 
 ---
 
-## Step 1: 讀取狀態與尋找任務 (State Read & Task Discovery)
+## Step 1: 讀取狀態與環境對齊 (State Read & Hard Alignment)
 
 > **此步驟由 Dispatcher 教導，Worker 機械性執行。**
 
-1. **讀取 `.{{AGENT_NAME}}/tracker.json`**。
-2. 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
-3. 🛡️ **健康檢查**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，**停止執行**並回報人類。
-4. 若沒有 `pending` 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。
+1. 🛡️ **環境硬對齊 (Hard Alignment Check)**：
+   - 執行 `git branch --show-current` 與 `git remote -v`。
+   - **禁止猜測**：若當前分支與目標 `{{BASE_BRANCH}}` 不符，或遠端路徑異常，必須先修正環境而非盲目執行。
+2. **讀取 `.{{AGENT_NAME}}/tracker.json`**。
+3. 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
+4. 🛡️ **健康檢查**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，**停止執行**並回報人類。
+5. 若沒有 `pending` 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。
 
 ## Step 2: 互斥鎖檢查與分支建立 (Branch-as-Lock & Checkout)
 
@@ -66,6 +69,8 @@
 - **1:1 Spec 讀取 (No Guessing)**：
   - 完整讀取任務對應的 `spec_ref` 檔案。
   - **嚴格限令**：禁止「猜測」任務，必須依此檔案為唯一準則。
+- **🔄 邊界校準 (Boundary Calibration)**：
+  - 若偵測到 Spec 所要求的技術棧、依賴或架構與當前 Labyrinth 結構存在**嚴重衝突**，或發現與原始願景發生 **Source Vision Drift**，您必須**強制暫停**並要求管理員重新執行 Orchestrator Resync。
 - **維護模式審計 (Maintenance/Audit Step)**：
   - 若專案已有既有程式碼，您**必須**先執行 `list_dir` 與 `grep_search` 遍歷涉及的模組。
   - **禁令**：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。
@@ -96,14 +101,7 @@
 - 🛡️ **TDD 分級制 (Phase-aware Testing)**：
   - **Phase 1 (Setup)**：僅強制要求測試 1-4 項 (基礎守後)。
   - **Phase 2+ (Implementation)**：必須全面涵蓋 1-8 項破壞性邊界測試。
-  1. `Null/Undefined` 行為。
-  2. 空陣列 / 空字串傳入。
-  3. Spec 中定義的 `negative_test_cases`。
-  4. 邊界數值 (Max/Min)。
-  5. 錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。
-  6. **併發競爭 (Race Conditions)**。
-  7. 極端大資料量 (10k+ items) 效能分析。
-  8. 特殊字元 (Unicode, Emoji, SQL injection 防禦)。
+- **🎨 ASCII-First 視圖**：建議在回報架構變更或複雜邏輯時，使用 ASCII 繪圖輔助說明，確保結構層面的理解對齊。
 - 對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。
 - 若任何一條未通過，回到 Step 4 或 Step 5 修正，**不得帶著失敗的測試提 PR**。
 
@@ -118,7 +116,9 @@
     - 已完成的 Acceptance Criteria 列表。
     - **路徑審計報告**：聲明所有變更均符合 `allowed_paths`。
   - **必須**添加 GitHub Label `auto-merge` 以觸發自動合併。
-  - **推薦指令**：`gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body "{description}" --label "auto-merge"`
+  - **📁 檔案交換協議 (File-Based Protocol)**：
+    - 當 PR Body 或變更說明過長時，**禁止透過 CLI 變數傳遞**，應寫入一個 `.jules/pr_body.txt` 並在 `gh pr create --body-file` 中引用，以避開 Windows Shell 長度限制。
+  - **推薦指令**：`gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body-file .{{AGENT_NAME}}/pr_body.txt --label "auto-merge"`
 
 ---
 
