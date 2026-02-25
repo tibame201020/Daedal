@@ -1,0 +1,11 @@
+id: "phase_X"
+name: "Phase X: Description"
+description: "在此填寫階段描述，例如：建置底層架構與核心模組"
+objectives:
+  - "建立專案骨架"
+modules:
+  - id: "X.1"
+    name: "專案初始化"
+    tasks:
+      - id: "task_X_1_1" # 必須與 tracker.json 中的 ID 保持一致
+        spec_ref: "specs/tasks/task_X_1_1.yml"

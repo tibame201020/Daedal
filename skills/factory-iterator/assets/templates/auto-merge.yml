@@ -1,0 +1,109 @@
+name: {{AGENT_NAME}} Auto-Merge
+
+# ⚠️ TECH-STACK-PLACEHOLDER: 以下 CI 步驟預設為 Java/Maven + NPM。
+# Initiator 必須根據專案選型替換 "Backend Tests" 與 "Frontend Checks" 中的內容。
+# 若未進行指令替換即部署，非 Java 專案在 Phase 2 起將因找不到 pom.xml 而全線失敗。
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened, ready_for_review]
+    branches:
+      - '{{BASE_BRANCH}}'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # 🕵️ 安全門戶 (Security Gates: Identity Lockdown)
+    # 僅限 BOT_USERNAME 觸發 且 具備 auto-merge Label
+    if: |
+      github.event.pull_request.user.login == '{{BOT_USERNAME}}' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # 🛡️ Scaffolding Guard: 確保早期 PR 不被靜默合併
+      - name: Basic Factory Audit
+        run: |
+          if [ ! -f ".{{AGENT_NAME}}/tracker.json" ]; then
+            echo "Error: Factory structure not found. Blocking merge."
+            exit 1
+          fi
+          echo "Factory structure verified."
+
+      # 🛡️ Task Status Guard: 防止 Worker 漏更新 tracker 就提 PR
+      - name: Verify Task Completion in Tracker
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          # 分支格式: {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
+          # 例如: jules/main/task-task_1_1_1 → 萃取 task_1_1_1
+          # sed 's|.*/task-||' 使用貪婪匹配，三層路徑也能正確萃取
+          TASK_ID=$(echo "$BRANCH_NAME" | sed 's|.*/task-||' || echo "")
+          if [ -z "$TASK_ID" ]; then
+            echo "Warning: Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
+          else
+            TASK_STATUS=$(jq -r --arg tid "$TASK_ID" '.phases[].tasks[] | select(.id == $tid) | .status' .{{AGENT_NAME}}/tracker.json 2>/dev/null || echo "not_found")
+            if [ "$TASK_STATUS" != "completed" ]; then
+              echo "Error: Task '${TASK_ID}' status is '${TASK_STATUS}', expected 'completed'. Worker must update tracker before PR can merge."
+              exit 1
+            fi
+            echo "Task '${TASK_ID}' status verified as 'completed'."
+          fi
+
+      # CI: 動態偵測防護機制
+      - name: Backend Tests (Maven)
+        run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
+          if [ -f "./pom.xml" ]; then
+            ./mvnw clean test
+          elif [ -f "backend/pom.xml" ]; then
+            cd backend && ./mvnw clean test
+          else
+            if [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+              echo "Error: Backend missing after Phase 1. Failing CI."
+              exit 1
+            fi
+            echo "Phase 1: Backend not initialized yet. Skipping."
+          fi
+
+      - name: Frontend Checks (NPM)
+        run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
+          if [ -f "./package.json" ]; then
+            npm ci && npm run build
+          elif [ -f "frontend/package.json" ]; then
+            cd frontend && npm ci && npm run build
+          else
+            if [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+              echo "Error: Frontend missing after Phase 1. Failing CI."
+              exit 1
+            fi
+            echo "Phase 1: Frontend not initialized yet. Skipping."
+          fi
+
+      - name: Auto-merge PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+          # ⚠️ ACTION REQUIRED: GITHUB_TOKEN 通常無權限執行 auto-merge 或繞過分支保護。
+          # 請至 GitHub Repo → Settings → Secrets → Actions 新增 PAT_TOKEN。
+          # PAT 需要的權限：repo (full), workflow。
+          # 設定完成後，請確保此處使用的是 PAT_TOKEN。
+          token: ${{ secrets.PAT_TOKEN }}
+
+      # 🔄 Phase 推進已移至獨立 Workflow (phase-bump.yml)
+      # 觸發條件：push to {{BASE_BRANCH}}（即 PR 合併後）
+      # 這避免了 Phase Bump commit 與 Squash Merge 競爭 tracker.json 的時序問題。
+

@@ -1,0 +1,25 @@
+{
+    "project": "YOUR_PROJECT_NAME",
+    "current_phase": "Phase 1: Setup",
+    "phases": [
+        {
+            "phase_id": "phase_1",
+            "name": "Phase 1: Setup",
+            "tasks": [
+                {
+                    "id": "task_1",
+                    "title": "任務名稱",
+                    "status": "pending",
+                    "priority": 0,
+                    "attempts": 0,
+                    "depends_on": [],
+                    "allowed_paths": [
+                        "path/to/module/*",
+                        "tests/to/module/*"
+                    ],
+                    "spec_ref": "specs/tasks/task_1.yml"
+                }
+            ]
+        }
+    ]
+}

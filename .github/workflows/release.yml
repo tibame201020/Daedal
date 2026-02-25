@@ -1,0 +1,79 @@
+name: 🚀 Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version '$VERSION' does not match semver format (x.y.z)"
+            exit 1
+          fi
+          echo "VERSION=v$VERSION" >> $GITHUB_ENV
+
+      - name: Check tag does not already exist
+        run: |
+          if git rev-parse "${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Error: Tag ${{ env.VERSION }} already exists."
+            exit 1
+          fi
+
+      - name: Update CHANGELOG version header
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          sed -i "s/## \[Unreleased\].*/## [${{ github.event.inputs.version }}] - $DATE/" CHANGELOG.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "chore: release ${{ env.VERSION }}" || echo "No CHANGELOG changes to commit"
+
+      - name: Create Git Tag
+        run: |
+          git tag -a "${{ env.VERSION }}" -m "Release ${{ env.VERSION }}"
+          git push origin HEAD --follow-tags
+
+      - name: Extract CHANGELOG for this version
+        id: changelog
+        run: |
+          # Extract content between this version header and the next version header
+          NOTES=$(awk '/^## \[${{ github.event.inputs.version }}\]/{flag=1; next} /^## \[/{flag=0} flag' CHANGELOG.md)
+          # Save to file for gh release
+          echo "$NOTES" > /tmp/release-notes.md
+          echo "Generated release notes:"
+          cat /tmp/release-notes.md
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PRERELEASE_FLAG=""
+          if [ "${{ github.event.inputs.prerelease }}" == "true" ]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+          gh release create "${{ env.VERSION }}" \
+            --title "${{ env.VERSION }}" \
+            --notes-file /tmp/release-notes.md \
+            $PRERELEASE_FLAG

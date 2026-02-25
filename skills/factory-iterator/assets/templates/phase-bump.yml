@@ -1,0 +1,63 @@
+name: Phase Auto-Bump
+
+# 🔄 此 Workflow 在 PR 合併（push to main）後觸發，確保 Phase 推進不會與 PR merge 競爭。
+
+on:
+  push:
+    branches:
+      - '{{BASE_BRANCH}}'
+    paths:
+      - '.{{AGENT_NAME}}/tracker.json'
+
+permissions:
+  contents: write
+
+jobs:
+  bump-phase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check and Bump Phase
+        run: |
+          TRACKER=".{{AGENT_NAME}}/tracker.json"
+
+          if [ ! -f "$TRACKER" ]; then
+            echo "No tracker found. Skipping."
+            exit 0
+          fi
+
+          CURRENT_PHASE=$(jq -r '.current_phase' $TRACKER)
+          echo "Current Phase: $CURRENT_PHASE"
+
+          # 檢查當前 Phase 是否所有任務皆已 completed
+          # ⚠️ jq 的 `all` 對空陣列回傳 true，必須先檢查 length > 0
+          ALL_DONE=$(jq -r --arg cp "$CURRENT_PHASE" '
+            .phases[] | select(.name == $cp) | .tasks |
+            if length > 0 then map(.status == "completed") | all else false end
+          ' $TRACKER)
+
+          if [ "$ALL_DONE" == "true" ]; then
+            echo "All tasks in $CURRENT_PHASE are completed!"
+
+            NEXT_PHASE=$(jq -r --arg cp "$CURRENT_PHASE" '
+              (.phases | map(.name) | index($cp)) as $idx |
+              if $idx != null and $idx + 1 < (.phases | length) then .phases[$idx + 1].name else "" end
+            ' $TRACKER)
+
+            if [ -n "$NEXT_PHASE" ]; then
+              echo "Bumping phase to: $NEXT_PHASE"
+              jq --arg np "$NEXT_PHASE" '.current_phase = $np' $TRACKER > tmp.json && mv tmp.json $TRACKER
+
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add $TRACKER
+              git commit -m "chore: auto-bump phase to $NEXT_PHASE [skip ci]"
+              git push
+            else
+              echo "🎉 All phases completed! Project is done."
+            fi
+          else
+            echo "Phase $CURRENT_PHASE still has pending tasks."
+          fi

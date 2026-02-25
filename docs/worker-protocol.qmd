@@ -1,0 +1,59 @@
+---
+title: "👷 工人憲法與行事準則"
+subtitle: "Dispatcher 教導的自服務執行者"
+---
+
+## 📜 AGENT_PROTOCOL.md (工人憲法)
+
+任何進入本工廠的 Worker Agent 在每次甦醒時，**必須**首先閱讀這份憲法。
+
+### ⚠️ 角色聲明：你是被指導的執行者
+
+::: callout-important
+本協議由 **Task Dispatcher (教導者)** 編寫。Worker 遵循的每一步，都是 Dispatcher 的指令。 Worker 看起來「自己在找任務、管分支」，但這些行為來自 Dispatcher 的標準化流程，不是 Worker 自主決定的。
+:::
+
+Worker 的完整生命週期（由 Dispatcher 教導）：
+
+```{mermaid}
+graph LR
+    Read[讀取 Tracker] --> Lock{互斥鎖檢查}
+    Lock -- 可領取 --> Branch[切 Branch]
+    Lock -- CI 失敗 --> Recover[關 PR + 重試]
+    Lock -- 鎖定中 --> Skip[跳過]
+    Branch --> Spec[載入規格]
+    Spec --> Impl[實作功能]
+    Recover --> Branch
+    Impl --> Test[驗證品質]
+    Test --> PR[提交 PR]
+    PR --> Done((結束))
+
+    style Read fill:#fff3e0,stroke:#e65100
+    style Recover fill:#ffebee,stroke:#c62828
+    style Done fill:#c8e6c9,stroke:#2e7d32
+```
+
+------------------------------------------------------------------------
+
+### 三大鐵律
+
+1.  **路徑審計 (Allowed Paths Audit)** 所有變更必須精確落在 `allowed_paths` 內，嚴禁修改框架底層，防止 Scope Creep。
+
+2.  **TDD 分級制 (Phase-Aware Testing)**
+
+    -   Phase 1：基礎測試 1-4 項
+    -   Phase 2+：全面涵蓋 8 項破壞性邊界測試（Null、空值、Race Conditions、大資料量等）
+
+3.  **自我修復 + CI 失敗恢復 (Self-Healing)**
+
+    -   被授權在不偏離核心功能的前提下，自主修正環境問題。
+    -   偵測到 CI 失敗的 PR 時，自動關閉 → 遞增 `attempts` → 重試。
+    -   `attempts` ≥ 5 次 → 熔斷，呼救人類。
+
+------------------------------------------------------------------------
+
+### 🧠 認知上限守則 (Cognitive Load Limit)
+
+-   **檔案長度控制**：盡量保持在 200\~300 行以內。
+-   **反模式禁令**：絕對禁止寫出「全能上帝物件 (God Object)」。
+-   **壞了就換 (Disposable Components)**：如果模組 Bug 難以修補，**直接刪除重寫**。

@@ -1,0 +1,50 @@
+---
+title: "🏭 Autonomous Software Factory"
+subtitle: "Enterprise-grade AI Production Line Pattern"
+---
+
+# 🏭 AI 無人值守軟體工廠
+
+> **核心願景**：將 LLM 從「一問一答的程式碼生成器」，提升為「遵守標準作業程序 (SOP)、具備自我修復能力、穩健推進千行程式碼專案的企業級自動化產線」。
+
+## 🏗️ 四大支柱 (The 4 Pillars)
+
+為了防止大型 AI 專案常見的**幻覺崩潰 (Hallucination)** 與 **非同步覆寫死鎖 (Race Conditions)**，本工廠將職責嚴格拆分為四個獨立組件：
+
+::::::: grid
+::: g-col-6
+### 📜 行為憲法 (Protocol)
+
+定義 Agent 甦醒後「只能做的幾件事」。強制循序漸進，授權**自我修復 (Self-Healing)**。
+:::
+
+::: g-col-6
+### 🗺️ 狀態機 (Tracker)
+
+透過 `tracker.json` 與 DAG 依賴，精確控制任務先後順序。**Git Merge 才是唯一的真理**。
+:::
+
+::: g-col-6
+### 📑 規格藍圖 (Specs)
+
+將模糊的需求轉為強型別的 AC。包含 **💣 防爆地雷設計**，明令禁止高風險行為。
+:::
+
+::: g-col-6
+### 🚦 裁判所 (CI/CD)
+
+GitHub Actions 扮演無情裁判。測試不通過即退回 PR，保護主分支不受汙染。
+:::
+:::::::
+
+## 🚀 快速開始
+
+1.  **閱讀流程藍圖**：瞭解 [五大技能編排](docs/FACTORY_WORKFLOW.qmd)。
+
+2.  **啟動編排器**：執行 `factory-orchestrator` 技能進行探索。
+
+3.  **查看技術細節**：深入瞭解 [Git 狀態機原理](docs/principles.qmd)。
+
+------------------------------------------------------------------------
+
+> 💡 **總結**：這套架構是一套嚴格限制 LLM 行為的防護罩。透過**純粹的狀態分離**與 **CI 驅動進度**，將生成式 AI 馴化為高效的工程師軍隊。
