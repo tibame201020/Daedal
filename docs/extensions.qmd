@@ -1,35 +1,33 @@
 ---
-title: "🔌 擴充與外掛指南"
-subtitle: "如何接入不同的 Worker Agent"
+title: "🔌 擴充與接入指南"
+subtitle: "如何讓不同的 Ikaros 接入工廠"
 ---
 
-## 解耦的藝術：Worker-Agnostic Prompt
+## 接入 Ikaros：Worker-Agnostic Prompt
 
-本框架的設計哲學是 **Worker-Agnostic（工人無關性）**。Task Dispatcher 產出的 Worker Prompt 對所有 LLM Agent 通用——不管你用的是 Jules、Devin、Cursor Agent 還是自研的 CorpBot，只要它能操作 Git 和執行程式碼，就能接入這座工廠。
+Daedal 的設計哲學是 **運作平台無關性**。任何具備基礎能力（Git 操作、CLI 執行、代碼編輯）的 Agent 都可以成為 **Ikaros**。
 
 ### 接入方式
 
-| Worker | 觸發方式 | 說明 |
+| Agent 實體 | 觸發方式 | 說明 |
 |:-----------------------|:-----------------------|:-----------------------|
-| **Jules** | Web GUI / API | 直接將 Worker Prompt 貼入 Jules 介面或透過 API 傳送 |
-| **Devin** | Web GUI / API | 同上，適用 Devin 的任務建立介面 |
-| **Cursor Agent** | IDE Prompt | 在 Cursor 中開啟專案目錄，將 Prompt 送入 Agent 模式 |
-| **自研 Agent** | Any | 只要能執行 `git`, `gh` CLI 並遵循 AGENT_PROTOCOL.md 即可 |
+| **Jules** | Web GUI / API | 將 Worker Prompt 投餵至 Jules |
+| **Devin** | Web GUI / API | 適用 Devin 的任務建立流程 |
+| **Cursor Agent** | IDE Prompt | 在本地 IDE 中啟動飛行模式 |
+| **Claude Code** | CLI | 透過終端機執行 Ikaros 循環 |
 
-### 若使用者需要自動化觸發
+### Knossos 的角色 (調度擴充)
 
-Task Dispatcher 可協助產出專屬的 API 觸發腳本。詳見 [Task Dispatcher SKILL.md](../skills/task-dispatcher/SKILL.md) 的 Step 3。
+未來的 **Knossos** 將不再只是觀察者，它將具備：
+- **API 集成**：自動將 Prompt 推送給 Ikaros 實體。
+- **排程發動機 (Cron Engine)**：定時檢查 Labyrinth 狀態並重新點火。
+- **自動合併策略**：在特定條件下自動 Accept PR。
 
 ------------------------------------------------------------------------
 
-## 🔮 未來：分散式 Worker 管理
+## 🔮 未來展望：多 Ikaros 分散式協作
 
 ::: callout-note
-#### 規劃中的功能 (Future Feature)
-
-**分散式 Worker 調度 (Distributed Worker Scheduling)** 是規劃中的未來功能，不包含在目前版本中。
-
-目前框架以**單一 Worker 串行迭代**運作。所有調度邏輯已抽象至 Task Dispatcher，未來擴充時只需將 Dispatcher 從 `mode: instructor`（一次性教導）升級為 `mode: live`（持續性調度），其餘 5 個 Skill 完全不受影響。
-
-可能的擴充方向： - 多 Worker 並行執行不同 Phase 的任務 - Worker 負載均衡與健康監控 - 分散式互斥鎖升級（從 Branch-as-Lock 到 Advisory Lock）
+#### 規劃中的功能
+當單一 Ikaros 模式趨於穩定，我們將擴充 **Knossos** 的調度能力，支援多個 Ikaros 同時在 Labyrinth 不同區域（Phase）中飛行，實現真正的並行化治理生產線。
 :::

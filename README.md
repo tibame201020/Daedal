@@ -1,120 +1,174 @@
-# 🏭 Autonomous Software Factory Framework
-> **「這不是一個代碼生成器，這是一座無人值守的軟體工廠。」**
+# Daedal
 
-這套框架將「大型軟體開發」抽象化為 **6 個解耦的 AI Skill** 和一個基於 Git 的無伺服器狀態機。
-你只需要扮演「發包者 (Product Owner)」，把模糊的願景丟給框架。規劃、拆票、寫扣、測試與合併，全部交由工廠自動流轉。
+### The Structured AI Software Factory
 
----
+在 AI Coding Agent 爆發的時代，
+問題已經不是「能不能寫程式」，
+而是——**能不能可控地推進專案**。
 
-## ✨ 核心特色
+Daedal 是一套結構化 AI 軟體工廠框架，
+將生成式 AI 納入可驗證、可治理的工程流程。
 
-| 特色 | 說明 |
-|:---|:---|
-| 🧠 **6-Role 解耦管線** | 需求分析 → 視覺設計 → 架構審查 → 任務拆解 → 調度教導 → 工人執行，各角色嚴格單一職責 |
-| 🎯 **教導者模式 (Instructor Pattern)** | Task Dispatcher 只喚醒一次，產出「可重複使用的 Worker Prompt」。執行階段零 LLM 調度成本 |
-| 🛡️ **絕對防爆 CI/CD** | 所有 PR 必須通過 GitHub Actions 測試 + Task Status Guard，Worker 無法繞過 |
-| 🗄️ **Git as State Machine** | `tracker.json` 即狀態機。Phase 推進由獨立 CI workflow 自動處理 |
-| 🧱 **認知上限守則** | 嚴禁 God Object、檔案 ≤ 300 行、壞了就換不修 |
-| 🔁 **自我修復迴圈** | CI 失敗 → Worker 自動關 PR → 遞增 attempts → 重試（≥ 5 次呼救人類）|
+它不是更強的 Agent。
+它是讓 Agent 不失控的系統。
 
 ---
 
-## ⚡ 快速啟動
+## 為什麼需要 Daedal？
 
-### 1. 準備工廠地基
-```bash
-git clone https://github.com/your-username/app-generator.git my-new-app
-cd my-new-app
-```
+AI Agent 可以：
 
-### 2. 喚醒總指揮 (Orchestrator)
-打開你偏好的 AI 工具（Claude Code、Cursor、Jules 等），輸入：
-> 👉 **「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」**
+* 產生大量程式碼
+* 快速重構模組
+* 連續自動迭代
 
-Orchestrator 會依序引導你走過 5 個階段：
-1. **Requirements Analyst** — 需求探測與意圖分類
-2. **Visual Designer** *(可選)* — Design Tokens 與 Wireframe
-3. **Architect Reviewer** — 技術選型與 ADR 產出
-4. **Factory Iterator** — 任務拆解、CI/CD 適配、建廠部署
-5. **Task Dispatcher** — 產出可重複使用的 Worker Prompt
+但它們常常：
 
-### 3. 放牛吃草 (Unleash the Worker)
-Dispatcher 會給你一段 **Worker Prompt**。
-把這段 Prompt 反覆餵給你的 Worker Agent（例如 Jules），Worker 會自動：
-- 讀取 `tracker.json` 尋找任務
-- 切 branch、實作、測試、提 PR
-- CI 自動 merge + 自動推進 Phase
+* 破壞依賴順序
+* 產生不可回溯的修改
+* 合併錯誤代碼
+* 在大型專案中失去結構
 
-**直到專案完工為止。**
-
-觸發方式由你決定：Web GUI、API、Cron、n8n 隨便你。
+Daedal 解決的不是「生成能力」，
+而是「生成治理」。
 
 ---
 
-## 🏗️ 架構流轉圖
+# Daedal 生態系統
 
-```mermaid
-sequenceDiagram
-    participant Human as 👩‍💻 Product Owner
-    participant LLM as 🧠 LLM Pipeline (一次性)
-    participant Git as 🗄️ Git (Main Branch)
-    participant Worker as 👷 Worker Agent
-    participant CI as 🤖 GitHub Actions
-
-    Human->>LLM: 給出模糊需求
-    LLM->>Git: 產出 tracker.json, specs/*.yml, Worker Prompt
-    LLM-->>Human: 交付 Worker Prompt
-
-    loop 自動化生產迴圈
-        Human->>Worker: 餵入 Worker Prompt
-        Worker->>Git: 讀取 tracker → 切 branch → 實作 → 提 PR
-        Git->>CI: 觸發 auto-merge.yml
-        alt 🟢 CI 通過
-            CI->>Git: Squash Merge
-            Git->>CI: 觸發 phase-bump.yml
-            CI->>Git: 若 Phase 完成 → 自動推進
-        else 🔴 CI 失敗
-            Note over Worker: 下次喚醒時自動關 PR、重試
-        end
-    end
-```
+Daedal 並不是單一工具。
+它是一個角色分離的體系。
 
 ---
 
-## 📁 專案結構
+## 🧠 Daedal — 框架本身
 
-```
-├── skills/                          # AI Skill 定義（Prompt 工程）
-│   ├── factory-orchestrator/        # 總指揮官
-│   ├── requirements-analyst/        # 需求分析師
-│   ├── visual-designer/             # 視覺設計師
-│   ├── architect-reviewer/          # 架構審查員
-│   ├── factory-iterator/            # 任務拆解器 + 模板
-│   │   └── assets/templates/        # AGENT_PROTOCOL, auto-merge.yml, phase-bump.yml
-│   └── task-dispatcher/             # 任務調度教導者
-├── docs/                            # Quarto 文檔門戶
-│   ├── FACTORY_WORKFLOW.qmd         # 戰略全景與即時進度
-│   ├── worker-protocol.qmd          # 工人行為準則
-│   ├── extensions.qmd               # 擴充指南
-│   └── principles.qmd              # 設計原則
-├── README.md                        # ← 你現在在這裡
-└── CHANGELOG.md
-```
+定義整套工廠的規則與協議。
+
+* 任務必須是 DAG
+* 狀態必須透過 Git 推進
+* 合併必須經 CI 驗證
+* Worker 不得越權
+
+Daedal 是幾何學。
+它定義邊界。
 
 ---
 
-## 🔮 Roadmap
+## 🏗 Labyrinth — 被建造的專案結構
 
-> [!NOTE]
-> 目前框架專注於**全新專案建廠 (CREATE Mode) 與單一 Worker 串行迭代**。以下為未來的擴充藍圖：
-> 
-> 1. **已存在專案支援 (Existing Project Support)**：支援 `CONTINUE` (開發期) 與 `MAINTAIN` (維護期) 模式。這將是首要擴充重點，專注於既有邏輯的上下文載入與任務轉換。
-> 2. **分散式 Worker 管理 (Distributed Worker Scheduling)**：在單一 Worker 模式驗證穩固後，將 Task Dispatcher 從 `mode: instructor` 升級為 `mode: live`，實現多 Worker 並發協作。
+每個使用 Daedal 初始化的專案，
+都會生成一個「Labyrinth」。
+
+它包含：
+
+* `tracker.json`（任務狀態圖）
+* `specs/*.yml`（驗收標準）
+* CI workflows（自動仲裁）
+
+Labyrinth 是專案的骨架。
+Worker 只能沿著結構行走。
 
 ---
 
-## 📚 延伸閱讀
+## 🏛 Knossos — 調度中心（Dashboard）
 
-- [Factory Workflow Blueprint](docs/FACTORY_WORKFLOW.qmd) — 6-Role 管線的完整架構圖與即時進度
-- [Worker Protocol](docs/worker-protocol.qmd) — 工人憲法與邊界測試清單
-- [Extensions Guide](docs/extensions.qmd) — 如何接入 Jules、Devin 等 Worker Agent
+Knossos 是人類俯瞰迷宮的地方。
+
+它提供：
+
+* 任務進度可視化
+* PR 與 CI 狀態
+* 手動或排程 Trigger
+* 日誌與執行紀錄
+
+Knossos 不寫程式。
+它觀測與觸發。
+
+---
+
+## 🕊 Ikaros — Worker Agents
+
+Ikaros 是所有外部 AI Agent 的統稱。
+
+可以是：
+
+* Jules
+* Devin
+* Cursor Agent
+* 任何符合協議的執行者
+
+Ikaros 可以生成。
+但它無法決定專案是否前進。
+
+---
+
+## ⚖ 仲裁層（CI/CD）
+
+這是整個系統的物理法則。
+
+* 測試失敗 → 無法合併
+* 驗收未通過 → 狀態不推進
+* PR 不乾淨 → 退回修正
+
+在 Daedal 中：
+
+> 沒有 Merge，就沒有完成。
+
+---
+
+# 核心價值
+
+Daedal 建立三件事：
+
+### 1️⃣ 可預測性
+
+任務順序由 DAG 決定，而不是 Agent 猜測。
+
+### 2️⃣ 可驗證性
+
+每次推進都必須通過 CI。
+
+### 3️⃣ 權力分離
+
+設計、執行、觀測、仲裁彼此分離。
+
+這使得 AI 不再是失控的加速器，
+而是可治理的生產力。
+
+---
+
+# 我們的立場
+
+AI 不需要更多自由。
+
+它需要更好的結構。
+
+Daedal 不是取代工程師。
+它讓工程流程在 AI 時代仍然成立。
+
+---
+
+# 適用場景
+
+* 自動化專案迭代
+* 長期無人值守開發
+* 多 Agent 協作
+* 需要強 CI 控制的專案
+* 企業級 AI 開發流程實驗
+
+---
+
+# 當前狀態
+
+Early-stage framework.
+正在持續演進與驗證。
+
+---
+
+# 簡單一句話
+
+> Daedal 是一套將生成式 AI 納入確定性工程流程的控制框架。
+
+不是飛得更高。
+而是飛得更穩。

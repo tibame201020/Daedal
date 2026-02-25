@@ -1,111 +1,96 @@
 ---
-title: "🏭 Factory Workflow Blueprint"
+title: "🏭 Daedal 核心流程藍圖"
 subtitle: "The Literate State Machine of Software Production"
 ---
 
-# 🏭 Autonomous Software Factory Workflow
+# 🏭 Daedal 核心流程藍圖
 
-> \[!NOTE\] This is an **Executable Document**. It not only describes the workflow but also serves as the real-time monitoring interface for the factory.
+> [!NOTE] 本文不僅是說明文件，也是工廠的**即時觀測面板**。
 
-## 🏗️ Core Architecture: 6-Role Decoupled Pipeline
+## 🏗️ 核心架構：五大組件協作
 
-The factory is composed of six specialized autonomous components orchestrated by a central brain.
+工廠由五個角色各司其職，確保專案推進的穩定性。
 
-### 🗺️ 戰略全景：軟體工廠生命週期
+### 🗺️ 戰略全景：從意圖到發布
 
-> 旨在呈現 6 個角色間的高階協作與狀態轉移。
+> 旨在呈現 **Daedal** 定義下的 **Labyrinth** 推進過程，與 **Knossos** 的觀測位置。
 
 ```{mermaid}
 graph TD
-    User([👩‍💻 人類意圖]) --> P1[[Phase 1: Discovery]]
-    P1 --> P2[[Phase 2: Tech Design]]
-    P2 --> P3[[Phase 3: Task Specification]]
-    P3 --> P4[[Phase 4: Dispatch]]
-    P4 --> P5[[Phase 5: Execution]]
-    P5 --> P6[[Phase 6: Validation]]
-    P6 -- "反饋/重試" --> P5
-    P6 -- "Phase 推進" --> P4
-    P6 -- "完成" --> Done((🚀 發布))
+    User([👩‍💻 人類意圖]) --> Knossos[🏛️ Knossos 調度中心]
+    Knossos -- "點火/觸發" --> P1[[Phase 1: Discovery]]
+    P1 --> P2[[Phas 2: Tech Design]]
+    P2 --> P3[[Phase 3: Labyrinth Construction]]
+    P3 --> P4[[Phase 4: Ikaros Flight]]
+    P4 --> P5[[Phase 5: CI Arbitration]]
+    P5 -- "反饋/重試" --> P4
+    P5 -- "Merg & Phase 推進" --> Knossos
+    Knossos -- "完成" --> Done((🚀 發布))
 
-    style P1 fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
-    style P2 fill:#fffde7,stroke:#fbc02d,color:#f57f17
-    style P3 fill:#f3e5f5,stroke:#7b1fa2,color:#4a148c
-    style P4 fill:#fff3e0,stroke:#e65100,color:#bf360c
-    style P5 fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
-    style P6 fill:#ffebee,stroke:#c62828,color:#b71c1c
+    subgraph Labyrinth["🏰 Labyrinth (專案結構)"]
+        P1
+        P2
+        P3
+        P4
+        P5
+    end
+
+    style Knossos fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style Labyrinth fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5
 ```
 
 ------------------------------------------------------------------------
 
 ## 🔍 戰術拆解：各階段詳細邏輯
 
-### 1. Discovery: 意圖具現化
+### 1. Discovery & Design (建構 Labyrinth)
 
-> 將模糊的自然語言轉化為可執行的視覺與功能需求。
+> 將模糊的自然語言轉化為 **Labyrinth** 中的軌跡。
 
 ```{mermaid}
 graph TD
-    Start([人類輸入]) --> Orch{協作編程器}
-    Orch --> ReqA[需求分析師]
+    Knossos[🏛️ Knossos] --> ReqA[需求分析師]
     ReqA --> UI_Check{需要 UI?}
     UI_Check -- 是 --> VisD[視覺設計師]
     UI_Check -- 否 --> Arch[架構審查]
     VisD --> Arch
-```
-
-### 2. Tech Design → Task Specification
-
-> 確保架構內聚後，將需求拆解為模組化微型任務。
-
-```{mermaid}
-graph TD
-    In[需求藍圖] --> Arch[架構審查員]
-    Arch --> Sim[大模型腦力模擬]
-    Sim -- 簽署通過 --> Iter[工廠迭代器]
-    Iter --> Specs[(specs/*.yml)]
+    Arch --> Iter[工廠迭代器]
+    Iter --> Specs[(Labyrinth Specs)]
     Iter --> Track[(tracker.json)]
-
-    style Sim fill:#fff9c4,stroke:#fbc02d
-    style Specs fill:#f5f5f5,stroke:#9e9e9e
 ```
 
-### 3. Dispatch → Execution → Validation
+### 2. Ikaros Flight & CI (執行與仲裁)
 
-> Task Dispatcher 專職調度，Worker 純粹實作，CI/CD 裁決結果。
+> **Ikaros** 負責在 **Labyrinth** 中飛行，**CI** 負責物理法則仲裁。
 
 ::: callout-note
-#### 🤖 Dispatcher = 教導者，非調度員
-Task Dispatcher 是一次性的教導者 (`mode: instructor`)。他被喚醒一次，產出一段「可重複使用的 Worker Prompt」後即退場。使用者只需反覆將此 Prompt 餵給 Worker Agent（透過 Web GUI、API、Cron 等任何方式），Worker 就會自動讀取 tracker、領取任務、實作、提 PR。CI/CD 負責驗收與 Phase 推進。整個執行階段不消耗額外的 LLM 調度成本。
+#### 🏛️ Knossos = 導航，而非動力
+Knossos 負責觀測 `tracker.json` 並在合適時機觸發 Ikaros。Ikaros 則是自主讀取 Labyrinth 結構進行實作。
 :::
 
 ```{mermaid}
 graph TD
-    Disp[任務調度官] --> Lock{互斥鎖檢查}
-    Lock -- 可領取 --> Pack[組裝任務包]
-    Lock -- 已鎖定 --> Skip[跳過]
-    Pack --> Worker[執行工人]
-    Worker -- 提交 PR --> CI{CI 門戶}
-    CI -- 通過 --> Merge[合併]
-    CI -- 失敗 --> Retry{可重試?}
-    Retry -- 是 --> Disp
-    Retry -- 否 --> Human([通知人類])
-    Merge --> Phase{Phase 完成?}
-    Phase -- 是 --> Disp
-    Phase -- 全部完成 --> Done((🚀 發布))
+    Knossos[🏛️ Knossos] --> Ikaros[🕊️ Ikaros Worker]
+    Ikaros -- "讀取 Labyrinth" --> Lab{tracker.json}
+    Lab -- "領取任務" --> Impl[實作代碼]
+    Impl -- "提交 PR" --> CI{⚖️ CI 仲裁}
+    CI -- "🟢 通過" --> Merge[Merge to Main]
+    CI -- "🔴 失敗" --> Recover[自我修復/重試]
+    Merge --> Knossos
+    Recover --> Ikaros
 
-    style Disp fill:#fff3e0,stroke:#e65100
-    style Worker fill:#e8f5e9,stroke:#2e7d32
-    style Merge fill:#c8e6c9,stroke:#2e7d32
+    style Knossos fill:#fff3e0,stroke:#e65100
+    style Ikaros fill:#f3e5f5,stroke:#7b1fa2
+    style CI fill:#ffebee,stroke:#c62828
 ```
 
 ------------------------------------------------------------------------
 
-## 📊 Live Factory Status (Experimental)
+## 📊 實時工廠狀態 (Live Status)
 
 ::: callout-tip
-### 進度自動化監控
-
-以下區塊會自動搜尋專案中的 `tracker.json` 並呈現即時進度。
+### 觀測中心
+以下區塊直接讀取專案內的 `tracker.json`，提供 **Knossos** 視角的即時數據。
 :::
 
 ``` python
@@ -118,31 +103,24 @@ if tracker_files:
     tracker_path = tracker_files[0]
     with open(tracker_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    print(f"**Current Phase:** {data.get('current_phase', 'N/A')}")
+    print(f"**Current Labyrinth Phase:** {data.get('current_phase', 'N/A')}")
 else:
-    print("> ⚠️ No active tracker found. Factory is currently idle.")
+    print("> ⚠️ No active Labyrinth structure found. Factory is idle.")
 ```
 
-> \[!NOTE\] **初次部署說明**：若您剛建立專案且尚未執行 Factory Iterator 的建廠流程 (Scaffolding)，上方顯示「No active tracker found」是正常現象。待 `tracker.json` 被 commit 進倉庫後，此區塊將自動顯示即時進度。
-
 ------------------------------------------------------------------------
 
-## 🛠️ 角色定義 (6-Role Pipeline)
+## 🛠️ 角色清單 (Ecosystem Roles)
 
-| \# | 角色 | 職責 | Skill |
+| \# | 角色名稱 | 系統別名 | 職責 |
 |:--|:--|:--|:--|
-| 1 | [Requirements Analyst](../skills/requirements-analyst/SKILL.md) | 意圖分類與需求收集 | `requirements-analyst` |
-| 2 | [Visual Designer](../skills/visual-designer/SKILL.md) | **(可選)** 設計系統與視覺規格 | `visual-designer` |
-| 3 | [Architect Reviewer](../skills/architect-reviewer/SKILL.md) | 技術選型與沙盤推演 | `architect-reviewer` |
-| 4 | [Factory Iterator](../skills/factory-iterator/SKILL.md) | 任務拆解、規格產出、CI 技術棧適配 | `factory-iterator` |
-| 5 | [Task Dispatcher](../skills/task-dispatcher/SKILL.md) | 一次性教導者 (`mode: instructor`)：產出 Worker Prompt | `task-dispatcher` |
-| 6 | Worker (AGENT_PROTOCOL) | Dispatcher 教導的自服務執行者 | co-worker |
+| 1 | Requirements Analyst | Discovery | 意圖分類與需求收集 |
+| 2 | Architect Reviewer | Design | 技術選型與 ADR 產出 |
+| 3 | Factory Iterator | Construction | 構建 **Labyrinth** (Specs, Tracker) |
+| 4 | Task Dispatcher | Trigger | 產出 Ikaros 飛行指令 (Worker Prompt) |
+| 5 | **Ikaros** | Worker | 符合協議的自服務執行者 |
+| 6 | **Knossos** | Dashboard | 專案進度觀測與觸發中心 |
 
-::: callout-note
-#### 🔮 分散式 Worker 管理 (Future Feature)
-目前框架以**單一 Worker 串行迭代**運作。分散式 Worker 調度已規劃為未來功能，屆時只需將 Task Dispatcher 從 `mode: instructor` 升級為 `mode: live`。
-:::
+---
 
-------------------------------------------------------------------------
-
-> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. If a new skill is added, it must be registered in this blueprint.
+> [!TIP] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. Every flight must be recorded.

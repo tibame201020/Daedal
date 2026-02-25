@@ -1,27 +1,27 @@
 ---
-title: "👷 工人憲法與行事準則"
-subtitle: "Dispatcher 教導的自服務執行者"
+title: "🕊️ Ikaros 飛行協議與行事準則"
+subtitle: "Labyrinth 中的自服務執行者"
 ---
 
-## 📜 AGENT_PROTOCOL.md (工人憲法)
+## 📜 Ikaros Protocol (工人協議)
 
-任何進入本工廠的 Worker Agent 在每次甦醒時，**必須**首先閱讀這份憲法。
+任何進入本工廠的 Worker Agent 在每次甦醒時，**必須**首先閱讀這份協議。
 
-### ⚠️ 角色聲明：你是被指導的執行者
+### ⚠️ 飛行邊界：你是在 Labyrinth 中執行
 
 ::: callout-important
-本協議由 **Task Dispatcher (教導者)** 編寫。Worker 遵循的每一步，都是 Dispatcher 的指令。 Worker 看起來「自己在找任務、管分支」，但這些行為來自 Dispatcher 的標準化流程，不是 Worker 自主決定的。
+本協議由 **Task Dispatcher** 編寫。Ikaros 在 **Labyrinth** 中的每一步飛行，都必須遵循 `tracker.json` 的狀態約束。
 :::
 
-Worker 的完整生命週期（由 Dispatcher 教導）：
+Ikaros 的完整生命週期：
 
 ```{mermaid}
 graph LR
-    Read[讀取 Tracker] --> Lock{互斥鎖檢查}
+    Read[讀取 Labyrinth] --> Lock{互斥鎖檢查}
     Lock -- 可領取 --> Branch[切 Branch]
-    Lock -- CI 失敗 --> Recover[關 PR + 重試]
+    Lock -- CI 失敗 --> Recover[Recover & Retry]
     Lock -- 鎖定中 --> Skip[跳過]
-    Branch --> Spec[載入規格]
+    Branch --> Spec[載入 Specs]
     Spec --> Impl[實作功能]
     Recover --> Branch
     Impl --> Test[驗證品質]
@@ -37,23 +37,20 @@ graph LR
 
 ### 三大鐵律
 
-1.  **路徑審計 (Allowed Paths Audit)** 所有變更必須精確落在 `allowed_paths` 內，嚴禁修改框架底層，防止 Scope Creep。
+1.  **路徑審計 (Allowed Paths Audit)** 所有變更必須精確落在 `allowed_paths` 內。嚴禁飛出 Labyrinth 的邊界。
 
 2.  **TDD 分級制 (Phase-Aware Testing)**
+    -   早期 Phase：基礎功能驗證。
+    -   後期 Phase：全面涵蓋破壞性邊界測試。
 
-    -   Phase 1：基礎測試 1-4 項
-    -   Phase 2+：全面涵蓋 8 項破壞性邊界測試（Null、空值、Race Conditions、大資料量等）
-
-3.  **自我修復 + CI 失敗恢復 (Self-Healing)**
-
-    -   被授權在不偏離核心功能的前提下，自主修正環境問題。
-    -   偵測到 CI 失敗的 PR 時，自動關閉 → 遞增 `attempts` → 重試。
-    -   `attempts` ≥ 5 次 → 熔斷，呼救人類。
+3.  **自我修復與回航 (Self-Healing)**
+    -   偵測到 CI 失敗時，自動執行恢復流程（關 PR → 遞增 `attempts` → 重試）。
+    -   `attempts` ≥ 5 次 → 停止飛行，尋求 **Knossos** (人類) 的介入。
 
 ------------------------------------------------------------------------
 
 ### 🧠 認知上限守則 (Cognitive Load Limit)
 
--   **檔案長度控制**：盡量保持在 200\~300 行以內。
--   **反模式禁令**：絕對禁止寫出「全能上帝物件 (God Object)」。
--   **壞了就換 (Disposable Components)**：如果模組 Bug 難以修補，**直接刪除重寫**。
+-   **檔案長度控制**：保持在 200~300 行以內。
+-   **反模式禁令**：嚴禁創造 God Object。
+-   **組件化思維**：模組失敗若難以修復，應考慮重構而非疊床架屋。
