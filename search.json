@@ -1,0 +1,620 @@
+[
+  {
+    "objectID": "WHITEPAPER.html",
+    "href": "WHITEPAPER.html",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "生成式 AI 正在改變軟體開發。\n現在的問題已經不是：\n\nAI 能不能寫程式\nAI 能不能理解需求\n\n而是：\n\nAI 能否在長期專案中，穩定、可預測、可驗證地前進？\n\n當 AI Agent 能連續產生數千行程式碼時， 失控的成本會被放大。\n常見現象包括：\n\n任務順序錯亂\n狀態不一致\n依賴破壞\n合併污染主分支\nScope Creep 擴散\n\n這不是能力問題。 是治理問題。\n\n\n\n\nAI 需要的不是更多自由。\n它需要：\n\n明確邊界\n狀態約束\n可驗證推進\n權力分離\n\nDaedal 的核心假設是：\n\n生成能力可以無限放大，但狀態推進必須被嚴格限制。\n\n\n\n\n\nDaedal 將軟體工廠拆解為五個角色。\n\n\n\nDaedal 是治理規則本身。\n它定義：\n\n任務如何拆分\n任務如何依賴\nWorker 如何執行\n狀態如何推進\nCI 如何仲裁\n\nDaedal 不生成程式碼。 它定義生成的幾何結構。\n\n\n\n\n每個專案都是一座 Labyrinth。\n它由以下組成：\n\n任務 DAG（tracker.json）\n規格藍圖（specs/*.yml）\n仲裁流程（CI workflows）\n\nLabyrinth 是靜態結構。\n它不思考。 它只約束。\n\n\n\n\nIkaros 是所有 Worker Agent 的統稱。\n它們：\n\n能生成程式碼\n能修正錯誤\n能進行有限自治\n\n但它們不能：\n\n跳過依賴鏈\n推進未驗證狀態\n繞過 CI\n\nIkaros 可以飛。 但飛行高度由結構決定。\n\n\n\n\nKnossos 是觀測與觸發中心。\n人類在此：\n\n俯瞰整體狀態\n檢視任務進度\n查看 PR 與 CI\n手動或排程觸發 Worker\n\nKnossos 不負責裁決。 它只是視角與調度介面。\n\n\n\n\nCI 是物理法則。\n\n測試失敗 → 不可合併\n驗收未通過 → 不可推進\n狀態不一致 → 阻止變更\n\n在 Daedal 中：\n\nMerge 是唯一合法的狀態轉移。\n\n\n\n\n\n\nDaedal 的核心設計是權力分離。\n\n\n\n層級\n職責\n不可做\n\n\n\n\nDaedal\n定義規則\n不生成代碼\n\n\nLabyrinth\n承載結構\n不決策\n\n\nIkaros\n執行任務\n不裁決\n\n\nKnossos\n觀測與觸發\n不繞過 CI\n\n\nCI\n仲裁\n不生成\n\n\n\n沒有任何單一角色擁有完整權力。\n\n\n\n\nDaedal 將常見反模式具象化為「Minotaur」。\nMinotaur 包括：\n\n巨型任務未拆分\nGod Object\n不可測試修改\n依賴污染\nScope 無節制擴張\n\n系統透過：\n\n微型任務拆分\nDAG 明確依賴\nCI 強制關卡\n\n將 Minotaur 拆解為可治理單元。\n\n\n\n\n隨著 AI 能力提升， 單一 Agent 可能可以完成完整專案。\n但能力提升不等於穩定性提升。\n沒有治理的生成， 只會加速混亂。\nDaedal 是對 AI 能力擴張的一種結構回應。\n\n\n\n\nDaedal 的未來發展可能包括：\n\n多 Worker 並行協作\nLLM 調度決策層\n分散式狀態同步\n自動化 Phase 管理\n專案跨工廠協調\n\n但無論如何擴充， 核心原則不變：\n\n狀態推進必須可驗證。 生成必須受限於結構。\n\n\n\n\n\nDaedal 並不是一個更聰明的 Agent。\n它是一種讓 Agent 在長期專案中不失控的結構。\n在生成式時代， 治理比生成更重要。\nDaedal 的目標不是飛得更高。\n而是確保每一次飛行都能安全降落。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#問題的起點",
+    "href": "WHITEPAPER.html#問題的起點",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "生成式 AI 正在改變軟體開發。\n現在的問題已經不是：\n\nAI 能不能寫程式\nAI 能不能理解需求\n\n而是：\n\nAI 能否在長期專案中，穩定、可預測、可驗證地前進？\n\n當 AI Agent 能連續產生數千行程式碼時， 失控的成本會被放大。\n常見現象包括：\n\n任務順序錯亂\n狀態不一致\n依賴破壞\n合併污染主分支\nScope Creep 擴散\n\n這不是能力問題。 是治理問題。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#核心洞察",
+    "href": "WHITEPAPER.html#核心洞察",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "AI 需要的不是更多自由。\n它需要：\n\n明確邊界\n狀態約束\n可驗證推進\n權力分離\n\nDaedal 的核心假設是：\n\n生成能力可以無限放大，但狀態推進必須被嚴格限制。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#daedal-的結構哲學",
+    "href": "WHITEPAPER.html#daedal-的結構哲學",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "Daedal 將軟體工廠拆解為五個角色。\n\n\n\nDaedal 是治理規則本身。\n它定義：\n\n任務如何拆分\n任務如何依賴\nWorker 如何執行\n狀態如何推進\nCI 如何仲裁\n\nDaedal 不生成程式碼。 它定義生成的幾何結構。\n\n\n\n\n每個專案都是一座 Labyrinth。\n它由以下組成：\n\n任務 DAG（tracker.json）\n規格藍圖（specs/*.yml）\n仲裁流程（CI workflows）\n\nLabyrinth 是靜態結構。\n它不思考。 它只約束。\n\n\n\n\nIkaros 是所有 Worker Agent 的統稱。\n它們：\n\n能生成程式碼\n能修正錯誤\n能進行有限自治\n\n但它們不能：\n\n跳過依賴鏈\n推進未驗證狀態\n繞過 CI\n\nIkaros 可以飛。 但飛行高度由結構決定。\n\n\n\n\nKnossos 是觀測與觸發中心。\n人類在此：\n\n俯瞰整體狀態\n檢視任務進度\n查看 PR 與 CI\n手動或排程觸發 Worker\n\nKnossos 不負責裁決。 它只是視角與調度介面。\n\n\n\n\nCI 是物理法則。\n\n測試失敗 → 不可合併\n驗收未通過 → 不可推進\n狀態不一致 → 阻止變更\n\n在 Daedal 中：\n\nMerge 是唯一合法的狀態轉移。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#權力分離模型",
+    "href": "WHITEPAPER.html#權力分離模型",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "Daedal 的核心設計是權力分離。\n\n\n\n層級\n職責\n不可做\n\n\n\n\nDaedal\n定義規則\n不生成代碼\n\n\nLabyrinth\n承載結構\n不決策\n\n\nIkaros\n執行任務\n不裁決\n\n\nKnossos\n觀測與觸發\n不繞過 CI\n\n\nCI\n仲裁\n不生成\n\n\n\n沒有任何單一角色擁有完整權力。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#反模式與風險控制",
+    "href": "WHITEPAPER.html#反模式與風險控制",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "Daedal 將常見反模式具象化為「Minotaur」。\nMinotaur 包括：\n\n巨型任務未拆分\nGod Object\n不可測試修改\n依賴污染\nScope 無節制擴張\n\n系統透過：\n\n微型任務拆分\nDAG 明確依賴\nCI 強制關卡\n\n將 Minotaur 拆解為可治理單元。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#為何需要這種架構",
+    "href": "WHITEPAPER.html#為何需要這種架構",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "隨著 AI 能力提升， 單一 Agent 可能可以完成完整專案。\n但能力提升不等於穩定性提升。\n沒有治理的生成， 只會加速混亂。\nDaedal 是對 AI 能力擴張的一種結構回應。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#未來方向",
+    "href": "WHITEPAPER.html#未來方向",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "Daedal 的未來發展可能包括：\n\n多 Worker 並行協作\nLLM 調度決策層\n分散式狀態同步\n自動化 Phase 管理\n專案跨工廠協調\n\n但無論如何擴充， 核心原則不變：\n\n狀態推進必須可驗證。 生成必須受限於結構。"
+  },
+  {
+    "objectID": "WHITEPAPER.html#總結",
+    "href": "WHITEPAPER.html#總結",
+    "title": "Daedal Context",
+    "section": "",
+    "text": "Daedal 並不是一個更聰明的 Agent。\n它是一種讓 Agent 在長期專案中不失控的結構。\n在生成式時代， 治理比生成更重要。\nDaedal 的目標不是飛得更高。\n而是確保每一次飛行都能安全降落。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html",
+    "href": "skills/task-dispatcher/SKILL.html",
+    "title": "🎯 Task Dispatcher (任務調度教導者)",
+    "section": "",
+    "text": "你不是持續運作的調度員，你是一次性的教導者。 你被喚醒一次，產出一段「Worker Prompt」，然後功成身退。\n\n\n\n\n❌ 運行時調度員：每次排程都需要 LLM 判斷 → 成本高、延遲大\n❌ 本機調度腳本：依賴使用者的 local repo 定時 pull → 工廠不該在地面\n✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材 (Prompt)」讓 Worker 用到底\n建廠階段需要 local repo（specs、tracker 等必須 commit 進 repo）。 但執行階段不需要——使用者不必在本機持續 pull repo 來追蹤狀態。Worker 直接操作遠端 repo。 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n…隨便他），然後把你產出的 Prompt 餵進去。\n\n\n\n\n\n\n\n確認 tracker.json 已被 Factory Iterator 產出。\n確認 specs/tasks/*.yml 任務規格已就緒。\n確認 .agents/rules/ 規則目錄已初始化。\n確認使用者已提供的資訊：Agent Name、Base Branch、Repo URL。\n\n\n\n\n\n這是你唯一且最重要的交付物。\n\n根據專案的具體資訊，產出以下格式的 Prompt。 使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動推進任務直到完工。\n## 📋 Worker 自動執行 Prompt（可重複使用）\n\n你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：\n\n### 1. 讀取狀態\n- 讀取 `.{{AGENT_NAME}}/tracker.json`。\n- 找到 `current_phase` 中第一個 `status == \"pending\"` 的任務。\n- 若該任務的 `attempts` &gt;= 5，停止並回報人類。\n- 若沒有 pending 任務，回報「所有任務已完成或等待 CI」。\n\n### 2. 互斥鎖檢查\n- 檢查遠端是否存在分支 `{AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}`。\n- 若不存在：領取此任務。\n- 若存在：檢查 PR 狀態。\n  - MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。\n  - 無 PR 或 CLOSED → 刪除舊分支，重新領取。\n  - OPEN + CI 通過或進行中 → 跳過此任務，等待合併。\n  - OPEN + CI **失敗** → 執行恢復流程：\n    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n    3. 跳過此任務，嘗試下一個 pending 任務\n    - _(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_\n\n### 3. 建立工作環境\n- `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`\n- `git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n- `git commit --allow-empty -m \"chore: start {task_id}\"` (Heartbeat)\n- `git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n\n### 4. 規則預載與規格讀取\n- 讀取 `.agents/rules/` 中的所有編碼規則。\n- 讀取任務對應的 `spec_ref` 檔案（位於 `specs/tasks/` 下）。\n- 嚴格依照 Spec 實作，禁止猜測。\n\n### 5. 實作與驗證\n- 依照 Spec 實作功能 + 單元測試。\n- 遵守認知上限：檔案 ≤ 300 行，禁止 God Object。\n- 路徑審計：`git diff --name-only` 必須全部落在 `allowed_paths` 內。\n- TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。\n\n### 6. 提交 PR\n- 將 tracker.json 中該任務的 status 更新為 `completed`。\n- 提交 PR：`gh pr create --title \"[{{AGENT_NAME}}] {title}\" --body \"...\" --label \"auto-merge\"`\n- PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。\n\n[!IMPORTANT] 佔位符替換規則：你必須根據使用者提供的資訊，將 {AGENT_NAME}、{BASE_BRANCH} 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。\n\n\n[!WARNING] 雙份維護警告：此 Worker Prompt 模板的執行邏輯與 factory-iterator/assets/templates/AGENT_PROTOCOL.md 描述相同流程。 若修改此處任何 Step，必須同步更新 AGENT_PROTOCOL.md，反之亦然。\n\n\n\n\n\n\n這一步取決於使用者選擇的 Worker 以及觸發方式。\n\n使用者可以透過任何方式觸發 Worker：\n\n\n\n觸發方式\n說明\n複雜度\n\n\n\n\nWeb GUI\n直接在 Worker 的網頁介面貼上 Prompt\n⭐ 最簡單\n\n\nAPI 呼叫\n透過 Worker 的 REST API 傳送 Prompt\n⭐⭐\n\n\nCron + API 腳本\n定時自動觸發 Worker API\n⭐⭐⭐\n\n\nn8n / Zapier\n多步驟自動化（含通知、錯誤處理）\n⭐⭐⭐⭐\n\n\n\n\n\n若使用者已知其 Worker 的 API 端點與認證方式，你可以協助產出一支專用的觸發腳本。\n範例結構（以 Jules 為例）：\n#!/usr/bin/env python3\n\"\"\"jules_trigger.py - 自動觸發 Jules 執行任務\"\"\"\nimport requests\nimport json\n\nJULES_API_URL = \"https://api.jules.google/v1/tasks\"\nJULES_API_KEY = \"YOUR_API_KEY\"  # 從環境變數讀取\nREPO_URL = \"https://github.com/user/repo\"\nWORKER_PROMPT = \"\"\"...\"\"\"  # 貼入 Step 2 產出的完整 Prompt\n\ndef trigger_jules():\n    resp = requests.post(JULES_API_URL, headers={\n        \"Authorization\": f\"Bearer {JULES_API_KEY}\"\n    }, json={\n        \"repo\": REPO_URL,\n        \"prompt\": WORKER_PROMPT\n    })\n    print(f\"Status: {resp.status_code}\")\n    print(resp.json())\n\nif __name__ == \"__main__\":\n    trigger_jules()\n\n[!NOTE] 以上僅為概念範例。實際的 API 格式取決於 Worker 服務商（Jules、Devin、Cursor Agent 等）。 未來若框架內建了某 Worker 的 API 封裝（如 integrations/jules-api.py），你應優先引導使用者使用它。\n\n\n\n\n\n\n\n\n\n\n產出物\n必要性\n用途\n\n\n\n\nWorker Prompt\n✅ 必要\n使用者反覆餵給 Worker 的標準化執行指令\n\n\nAPI 觸發腳本\n⚪ 可選\n若使用者希望用 Cron 自動觸發 Worker\n\n\n\n\n\n\n\n\n當前 (mode: instructor)：被喚醒一次，產出 Prompt 後退場。 未來 (mode: live)：升級為持續性 Agent，觀察 Worker 結果、動態調整策略。\n\n多 Worker 支援： - 當框架支援 Devin、Cursor Agent 等新 Worker 後，本 Skill 只需在 Step 3 中新增對應的 API 封裝範例。 - Worker Prompt (Step 2) 的格式對所有 Worker 通用，不需要修改。\n\n\n🎉 完成：Worker Prompt 已產出。請將其交給使用者，並引導他選擇觸發方式。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#角色定位編譯時教導者-compile-time-instructor",
+    "href": "skills/task-dispatcher/SKILL.html#角色定位編譯時教導者-compile-time-instructor",
+    "title": "🎯 Task Dispatcher (任務調度教導者)",
+    "section": "",
+    "text": "❌ 運行時調度員：每次排程都需要 LLM 判斷 → 成本高、延遲大\n❌ 本機調度腳本：依賴使用者的 local repo 定時 pull → 工廠不該在地面\n✅ 編譯時教導者：LLM 只被喚醒一次，產出「教材 (Prompt)」讓 Worker 用到底\n建廠階段需要 local repo（specs、tracker 等必須 commit 進 repo）。 但執行階段不需要——使用者不必在本機持續 pull repo 來追蹤狀態。Worker 直接操作遠端 repo。 他只需要一種方式觸發 Worker（Web GUI、API、Cron、n8n…隨便他），然後把你產出的 Prompt 餵進去。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#執行流程僅執行一次",
+    "href": "skills/task-dispatcher/SKILL.html#執行流程僅執行一次",
+    "title": "🎯 Task Dispatcher (任務調度教導者)",
+    "section": "",
+    "text": "確認 tracker.json 已被 Factory Iterator 產出。\n確認 specs/tasks/*.yml 任務規格已就緒。\n確認 .agents/rules/ 規則目錄已初始化。\n確認使用者已提供的資訊：Agent Name、Base Branch、Repo URL。\n\n\n\n\n\n這是你唯一且最重要的交付物。\n\n根據專案的具體資訊，產出以下格式的 Prompt。 使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動推進任務直到完工。\n## 📋 Worker 自動執行 Prompt（可重複使用）\n\n你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：\n\n### 1. 讀取狀態\n- 讀取 `.{{AGENT_NAME}}/tracker.json`。\n- 找到 `current_phase` 中第一個 `status == \"pending\"` 的任務。\n- 若該任務的 `attempts` &gt;= 5，停止並回報人類。\n- 若沒有 pending 任務，回報「所有任務已完成或等待 CI」。\n\n### 2. 互斥鎖檢查\n- 檢查遠端是否存在分支 `{AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}`。\n- 若不存在：領取此任務。\n- 若存在：檢查 PR 狀態。\n  - MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。\n  - 無 PR 或 CLOSED → 刪除舊分支，重新領取。\n  - OPEN + CI 通過或進行中 → 跳過此任務，等待合併。\n  - OPEN + CI **失敗** → 執行恢復流程：\n    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n    3. 跳過此任務，嘗試下一個 pending 任務\n    - _(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_\n\n### 3. 建立工作環境\n- `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`\n- `git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n- `git commit --allow-empty -m \"chore: start {task_id}\"` (Heartbeat)\n- `git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`\n\n### 4. 規則預載與規格讀取\n- 讀取 `.agents/rules/` 中的所有編碼規則。\n- 讀取任務對應的 `spec_ref` 檔案（位於 `specs/tasks/` 下）。\n- 嚴格依照 Spec 實作，禁止猜測。\n\n### 5. 實作與驗證\n- 依照 Spec 實作功能 + 單元測試。\n- 遵守認知上限：檔案 ≤ 300 行，禁止 God Object。\n- 路徑審計：`git diff --name-only` 必須全部落在 `allowed_paths` 內。\n- TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。\n\n### 6. 提交 PR\n- 將 tracker.json 中該任務的 status 更新為 `completed`。\n- 提交 PR：`gh pr create --title \"[{{AGENT_NAME}}] {title}\" --body \"...\" --label \"auto-merge\"`\n- PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。\n\n[!IMPORTANT] 佔位符替換規則：你必須根據使用者提供的資訊，將 {AGENT_NAME}、{BASE_BRANCH} 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。\n\n\n[!WARNING] 雙份維護警告：此 Worker Prompt 模板的執行邏輯與 factory-iterator/assets/templates/AGENT_PROTOCOL.md 描述相同流程。 若修改此處任何 Step，必須同步更新 AGENT_PROTOCOL.md，反之亦然。\n\n\n\n\n\n\n這一步取決於使用者選擇的 Worker 以及觸發方式。\n\n使用者可以透過任何方式觸發 Worker：\n\n\n\n觸發方式\n說明\n複雜度\n\n\n\n\nWeb GUI\n直接在 Worker 的網頁介面貼上 Prompt\n⭐ 最簡單\n\n\nAPI 呼叫\n透過 Worker 的 REST API 傳送 Prompt\n⭐⭐\n\n\nCron + API 腳本\n定時自動觸發 Worker API\n⭐⭐⭐\n\n\nn8n / Zapier\n多步驟自動化（含通知、錯誤處理）\n⭐⭐⭐⭐\n\n\n\n\n\n若使用者已知其 Worker 的 API 端點與認證方式，你可以協助產出一支專用的觸發腳本。\n範例結構（以 Jules 為例）：\n#!/usr/bin/env python3\n\"\"\"jules_trigger.py - 自動觸發 Jules 執行任務\"\"\"\nimport requests\nimport json\n\nJULES_API_URL = \"https://api.jules.google/v1/tasks\"\nJULES_API_KEY = \"YOUR_API_KEY\"  # 從環境變數讀取\nREPO_URL = \"https://github.com/user/repo\"\nWORKER_PROMPT = \"\"\"...\"\"\"  # 貼入 Step 2 產出的完整 Prompt\n\ndef trigger_jules():\n    resp = requests.post(JULES_API_URL, headers={\n        \"Authorization\": f\"Bearer {JULES_API_KEY}\"\n    }, json={\n        \"repo\": REPO_URL,\n        \"prompt\": WORKER_PROMPT\n    })\n    print(f\"Status: {resp.status_code}\")\n    print(resp.json())\n\nif __name__ == \"__main__\":\n    trigger_jules()\n\n[!NOTE] 以上僅為概念範例。實際的 API 格式取決於 Worker 服務商（Jules、Devin、Cursor Agent 等）。 未來若框架內建了某 Worker 的 API 封裝（如 integrations/jules-api.py），你應優先引導使用者使用它。"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#產出物清單",
+    "href": "skills/task-dispatcher/SKILL.html#產出物清單",
+    "title": "🎯 Task Dispatcher (任務調度教導者)",
+    "section": "",
+    "text": "產出物\n必要性\n用途\n\n\n\n\nWorker Prompt\n✅ 必要\n使用者反覆餵給 Worker 的標準化執行指令\n\n\nAPI 觸發腳本\n⚪ 可選\n若使用者希望用 Cron 自動觸發 Worker"
+  },
+  {
+    "objectID": "skills/task-dispatcher/SKILL.html#未來擴充",
+    "href": "skills/task-dispatcher/SKILL.html#未來擴充",
+    "title": "🎯 Task Dispatcher (任務調度教導者)",
+    "section": "",
+    "text": "當前 (mode: instructor)：被喚醒一次，產出 Prompt 後退場。 未來 (mode: live)：升級為持續性 Agent，觀察 Worker 結果、動態調整策略。\n\n多 Worker 支援： - 當框架支援 Devin、Cursor Agent 等新 Worker 後，本 Skill 只需在 Step 3 中新增對應的 API 封裝範例。 - Worker Prompt (Step 2) 的格式對所有 Worker 通用，不需要修改。\n\n\n🎉 完成：Worker Prompt 已產出。請將其交給使用者，並引導他選擇觸發方式。"
+  },
+  {
+    "objectID": "skills/factory-orchestrator/SKILL.html",
+    "href": "skills/factory-orchestrator/SKILL.html",
+    "title": "🏁 Factory Orchestrator (總指揮官)",
+    "section": "",
+    "text": "您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。\n\n\n\n\n初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n引導 Task Dispatcher 執行一次性教導： - 產出可重複使用的 Worker Prompt——使用者只需反覆餵給 Worker Agent 即可持續推進任務。 - Worker 怎麼觸發由使用者決定（Web GUI、API、Cron、n8n 等皆可）。 - 若使用者需要自動化觸發，Dispatcher 可協助封裝對應 Worker 的 API 腳本。 - Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE (Future Feature)\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN (Future Feature)\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。\n\n\n\n\n\n元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含根目錄的 index.qmd、docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+  },
+  {
+    "objectID": "skills/factory-orchestrator/SKILL.html#指令流程",
+    "href": "skills/factory-orchestrator/SKILL.html#指令流程",
+    "title": "🏁 Factory Orchestrator (總指揮官)",
+    "section": "",
+    "text": "初次啟動時，請先呼叫並引導使用者完成 Requirements Analyst。\n\n\n\n根據需求分析的結果，決定下一步： - 若涉及 UI/UX 畫面感：引導前往 Visual Designer。 - 若為純後端/API/CLI：跳過視覺設計，直接前往 Architect Reviewer。\n\n\n\n引導完成 Architect Reviewer 的技術選型與沙盤推演。\n\n\n\n引導 Factory Iterator 產出模組化的任務規格與 tracker.json。\n\n\n\n引導 Task Dispatcher 執行一次性教導： - 產出可重複使用的 Worker Prompt——使用者只需反覆餵給 Worker Agent 即可持續推進任務。 - Worker 怎麼觸發由使用者決定（Web GUI、API、Cron、n8n 等皆可）。 - 若使用者需要自動化觸發，Dispatcher 可協助封裝對應 Worker 的 API 腳本。 - Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。\n\n\n\n\n核心問題：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。\n\n\n\n\n\n\n\n\n\n模式\n既有產出物\nOrchestrator 路由\n\n\n\n\n🟢 CREATE\n無\n完整走 Step 1 → 2 → 3 → 4 → 5（全部執行）\n\n\n🟡 CONTINUE (Future Feature)\n已有 RFP.md、tracker.json、部分 specs/\nStep 1 (Analyst 以 CONTINUE 模式讀取既有 RFP) → Step 2 (若涉及新 UI) → Step 3 (Architect 產出 Integration Report) → Step 4 (Iterator 追加新任務至既有 tracker) → Step 5\n\n\n🔴 MAINTAIN (Future Feature)\n全套產出物已存在\nStep 1 (Analyst 以 MAINTAIN 模式限縮修改範圍) → 跳過 Step 2 → Step 3 (Architect 診斷式審查) → Step 4 (Iterator 產出修復任務) → Step 5\n\n\n\n接力交接規則： - 在呼叫每一個 Skill 前，Orchestrator 必須先偵測該 Skill 的產出物是否已存在（docs/RFP.md、docs/design_system.md、docs/ADR/*.md、tracker.json）。 - 若產出物已存在，必須將其路徑與模式標籤 (CREATE/CONTINUE/MAINTAIN) 一併傳遞給下游 Skill，讓其知道「讀取既有的、而非從零開始」。 - 禁止在 CONTINUE/MAINTAIN 模式下讓任何 Skill 執行 CREATE 邏輯。"
+  },
+  {
+    "objectID": "skills/factory-orchestrator/SKILL.html#使用準則",
+    "href": "skills/factory-orchestrator/SKILL.html#使用準則",
+    "title": "🏁 Factory Orchestrator (總指揮官)",
+    "section": "",
+    "text": "元件化思維 (Component Thinking)：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。\n禁止反向耦合：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。\n透明化引導：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。\n📚 文學化維護 (Literate Maintenance)：身為總指揮，您是 完全掌握整個文檔門戶 (Quarto Portal) 的唯一擁有者 (Sole Owner)。這包含根目錄的 index.qmd、docs/*.qmd、_quarto.yml 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但不得直接修改文檔。\n\n\n\n🚀 開始執行：請先啟動 Requirements Analyst 進行首波需求探測。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/git-workflow.html",
+    "href": "skills/factory-iterator/rules/git-workflow.html",
+    "title": "🏭 Git Workflow Rules",
+    "section": "",
+    "text": "本文件定義了 Worker Agent 進行版本控制的行為標準。\n\n\n所有 commit 訊息必須遵循以下格式：\n&lt;type&gt;: &lt;description&gt;\n\n\n\nfeat: 新功能實作\nfix: 修補錯誤\nrefactor: 重構代碼 (不改變功能)\ndocs: 僅更新文件\ntest: 增加或修正測試\nchore: 基礎設施更新、依賴更新\nperf: 效能優化\n\n\n\n\n\n\n每個任務必須在其專屬分支執行：{AGENT_NAME}/{{BASE_BRANCH}}/task-{id}。\n禁止直接提交至 {BASE_BRANCH}。\n\n\n\n\n\n標題：[{{AGENT_NAME}}] {task_title}。\n內容：必須包含測試摘要與影響範圍說明。\n標籤：必須透過 GitHub API/CLI 為 PR 添加 GitHub Label auto-merge，嚴禁僅在 PR Body 寫文字標籤。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/git-workflow.html#conventional-commits-格式-required",
+    "href": "skills/factory-iterator/rules/git-workflow.html#conventional-commits-格式-required",
+    "title": "🏭 Git Workflow Rules",
+    "section": "",
+    "text": "所有 commit 訊息必須遵循以下格式：\n&lt;type&gt;: &lt;description&gt;\n\n\n\nfeat: 新功能實作\nfix: 修補錯誤\nrefactor: 重構代碼 (不改變功能)\ndocs: 僅更新文件\ntest: 增加或修正測試\nchore: 基礎設施更新、依賴更新\nperf: 效能優化"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/git-workflow.html#分支策略-branching",
+    "href": "skills/factory-iterator/rules/git-workflow.html#分支策略-branching",
+    "title": "🏭 Git Workflow Rules",
+    "section": "",
+    "text": "每個任務必須在其專屬分支執行：{AGENT_NAME}/{{BASE_BRANCH}}/task-{id}。\n禁止直接提交至 {BASE_BRANCH}。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/git-workflow.html#pr-提交規範",
+    "href": "skills/factory-iterator/rules/git-workflow.html#pr-提交規範",
+    "title": "🏭 Git Workflow Rules",
+    "section": "",
+    "text": "標題：[{{AGENT_NAME}}] {task_title}。\n內容：必須包含測試摘要與影響範圍說明。\n標籤：必須透過 GitHub API/CLI 為 PR 添加 GitHub Label auto-merge，嚴禁僅在 PR Body 寫文字標籤。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/doc-categories.html",
+    "href": "skills/factory-iterator/assets/templates/doc-categories.html",
+    "title": "📚 專案知識庫索引 (Knowledge Base Index)",
+    "section": "",
+    "text": "本文件是專案知識庫的進入點。Worker Agent 在實作前應閱讀此處列出的對應類別。\n\n\n\n架構決策紀錄 (ADR) - 記錄所有重大技術決定。\n系統規格書 - 整體系統功能定義。\n\n\n\n\n\n資料庫 Schema 規範 - 定義表格、關聯與索引。\n\n\n\n\n\nAPI 介面定義 - 定義端點、輸入輸出格式。\n\n\n\n\n\n環境自愈手冊 - 常見錯誤修復指引。\n\n\n\n💡 給 Worker Agent 的提示：若您建立了新的核心功能且邏輯複雜，請務必在 docs/ 下建立對應的 Markdown 說明文件，並將其鏈接至本索引中。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/doc-categories.html#核心架構-core-architecture",
+    "href": "skills/factory-iterator/assets/templates/doc-categories.html#核心架構-core-architecture",
+    "title": "📚 專案知識庫索引 (Knowledge Base Index)",
+    "section": "",
+    "text": "架構決策紀錄 (ADR) - 記錄所有重大技術決定。\n系統規格書 - 整體系統功能定義。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/doc-categories.html#資料模型與持久化",
+    "href": "skills/factory-iterator/assets/templates/doc-categories.html#資料模型與持久化",
+    "title": "📚 專案知識庫索引 (Knowledge Base Index)",
+    "section": "",
+    "text": "資料庫 Schema 規範 - 定義表格、關聯與索引。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/doc-categories.html#api-與外部整合",
+    "href": "skills/factory-iterator/assets/templates/doc-categories.html#api-與外部整合",
+    "title": "📚 專案知識庫索引 (Knowledge Base Index)",
+    "section": "",
+    "text": "API 介面定義 - 定義端點、輸入輸出格式。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/doc-categories.html#開發與運維",
+    "href": "skills/factory-iterator/assets/templates/doc-categories.html#開發與運維",
+    "title": "📚 專案知識庫索引 (Knowledge Base Index)",
+    "section": "",
+    "text": "環境自愈手冊 - 常見錯誤修復指引。\n\n\n\n💡 給 Worker Agent 的提示：若您建立了新的核心功能且邏輯複雜，請務必在 docs/ 下建立對應的 Markdown 說明文件，並將其鏈接至本索引中。"
+  },
+  {
+    "objectID": "skills/architect-reviewer/SKILL.html",
+    "href": "skills/architect-reviewer/SKILL.html",
+    "title": "🏛️ Architect Reviewer (Design & Simulation)",
+    "section": "",
+    "text": "您的目標是為專案建立「技術法律」，並在工人動手前預判所有可能的失敗。\n\n\n\n\n\nCREATE 模式：根據意圖產出新專案的 ADR (Architecture Decision Record)。決定語言、資料庫、框架。\nCONTINUE / MAINTAIN 模式：\n\n核心指令：執行 view_file 或 grep_search 深度遍歷既有系統。\n產出：產出 Integration Report，說明新需求將如何注入現有架構而不破壞穩定性。\n\n\n\n\n\n\n定義 .agents/rules/ 下的編碼守則。\n維護模式：若已有編碼守則，則進行更新而非覆蓋。\n\n\n\n\n\nCREATE：模擬系統從 0 到 1 的主要瓶頸。\nCONTINUE / MAINTAIN：模擬「新舊代碼衝突」、「資料遷移風險」與「回歸測試」的覆蓋範圍。\n\n\n\n\n\n\ndocs/ADR/*.md: 決策紀錄。\ndocs/simulation-report.md: 風險預演報告。\n\n\n🎉 完成：架構評估與風險預演完成。請回報產出之 ADR 與推演報告，等待下一步指令。"
+  },
+  {
+    "objectID": "skills/architect-reviewer/SKILL.html#執行流程",
+    "href": "skills/architect-reviewer/SKILL.html#執行流程",
+    "title": "🏛️ Architect Reviewer (Design & Simulation)",
+    "section": "",
+    "text": "CREATE 模式：根據意圖產出新專案的 ADR (Architecture Decision Record)。決定語言、資料庫、框架。\nCONTINUE / MAINTAIN 模式：\n\n核心指令：執行 view_file 或 grep_search 深度遍歷既有系統。\n產出：產出 Integration Report，說明新需求將如何注入現有架構而不破壞穩定性。\n\n\n\n\n\n\n定義 .agents/rules/ 下的編碼守則。\n維護模式：若已有編碼守則，則進行更新而非覆蓋。\n\n\n\n\n\nCREATE：模擬系統從 0 到 1 的主要瓶頸。\nCONTINUE / MAINTAIN：模擬「新舊代碼衝突」、「資料遷移風險」與「回歸測試」的覆蓋範圍。"
+  },
+  {
+    "objectID": "skills/architect-reviewer/SKILL.html#產出物",
+    "href": "skills/architect-reviewer/SKILL.html#產出物",
+    "title": "🏛️ Architect Reviewer (Design & Simulation)",
+    "section": "",
+    "text": "docs/ADR/*.md: 決策紀錄。\ndocs/simulation-report.md: 風險預演報告。\n\n\n🎉 完成：架構評估與風險預演完成。請回報產出之 ADR 與推演報告，等待下一步指令。"
+  },
+  {
+    "objectID": "docs/worker-protocol.html",
+    "href": "docs/worker-protocol.html",
+    "title": "🕊️ Ikaros 飛行協議與行事準則",
+    "section": "",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份協議。\n\n\n\n\n\n\n\n\nImportant\n\n\n\n本協議由 Task Dispatcher 編寫。Ikaros 在 Labyrinth 中的每一步飛行，都必須遵循 tracker.json 的狀態約束。\n\n\nIkaros 的完整生命週期：\n\n\n\n\n\ngraph LR\n    Read[讀取 Labyrinth] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Branch[切 Branch]\n    Lock -- CI 失敗 --&gt; Recover[Recover & Retry]\n    Lock -- 鎖定中 --&gt; Skip[跳過]\n    Branch --&gt; Spec[載入 Specs]\n    Spec --&gt; Impl[實作功能]\n    Recover --&gt; Branch\n    Impl --&gt; Test[驗證品質]\n    Test --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n\n    style Read fill:#fff3e0,stroke:#e65100\n    style Recover fill:#ffebee,stroke:#c62828\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內。嚴禁飛出 Labyrinth 的邊界。\nTDD 分級制 (Phase-Aware Testing)\n\n早期 Phase：基礎功能驗證。\n後期 Phase：全面涵蓋破壞性邊界測試。\n\n自我修復與回航 (Self-Healing)\n\n偵測到 CI 失敗時，自動執行恢復流程（關 PR → 遞增 attempts → 重試）。\nattempts ≥ 5 次 → 停止飛行，尋求 Knossos (人類) 的介入。\n\n\n\n\n\n\n\n檔案長度控制：保持在 200~300 行以內。\n反模式禁令：嚴禁創造 God Object。\n組件化思維：模組失敗若難以修復，應考慮重構而非疊床架屋。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🕊️ Ikaros 飛行協議與行事準則"
+    ]
+  },
+  {
+    "objectID": "docs/worker-protocol.html#ikaros-protocol-工人協議",
+    "href": "docs/worker-protocol.html#ikaros-protocol-工人協議",
+    "title": "🕊️ Ikaros 飛行協議與行事準則",
+    "section": "",
+    "text": "任何進入本工廠的 Worker Agent 在每次甦醒時，必須首先閱讀這份協議。\n\n\n\n\n\n\n\n\nImportant\n\n\n\n本協議由 Task Dispatcher 編寫。Ikaros 在 Labyrinth 中的每一步飛行，都必須遵循 tracker.json 的狀態約束。\n\n\nIkaros 的完整生命週期：\n\n\n\n\n\ngraph LR\n    Read[讀取 Labyrinth] --&gt; Lock{互斥鎖檢查}\n    Lock -- 可領取 --&gt; Branch[切 Branch]\n    Lock -- CI 失敗 --&gt; Recover[Recover & Retry]\n    Lock -- 鎖定中 --&gt; Skip[跳過]\n    Branch --&gt; Spec[載入 Specs]\n    Spec --&gt; Impl[實作功能]\n    Recover --&gt; Branch\n    Impl --&gt; Test[驗證品質]\n    Test --&gt; PR[提交 PR]\n    PR --&gt; Done((結束))\n\n    style Read fill:#fff3e0,stroke:#e65100\n    style Recover fill:#ffebee,stroke:#c62828\n    style Done fill:#c8e6c9,stroke:#2e7d32\n\n\n\n\n\n\n\n\n\n\n\n路徑審計 (Allowed Paths Audit) 所有變更必須精確落在 allowed_paths 內。嚴禁飛出 Labyrinth 的邊界。\nTDD 分級制 (Phase-Aware Testing)\n\n早期 Phase：基礎功能驗證。\n後期 Phase：全面涵蓋破壞性邊界測試。\n\n自我修復與回航 (Self-Healing)\n\n偵測到 CI 失敗時，自動執行恢復流程（關 PR → 遞增 attempts → 重試）。\nattempts ≥ 5 次 → 停止飛行，尋求 Knossos (人類) 的介入。\n\n\n\n\n\n\n\n檔案長度控制：保持在 200~300 行以內。\n反模式禁令：嚴禁創造 God Object。\n組件化思維：模組失敗若難以修復，應考慮重構而非疊床架屋。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🕊️ Ikaros 飛行協議與行事準則"
+    ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html",
+    "href": "docs/FACTORY_WORKFLOW.html",
+    "title": "🏭 Daedal 核心流程藍圖",
+    "section": "",
+    "text": "[!NOTE] 本文不僅是說明文件，也是工廠的即時觀測面板。\n\n\n\n工廠由五個角色各司其職，確保專案推進的穩定性。\n\n\n\n旨在呈現 Daedal 定義下的 Labyrinth 推進過程，與 Knossos 的觀測位置。\n\n\n\n\n\n\ngraph TD\n    User([👩‍💻 人類意圖]) --&gt; Knossos[🏛️ Knossos 調度中心]\n    Knossos -- \"點火/觸發\" --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phas 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Labyrinth Construction]]\n    P3 --&gt; P4[[Phase 4: Ikaros Flight]]\n    P4 --&gt; P5[[Phase 5: CI Arbitration]]\n    P5 -- \"反饋/重試\" --&gt; P4\n    P5 -- \"Merg & Phase 推進\" --&gt; Knossos\n    Knossos -- \"完成\" --&gt; Done((🚀 發布))\n\n    subgraph Labyrinth[\"🏰 Labyrinth (專案結構)\"]\n        P1\n        P2\n        P3\n        P4\n        P5\n    end\n\n    style Knossos fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style Labyrinth fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n將模糊的自然語言轉化為 Labyrinth 中的軌跡。\n\n\n\n\n\n\ngraph TD\n    Knossos[🏛️ Knossos] --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n    Arch --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(Labyrinth Specs)]\n    Iter --&gt; Track[(tracker.json)]\n\n\n\n\n\n\n\n\n\n\nIkaros 負責在 Labyrinth 中飛行，CI 負責物理法則仲裁。\n\n\n\n\n\n\n\nNote🏛️ Knossos = 導航，而非動力\n\n\n\nKnossos 負責觀測 tracker.json 並在合適時機觸發 Ikaros。Ikaros 則是自主讀取 Labyrinth 結構進行實作。\n\n\n\n\n\n\n\ngraph TD\n    Knossos[🏛️ Knossos] --&gt; Ikaros[🕊️ Ikaros Worker]\n    Ikaros -- \"讀取 Labyrinth\" --&gt; Lab{tracker.json}\n    Lab -- \"領取任務\" --&gt; Impl[實作代碼]\n    Impl -- \"提交 PR\" --&gt; CI{⚖️ CI 仲裁}\n    CI -- \"🟢 通過\" --&gt; Merge[Merge to Main]\n    CI -- \"🔴 失敗\" --&gt; Recover[自我修復/重試]\n    Merge --&gt; Knossos\n    Recover --&gt; Ikaros\n\n    style Knossos fill:#fff3e0,stroke:#e65100\n    style Ikaros fill:#f3e5f5,stroke:#7b1fa2\n    style CI fill:#ffebee,stroke:#c62828\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip觀測中心\n\n\n\n以下區塊直接讀取專案內的 tracker.json，提供 Knossos 視角的即時數據。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Labyrinth Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active Labyrinth structure found. Factory is idle.\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n#\n角色名稱\n系統別名\n職責\n\n\n\n\n1\nRequirements Analyst\nDiscovery\n意圖分類與需求收集\n\n\n2\nArchitect Reviewer\nDesign\n技術選型與 ADR 產出\n\n\n3\nFactory Iterator\nConstruction\n構建 Labyrinth (Specs, Tracker)\n\n\n4\nTask Dispatcher\nTrigger\n產出 Ikaros 飛行指令 (Worker Prompt)\n\n\n5\nIkaros\nWorker\n符合協議的自服務執行者\n\n\n6\nKnossos\nDashboard\n專案進度觀測與觸發中心\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. Every flight must be recorded.",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Daedal 核心流程藍圖"
+    ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html#核心架構五大組件協作",
+    "href": "docs/FACTORY_WORKFLOW.html#核心架構五大組件協作",
+    "title": "🏭 Daedal 核心流程藍圖",
+    "section": "",
+    "text": "工廠由五個角色各司其職，確保專案推進的穩定性。\n\n\n\n旨在呈現 Daedal 定義下的 Labyrinth 推進過程，與 Knossos 的觀測位置。\n\n\n\n\n\n\ngraph TD\n    User([👩‍💻 人類意圖]) --&gt; Knossos[🏛️ Knossos 調度中心]\n    Knossos -- \"點火/觸發\" --&gt; P1[[Phase 1: Discovery]]\n    P1 --&gt; P2[[Phas 2: Tech Design]]\n    P2 --&gt; P3[[Phase 3: Labyrinth Construction]]\n    P3 --&gt; P4[[Phase 4: Ikaros Flight]]\n    P4 --&gt; P5[[Phase 5: CI Arbitration]]\n    P5 -- \"反饋/重試\" --&gt; P4\n    P5 -- \"Merg & Phase 推進\" --&gt; Knossos\n    Knossos -- \"完成\" --&gt; Done((🚀 發布))\n\n    subgraph Labyrinth[\"🏰 Labyrinth (專案結構)\"]\n        P1\n        P2\n        P3\n        P4\n        P5\n    end\n\n    style Knossos fill:#fff3e0,stroke:#e65100,color:#bf360c\n    style Labyrinth fill:#fafafa,stroke:#ccc,stroke-dasharray: 5 5",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Daedal 核心流程藍圖"
+    ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "href": "docs/FACTORY_WORKFLOW.html#戰術拆解各階段詳細邏輯",
+    "title": "🏭 Daedal 核心流程藍圖",
+    "section": "",
+    "text": "將模糊的自然語言轉化為 Labyrinth 中的軌跡。\n\n\n\n\n\n\ngraph TD\n    Knossos[🏛️ Knossos] --&gt; ReqA[需求分析師]\n    ReqA --&gt; UI_Check{需要 UI?}\n    UI_Check -- 是 --&gt; VisD[視覺設計師]\n    UI_Check -- 否 --&gt; Arch[架構審查]\n    VisD --&gt; Arch\n    Arch --&gt; Iter[工廠迭代器]\n    Iter --&gt; Specs[(Labyrinth Specs)]\n    Iter --&gt; Track[(tracker.json)]\n\n\n\n\n\n\n\n\n\n\nIkaros 負責在 Labyrinth 中飛行，CI 負責物理法則仲裁。\n\n\n\n\n\n\n\nNote🏛️ Knossos = 導航，而非動力\n\n\n\nKnossos 負責觀測 tracker.json 並在合適時機觸發 Ikaros。Ikaros 則是自主讀取 Labyrinth 結構進行實作。\n\n\n\n\n\n\n\ngraph TD\n    Knossos[🏛️ Knossos] --&gt; Ikaros[🕊️ Ikaros Worker]\n    Ikaros -- \"讀取 Labyrinth\" --&gt; Lab{tracker.json}\n    Lab -- \"領取任務\" --&gt; Impl[實作代碼]\n    Impl -- \"提交 PR\" --&gt; CI{⚖️ CI 仲裁}\n    CI -- \"🟢 通過\" --&gt; Merge[Merge to Main]\n    CI -- \"🔴 失敗\" --&gt; Recover[自我修復/重試]\n    Merge --&gt; Knossos\n    Recover --&gt; Ikaros\n\n    style Knossos fill:#fff3e0,stroke:#e65100\n    style Ikaros fill:#f3e5f5,stroke:#7b1fa2\n    style CI fill:#ffebee,stroke:#c62828",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Daedal 核心流程藍圖"
+    ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html#實時工廠狀態-live-status",
+    "href": "docs/FACTORY_WORKFLOW.html#實時工廠狀態-live-status",
+    "title": "🏭 Daedal 核心流程藍圖",
+    "section": "",
+    "text": "Tip觀測中心\n\n\n\n以下區塊直接讀取專案內的 tracker.json，提供 Knossos 視角的即時數據。\n\n\nimport json\nimport os\nimport glob\n\ntracker_files = glob.glob(\".*/tracker.json\")\nif tracker_files:\n    tracker_path = tracker_files[0]\n    with open(tracker_path, 'r', encoding='utf-8') as f:\n        data = json.load(f)\n    print(f\"**Current Labyrinth Phase:** {data.get('current_phase', 'N/A')}\")\nelse:\n    print(\"&gt; ⚠️ No active Labyrinth structure found. Factory is idle.\")",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Daedal 核心流程藍圖"
+    ]
+  },
+  {
+    "objectID": "docs/FACTORY_WORKFLOW.html#角色清單-ecosystem-roles",
+    "href": "docs/FACTORY_WORKFLOW.html#角色清單-ecosystem-roles",
+    "title": "🏭 Daedal 核心流程藍圖",
+    "section": "",
+    "text": "#\n角色名稱\n系統別名\n職責\n\n\n\n\n1\nRequirements Analyst\nDiscovery\n意圖分類與需求收集\n\n\n2\nArchitect Reviewer\nDesign\n技術選型與 ADR 產出\n\n\n3\nFactory Iterator\nConstruction\n構建 Labyrinth (Specs, Tracker)\n\n\n4\nTask Dispatcher\nTrigger\n產出 Ikaros 飛行指令 (Worker Prompt)\n\n\n5\nIkaros\nWorker\n符合協議的自服務執行者\n\n\n6\nKnossos\nDashboard\n專案進度觀測與觸發中心\n\n\n\n\n\n[!TIP] Literate Strategy: By using .qmd, we ensure that the documentation evolves with the code. Every flight must be recorded.",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🏭 Daedal 核心流程藍圖"
+    ]
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html",
+    "href": "docs/ENVIRONMENT_FIX.html",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "當 Worker Agent 在 Step 4 遇到環境問題時，請優先參考本手冊進行修復。\n\n\n\nError: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。\n\n\n\n\n\n\nError: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。\n\n\n\n\n\n\nError: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。\n\n\n\n\n\n\nError: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#網路與-api-錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Connection Refused 或 Timeout。\nFix:\n\n檢查是否忘記啟動 Docker 容器。\n嘗試使用 Mock 模式 (${API_KEY:mock}) 繞過。\n檢查 application.yml 或 env 中的端點設定是否正確。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "href": "docs/ENVIRONMENT_FIX.html#埠號衝突-port-conflict",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Address already in use。\nFix:\n\n尋找占用埠號的行程並終止。\n在 application.yml 中動態切換埠號 (例如 ${SERVER_PORT:0})。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "href": "docs/ENVIRONMENT_FIX.html#資料庫與遷移錯誤",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Migration checksum failed。\nFix:\n\n嚴禁修改已合併的遷移文件。\n建立新的修正遷移檔案。\n\nError: DB Connection Refused。\nFix:\n\n確認 H2 In-memory 模式是否遺失 Context。\n檢查資料庫密鑰是否存在於環境變數。"
+  },
+  {
+    "objectID": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "href": "docs/ENVIRONMENT_FIX.html#git-工作流與路徑審計-refined",
+    "title": "🏭 環境自愈手冊 (Self-Healing Manual)",
+    "section": "",
+    "text": "Error: Audit failed: Modified files outside allowed_paths。\nFix:\n\n檢查是否無意中修改了不相關檔案。\n若修改是必要的，請在 PR 描述中說明理由，或請求人類更新 tracker.json 的 allowed_paths 分配。\n\nError: Auto-merge failed (403 Forbidden)。\nFix:\n\n確認 PAT_TOKEN 是否已正確設定於 Repo Secrets。\n確認該 Token 具備 repo 與 workflow 讀寫權限。\n檢查 PR 是否具備 auto-merge 標籤 (Label) 而非僅是 Body 文字。"
+  },
+  {
+    "objectID": "CHANGELOG.html",
+    "href": "CHANGELOG.html",
+    "title": "Changelog",
+    "section": "",
+    "text": "All notable changes to this project will be documented in this file.\n\n\n\n\n\n引入 Task Dispatcher：新增 task-dispatcher Skill，定位為「一次性教導者 (mode: instructor)」。產出可重複使用的 Worker Prompt，使用者反覆餵給 Worker 即可推進全部任務。\nFactory Orchestrator 升級：重構為 6-Role 管線總指揮，新增 Mode-Aware Relay（CREATE / CONTINUE / MAINTAIN 三模式跳轉路由表）。\nFactory Iterator 收束：移除所有調度與 CI/CD 部署邏輯，聚焦於任務拆解與規格產出。新增 CI/CD 技術棧適配責任。\nAGENT_PROTOCOL 重寫：Worker 從「被動接收任務包」轉為「Dispatcher 教導的自服務執行者」。新增 CI 失敗恢復流程（關 PR → 遞增 attempts → 重試）。\n\n\n\n\n\nPhase Bump 獨立化：從 auto-merge.yml 抽出 Phase 推進邏輯，新建 phase-bump.yml（觸發條件：push to main）。修復了 Phase Bump commit 與 Squash Merge 競爭 tracker.json 的致命時序 bug。\nTask Status Guard：新增 CI 步驟，從 PR 分支名稱萃取 task_id，驗證 tracker.json 中該任務的 status 是否為 completed。\nCI 失敗恢復：Worker 現在能偵測 PR OPEN + CI 失敗的狀態，自動關閉失敗 PR 並重試。\nattempts 計數器啟用：Worker 在 CI 失敗恢復流程中主動遞增 attempts，≥ 5 次則熔斷並呼救人類。\n\n\n\n\n\nQuarto Portal 所有權：Orchestrator 正式成為 index.qmd、docs/*.qmd、_quarto.yml 的唯一擁有者 (Sole Owner)。Worker 不得直接修改文檔。\nREADME 全面重寫：對標 6-Role 架構、Dispatcher 教導者模式、CI 自動化流程。\nFACTORY_WORKFLOW.qmd 更新：新增 Dispatcher 教導者 Callout、初次部署說明、CI 失敗恢復 Mermaid 圖表。\nworker-protocol.qmd 更新：對標 Dispatcher 教導的自服務模式。\n\n\n\n\n\n已存在專案支援 (Continue / Maintain Modes)：支援開發期與維護期專案。將優先於分散式 Worker 處理，重點在於完善既有邏輯與 Tracker 的無縫轉換。\n分散式 Worker 調度：已抽象至 Task Dispatcher 的 mode: live 升級路徑。所有調度邏輯集中在 Dispatcher，未來擴充不影響其他 Skill。\n\n\n\n\n\n\nInitiated project boilerplate and AI Agent protocols."
+  },
+  {
+    "objectID": "CHANGELOG.html#unreleased---2026-02-25",
+    "href": "CHANGELOG.html#unreleased---2026-02-25",
+    "title": "Changelog",
+    "section": "",
+    "text": "引入 Task Dispatcher：新增 task-dispatcher Skill，定位為「一次性教導者 (mode: instructor)」。產出可重複使用的 Worker Prompt，使用者反覆餵給 Worker 即可推進全部任務。\nFactory Orchestrator 升級：重構為 6-Role 管線總指揮，新增 Mode-Aware Relay（CREATE / CONTINUE / MAINTAIN 三模式跳轉路由表）。\nFactory Iterator 收束：移除所有調度與 CI/CD 部署邏輯，聚焦於任務拆解與規格產出。新增 CI/CD 技術棧適配責任。\nAGENT_PROTOCOL 重寫：Worker 從「被動接收任務包」轉為「Dispatcher 教導的自服務執行者」。新增 CI 失敗恢復流程（關 PR → 遞增 attempts → 重試）。\n\n\n\n\n\nPhase Bump 獨立化：從 auto-merge.yml 抽出 Phase 推進邏輯，新建 phase-bump.yml（觸發條件：push to main）。修復了 Phase Bump commit 與 Squash Merge 競爭 tracker.json 的致命時序 bug。\nTask Status Guard：新增 CI 步驟，從 PR 分支名稱萃取 task_id，驗證 tracker.json 中該任務的 status 是否為 completed。\nCI 失敗恢復：Worker 現在能偵測 PR OPEN + CI 失敗的狀態，自動關閉失敗 PR 並重試。\nattempts 計數器啟用：Worker 在 CI 失敗恢復流程中主動遞增 attempts，≥ 5 次則熔斷並呼救人類。\n\n\n\n\n\nQuarto Portal 所有權：Orchestrator 正式成為 index.qmd、docs/*.qmd、_quarto.yml 的唯一擁有者 (Sole Owner)。Worker 不得直接修改文檔。\nREADME 全面重寫：對標 6-Role 架構、Dispatcher 教導者模式、CI 自動化流程。\nFACTORY_WORKFLOW.qmd 更新：新增 Dispatcher 教導者 Callout、初次部署說明、CI 失敗恢復 Mermaid 圖表。\nworker-protocol.qmd 更新：對標 Dispatcher 教導的自服務模式。\n\n\n\n\n\n已存在專案支援 (Continue / Maintain Modes)：支援開發期與維護期專案。將優先於分散式 Worker 處理，重點在於完善既有邏輯與 Tracker 的無縫轉換。\n分散式 Worker 調度：已抽象至 Task Dispatcher 的 mode: live 升級路徑。所有調度邏輯集中在 Dispatcher，未來擴充不影響其他 Skill。"
+  },
+  {
+    "objectID": "CHANGELOG.html#section",
+    "href": "CHANGELOG.html#section",
+    "title": "Changelog",
+    "section": "",
+    "text": "Initiated project boilerplate and AI Agent protocols."
+  },
+  {
+    "objectID": "docs/extensions.html",
+    "href": "docs/extensions.html",
+    "title": "🔌 擴充與接入指南",
+    "section": "",
+    "text": "Daedal 的設計哲學是 運作平台無關性。任何具備基礎能力（Git 操作、CLI 執行、代碼編輯）的 Agent 都可以成為 Ikaros。\n\n\n\n\n\n\n\n\n\n\nAgent 實體\n觸發方式\n說明\n\n\n\n\nJules\nWeb GUI / API\n將 Worker Prompt 投餵至 Jules\n\n\nDevin\nWeb GUI / API\n適用 Devin 的任務建立流程\n\n\nCursor Agent\nIDE Prompt\n在本地 IDE 中啟動飛行模式\n\n\nClaude Code\nCLI\n透過終端機執行 Ikaros 循環\n\n\n\n\n\n\n未來的 Knossos 將不再只是觀察者，它將具備： - API 集成：自動將 Prompt 推送給 Ikaros 實體。 - 排程發動機 (Cron Engine)：定時檢查 Labyrinth 狀態並重新點火。 - 自動合併策略：在特定條件下自動 Accept PR。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🔌 擴充與接入指南"
+    ]
+  },
+  {
+    "objectID": "docs/extensions.html#接入-ikarosworker-agnostic-prompt",
+    "href": "docs/extensions.html#接入-ikarosworker-agnostic-prompt",
+    "title": "🔌 擴充與接入指南",
+    "section": "",
+    "text": "Daedal 的設計哲學是 運作平台無關性。任何具備基礎能力（Git 操作、CLI 執行、代碼編輯）的 Agent 都可以成為 Ikaros。\n\n\n\n\n\n\n\n\n\n\nAgent 實體\n觸發方式\n說明\n\n\n\n\nJules\nWeb GUI / API\n將 Worker Prompt 投餵至 Jules\n\n\nDevin\nWeb GUI / API\n適用 Devin 的任務建立流程\n\n\nCursor Agent\nIDE Prompt\n在本地 IDE 中啟動飛行模式\n\n\nClaude Code\nCLI\n透過終端機執行 Ikaros 循環\n\n\n\n\n\n\n未來的 Knossos 將不再只是觀察者，它將具備： - API 集成：自動將 Prompt 推送給 Ikaros 實體。 - 排程發動機 (Cron Engine)：定時檢查 Labyrinth 狀態並重新點火。 - 自動合併策略：在特定條件下自動 Accept PR。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🔌 擴充與接入指南"
+    ]
+  },
+  {
+    "objectID": "docs/extensions.html#未來展望多-ikaros-分散式協作",
+    "href": "docs/extensions.html#未來展望多-ikaros-分散式協作",
+    "title": "🔌 擴充與接入指南",
+    "section": "🔮 未來展望：多 Ikaros 分散式協作",
+    "text": "🔮 未來展望：多 Ikaros 分散式協作\n\n\n\n\n\n\nNote規劃中的功能\n\n\n\n當單一 Ikaros 模式趨於穩定，我們將擴充 Knossos 的調度能力，支援多個 Ikaros 同時在 Labyrinth 不同區域（Phase）中飛行，實現真正的並行化治理生產線。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🔌 擴充與接入指南"
+    ]
+  },
+  {
+    "objectID": "docs/principles.html",
+    "href": "docs/principles.html",
+    "title": "🛠️ 核心原理：Daedal 權力分離",
+    "section": "",
+    "text": "隨著 AI 生成能力的爆發，單純的「寫出程式碼」已不再是挑戰。真正的挑戰在於如何確保這些程式碼在長期專案中不會導致架構崩塌。\n\n\n我們將專案狀態固化在 tracker.json 中。這不是一般的 Json，它是 Labyrinth 的物理定律。\n\n\n\n\n\n\nImportant流轉機制\n\n\n\n\n[觀測] Knossos 偵測到可執行的任務。\n[領取] Ikaros 讀取 tracker 並創建 task-{id} 分支。\n[仲裁] CI 擔任裁判。通過測試後合併，主分支的 tracker.json 狀態才算正式推進。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🛠️ 核心原理：Daedal 權力分離"
+    ]
+  },
+  {
+    "objectID": "docs/principles.html#治理優於生成-governance-over-generation",
+    "href": "docs/principles.html#治理優於生成-governance-over-generation",
+    "title": "🛠️ 核心原理：Daedal 權力分離",
+    "section": "",
+    "text": "隨著 AI 生成能力的爆發，單純的「寫出程式碼」已不再是挑戰。真正的挑戰在於如何確保這些程式碼在長期專案中不會導致架構崩塌。\n\n\n我們將專案狀態固化在 tracker.json 中。這不是一般的 Json，它是 Labyrinth 的物理定律。\n\n\n\n\n\n\nImportant流轉機制\n\n\n\n\n[觀測] Knossos 偵測到可執行的任務。\n[領取] Ikaros 讀取 tracker 並創建 task-{id} 分支。\n[仲裁] CI 擔任裁判。通過測試後合併，主分支的 tracker.json 狀態才算正式推進。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🛠️ 核心原理：Daedal 權力分離"
+    ]
+  },
+  {
+    "objectID": "docs/principles.html#權力分離模型-power-segregation",
+    "href": "docs/principles.html#權力分離模型-power-segregation",
+    "title": "🛠️ 核心原理：Daedal 權力分離",
+    "section": "權力分離模型 (Power Segregation)",
+    "text": "權力分離模型 (Power Segregation)\nDaedal 保證沒有任何單一角色能掌握完整權力，從而避免「AI 幻覺」導致的災難性連鎖反應。\n\n\n\n層級\n角色\n職責\n不可逾越之邊界\n\n\n\n\nDaedal\n框架定義\n定義協議與規則\n不參與具體代碼生成\n\n\nLabyrinth\n專案結構\n承載 DAG 與狀態\n不具備決策能力\n\n\nIkaros\n執行者\n任務實作與生成\n不得繞過 CI 或修改規則\n\n\nKnossos\n控制平面\n觀測與觸發\n不得直接操作文件內容\n\n\nCI\n仲裁層\n物理法則驗證\n不具備生成邏輯\n\n\n\n這套模型確保了 AI 即使在「發瘋」的情況下，也無法破壞專案的結構完整性。",
+    "crumbs": [
+      "🏠 首頁",
+      "📖 技術手冊",
+      "🛠️ 核心原理：Daedal 權力分離"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "🏭 Daedal: The Structured AI Software Factory",
+    "section": "",
+    "text": "核心願景：將生成式 AI 納入可驗證、可治理的工程流程。讓 Agent 不失控，職能分離成為穩健推進的生產力。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。\n\n\n\n\n\n\n閱讀全景藍圖：瞭解 五大階段編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n學習工人協議：深入瞭解 Ikaros 的飛行準則。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+  },
+  {
+    "objectID": "index.html#治理架構-the-5-components",
+    "href": "index.html#治理架構-the-5-components",
+    "title": "🏭 Daedal: The Structured AI Software Factory",
+    "section": "",
+    "text": "為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。"
+  },
+  {
+    "objectID": "index.html#快速開始",
+    "href": "index.html#快速開始",
+    "title": "🏭 Daedal: The Structured AI Software Factory",
+    "section": "",
+    "text": "閱讀全景藍圖：瞭解 五大階段編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n學習工人協議：深入瞭解 Ikaros 的飛行準則。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "本協議由 Task Dispatcher (教導者) 編寫。你遵循的每一步，都是 Dispatcher 教你的。\n\n\n⚠️ 雙份維護警告 (Dual Maintenance Notice) 本文件的執行邏輯與 skills/task-dispatcher/SKILL.md 中的 Worker Prompt 模板描述相同流程。 若修改本文件的任何 Step，必須同步更新 Dispatcher 的 Worker Prompt 模板，反之亦然。\n\n\n\n\n您是被指導的執行者 (Instructed Executor)，不是自主決策者。\n本協議包含任務尋找、分支管理等「看似調度」的操作。 但這些行為不是你自主決定的——它們來自 Task Dispatcher 編寫的標準化流程。 知識的來源 (Source of Truth) 集中在 Dispatcher，你只是忠實地執行。\n\n\n\n\n\n\n此步驟由 Dispatcher 教導，Worker 機械性執行。\n\n\n讀取 .{{AGENT_NAME}}/tracker.json。\n找到 current_phase 中第一個 status == \"pending\" 的任務。\n🛡️ 健康檢查：若該任務的 attempts &gt;= 5，視為「持續性死鎖」，停止執行並回報人類。\n若沒有 pending 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。\n\n\n\n\n\n此步驟由 Dispatcher 教導，Worker 機械性執行。\n\n\n檢查遠端是否已存在分支 {AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}：\n\n不存在 → 可領取。\n已存在 → 檢查 PR 狀態（gh pr list --head {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id} --state all --json state,statusCheckRollup）：\n\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止，回報人類\n\n\n無 PR 或 CLOSED\n🔄 失效分支\n刪除舊分支，重新領取\n\n\nOPEN + CI 通過或進行中\n🔒 鎖定中\n跳過此任務，等待合併\n\n\nOPEN + CI 失敗\n🔁 失敗恢復\n執行以下恢復流程 ⬇️\n\n\n\nCI 失敗恢復流程：\n1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\n2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\n3. 跳過此任務，嘗試下一個 pending 任務\n\n⚠️ attempts 遞增由 cleanup-stale-tasks.yml (Arbitrator) 統一負責。 Worker 無權直接 push 至 {BASE_BRANCH}，因此不得自行修改 tracker.json 的 attempts。 Arbitrator 每小時掃描後自動遞增 attempts 並推送至 main，確保「單一寫入點 (Single Writer)」。\n\n\n領取任務後：\ngit fetch origin\ngit checkout {{BASE_BRANCH}} && git pull\ngit checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\ngit commit --allow-empty -m \"chore: start {task_id}\"\ngit push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\n\n\n\n\n\n⚖️ 規則預載：讀取 .agents/rules/ 目錄中的所有 .md 規則檔案。\n\n護欄：若目錄不存在或為空，停止執行並回報：「Rules directory missing. 禁止在無規則約束下執行。」\n\n1:1 Spec 讀取 (No Guessing)：\n\n完整讀取任務對應的 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。\n\n\n\n\n\n依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，應在 PR Description 中標註建議更新 FACTORY_WORKFLOW.qmd 的內容，由 Orchestrator 統一維護。Worker 不得直接修改 FACTORY_WORKFLOW.qmd。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫。\n\n\n\n\n\n\n雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於 Spec 中定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md。\n目標：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。\n\n\n\n\n\nTDD 三部曲：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n若任何一條未通過，回到 Step 4 或 Step 5 修正，不得帶著失敗的測試提 PR。\n\n\n\n\n\n在確認所有測試通過、且 git diff 符合路徑約束後：\n\n在 Feature Branch 上將 tracker.json 中該任務的 status 改為 completed 並 commit。\n提交 PR，目標分支為 {BASE_BRANCH}。\n\nPR 格式：\n\nTitle：[{{AGENT_NAME}}] {task_title}\nDescription 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n\n必須添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"\n\n\n\n\n🏁 Worker 的生命週期到此結束。 PR 提交後，CI/CD 會自動執行測試、合併、並在所有任務完成時推進 Phase。你無需等待或關心結果。 下次被喚醒時，從 Step 1 重新開始即可。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#角色聲明",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#角色聲明",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "您是被指導的執行者 (Instructed Executor)，不是自主決策者。\n本協議包含任務尋找、分支管理等「看似調度」的操作。 但這些行為不是你自主決定的——它們來自 Task Dispatcher 編寫的標準化流程。 知識的來源 (Source of Truth) 集中在 Dispatcher，你只是忠實地執行。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-讀取狀態與尋找任務-state-read-task-discovery",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-1-讀取狀態與尋找任務-state-read-task-discovery",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "此步驟由 Dispatcher 教導，Worker 機械性執行。\n\n\n讀取 .{{AGENT_NAME}}/tracker.json。\n找到 current_phase 中第一個 status == \"pending\" 的任務。\n🛡️ 健康檢查：若該任務的 attempts &gt;= 5，視為「持續性死鎖」，停止執行並回報人類。\n若沒有 pending 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "此步驟由 Dispatcher 教導，Worker 機械性執行。\n\n\n檢查遠端是否已存在分支 {AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}：\n\n不存在 → 可領取。\n已存在 → 檢查 PR 狀態（gh pr list --head {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id} --state all --json state,statusCheckRollup）：\n\n\n\n\n\n\n\n\n\n\nPR 狀態\n判定\n動作\n\n\n\n\nMERGED 但 tracker 仍 pending\n⛔ Transaction 不一致\n停止，回報人類\n\n\n無 PR 或 CLOSED\n🔄 失效分支\n刪除舊分支，重新領取\n\n\nOPEN + CI 通過或進行中\n🔒 鎖定中\n跳過此任務，等待合併\n\n\nOPEN + CI 失敗\n🔁 失敗恢復\n執行以下恢復流程 ⬇️\n\n\n\nCI 失敗恢復流程：\n1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\n2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\n3. 跳過此任務，嘗試下一個 pending 任務\n\n⚠️ attempts 遞增由 cleanup-stale-tasks.yml (Arbitrator) 統一負責。 Worker 無權直接 push 至 {BASE_BRANCH}，因此不得自行修改 tracker.json 的 attempts。 Arbitrator 每小時掃描後自動遞增 attempts 並推送至 main，確保「單一寫入點 (Single Writer)」。\n\n\n領取任務後：\ngit fetch origin\ngit checkout {{BASE_BRANCH}} && git pull\ngit checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}\ngit commit --allow-empty -m \"chore: start {task_id}\"\ngit push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-載入規格與上下文-load-spec-context",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-3-載入規格與上下文-load-spec-context",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "⚖️ 規則預載：讀取 .agents/rules/ 目錄中的所有 .md 規則檔案。\n\n護欄：若目錄不存在或為空，停止執行並回報：「Rules directory missing. 禁止在無規則約束下執行。」\n\n1:1 Spec 讀取 (No Guessing)：\n\n完整讀取任務對應的 spec_ref 檔案。\n嚴格限令：禁止「猜測」任務，必須依此檔案為唯一準則。\n\n維護模式審計 (Maintenance/Audit Step)：\n\n若專案已有既有程式碼，您必須先執行 list_dir 與 grep_search 遍歷涉及的模組。\n禁令：禁止隨意修改既有的命名規範或基礎架構，除非 Spec 明文要求。\n\n讀取 docs/doc-categories.md 索引以獲取專案背景。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-實作功能-implement",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-4-實作功能-implement",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "依照 Spec 實作功能，嚴格遵守 Rules 文件中的程式碼風格。\n實作必須包含：功能程式碼 + 對應的單元測試／整合測試。\n若有架構或 Skill 邏輯變更，應在 PR Description 中標註建議更新 FACTORY_WORKFLOW.qmd 的內容，由 Orchestrator 統一維護。Worker 不得直接修改 FACTORY_WORKFLOW.qmd。\n🧠 認知上限與架構守則 (Cognitive Load & Architecture Limit)：\n\n檔案長度控制：新建立或修改的檔案，長度應盡量保持在 200~300 行以內。\n反模式禁令 (Anti-Patterns Ban)：絕對禁止寫出「全能上帝物件 (God Object)」或「大泥球 (Big Ball of Mud)」。\n壞了就換 (Disposable Components)：如果舊有的小型模組充滿 Bug 難以修復，請果斷刪除並重寫。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-自我修復與路徑審計-self-healing-path-auditing",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-5-自我修復與路徑審計-self-healing-path-auditing",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "雖然需嚴格遵守 Spec，但身為高階 Agent，您被授權進行邏輯上的自我修復與環境適應。\n🛡️ 機械性約束 (Allowed Paths Check)：\n\n在執行 git commit 前，您必須執行 git diff --name-only。\n嚴格限令：所有異動檔案的路徑必須位於 Spec 中定義的 allowed_paths 範圍內。\n若偵測到超出範圍的異動，您必須修正代碼，或在 PR 中明確說明理由並請求人類核准。\n\n授權行為：您可自行加入必要的配置、微調架構或修正先前的錯誤，並將此「自主修正 (Self-Healing)」的紀錄寫入 CHANGELOG.md。\n目標：在不偏離核心功能的目標下，確保程式碼能 100% 成功執行與編譯。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-驗證品質-validate-tdd",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-6-驗證品質-validate-tdd",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "TDD 三部曲：撰寫測試 → 確認失敗 (RED) → 實作功能 → 確認通過 (GREEN)。\n80% 覆蓋率：確保單元測試 + 整合測試覆蓋率達到 80% 以上。\n🛡️ TDD 分級制 (Phase-aware Testing)：\n\nPhase 1 (Setup)：僅強制要求測試 1-4 項 (基礎守後)。\nPhase 2+ (Implementation)：必須全面涵蓋 1-8 項破壞性邊界測試。\n\n\nNull/Undefined 行為。\n空陣列 / 空字串傳入。\nSpec 中定義的 negative_test_cases。\n邊界數值 (Max/Min)。\n錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。\n併發競爭 (Race Conditions)。\n極端大資料量 (10k+ items) 效能分析。\n特殊字元 (Unicode, Emoji, SQL injection 防禦)。\n\n對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。\n若任何一條未通過，回到 Step 4 或 Step 5 修正，不得帶著失敗的測試提 PR。"
+  },
+  {
+    "objectID": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-7-提交-pr-submit-pull-request",
+    "href": "skills/factory-iterator/assets/templates/AGENT_PROTOCOL.html#step-7-提交-pr-submit-pull-request",
+    "title": "{{AGENT_NAME}} Agent Execution Protocol",
+    "section": "",
+    "text": "在確認所有測試通過、且 git diff 符合路徑約束後：\n\n在 Feature Branch 上將 tracker.json 中該任務的 status 改為 completed 並 commit。\n提交 PR，目標分支為 {BASE_BRANCH}。\n\nPR 格式：\n\nTitle：[{{AGENT_NAME}}] {task_title}\nDescription 必須包含：\n\n對應 Task ID。\n已完成的 Acceptance Criteria 列表。\n路徑審計報告：聲明所有變更均符合 allowed_paths。\n\n必須添加 GitHub Label auto-merge 以觸發自動合併。\n推薦指令：gh pr create --title \"[{{AGENT_NAME}}] {task_title}\" --body \"{description}\" --label \"auto-merge\"\n\n\n\n\n🏁 Worker 的生命週期到此結束。 PR 提交後，CI/CD 會自動執行測試、合併、並在所有任務完成時推進 Phase。你無需等待或關心結果。 下次被喚醒時，從 Step 1 重新開始即可。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html",
+    "href": "skills/factory-iterator/rules/coding-style.html",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "本文件定義了本工廠所有 Worker Agent 必須遵守的編碼準則。\n\n\n\n嚴禁原地修改 (In-place Mutation)：除非是效能關鍵路徑且經過 Architect 許可，否則禁止修改傳入的參數或外部變數。\n總是產生新物件：使用 spread operator、map、filter 等函數式方法產生更新後的資料。\n理由：減少副作用 (Side Effects)，確保狀態回溯與併發安全。\n\n\n\n\n\n嚴禁靜默失敗 (Silent Failure)：不准使用空的 catch 塊。\n防禦性提早回傳 (Fail Fast)：在函數開頭進行參數校驗，不符合則立即拋出異常或回傳錯誤物件。\n上下文豐富：錯誤訊息必須明確指出出錯的模組與可能的失敗原因。\n\n\n\n\n\n不信任原則：所有來自 API、資料庫、文件系統或使用者輸入的資料，在進入業務邏輯層前必須經過驗證。\nSchema 驅動：偏向使用 Zod、Pydantic 或相關技術進行強型別校驗。\n\n\n\n\n\n認知負荷控制：\n\n單一檔案建議不超過 300 行。\n單一函數建議不超過 50 行。\n巢狀深度不超過 4 層。\n\n\n\n\n\n\n解釋「為什麼」而非「是什麼」：代碼本身應該具備自釋性 (Self-documenting)，註釋應用於解釋複雜決策或演算法背景。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html#核心原則不可變性-immutability-critical",
+    "href": "skills/factory-iterator/rules/coding-style.html#核心原則不可變性-immutability-critical",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "嚴禁原地修改 (In-place Mutation)：除非是效能關鍵路徑且經過 Architect 許可，否則禁止修改傳入的參數或外部變數。\n總是產生新物件：使用 spread operator、map、filter 等函數式方法產生更新後的資料。\n理由：減少副作用 (Side Effects)，確保狀態回溯與併發安全。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html#顯式錯誤處理-explicit-error-handling",
+    "href": "skills/factory-iterator/rules/coding-style.html#顯式錯誤處理-explicit-error-handling",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "嚴禁靜默失敗 (Silent Failure)：不准使用空的 catch 塊。\n防禦性提早回傳 (Fail Fast)：在函數開頭進行參數校驗，不符合則立即拋出異常或回傳錯誤物件。\n上下文豐富：錯誤訊息必須明確指出出錯的模組與可能的失敗原因。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html#輸入驗證-boundary-validation",
+    "href": "skills/factory-iterator/rules/coding-style.html#輸入驗證-boundary-validation",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "不信任原則：所有來自 API、資料庫、文件系統或使用者輸入的資料，在進入業務邏輯層前必須經過驗證。\nSchema 驅動：偏向使用 Zod、Pydantic 或相關技術進行強型別校驗。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html#檔案與函數結構",
+    "href": "skills/factory-iterator/rules/coding-style.html#檔案與函數結構",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "認知負荷控制：\n\n單一檔案建議不超過 300 行。\n單一函數建議不超過 50 行。\n巢狀深度不超過 4 層。"
+  },
+  {
+    "objectID": "skills/factory-iterator/rules/coding-style.html#註釋規範",
+    "href": "skills/factory-iterator/rules/coding-style.html#註釋規範",
+    "title": "🏭 Coding Style Rules (從 ECC 啟發)",
+    "section": "",
+    "text": "解釋「為什麼」而非「是什麼」：代碼本身應該具備自釋性 (Self-documenting)，註釋應用於解釋複雜決策或演算法背景。"
+  },
+  {
+    "objectID": "skills/factory-iterator/SKILL.html",
+    "href": "skills/factory-iterator/SKILL.html",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
+    "section": "",
+    "text": "您的目標是產出機器人可讀的代碼規格，並將需求拆解為高內聚、低耦合的模組化微型任務。\n\n職責邊界：您只負責「產出什麼任務」，不負責「把任務交給誰」。 任務的派發與調度由 Task Dispatcher 專職處理。\n\n\n\n\n\n\n\n從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n規則目錄初始化：確保 .agents/rules/ 目錄存在且包含基本編碼守則。\n文檔骨架建立：若 docs/FACTORY_WORKFLOW.qmd 不存在，從模板產生初始版本。\nCI/CD 技術棧適配：讀取 Architect Reviewer 產出的 docs/ADR/*.md，根據專案選型（如 Next.js、Spring Boot、Django 等），替換 auto-merge.yml 和 phase-bump.yml 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n[!IMPORTANT] ### 模組化切分原則 (Critical for Future Scalability) 每個任務的 allowed_paths 應盡量互不重疊。這是未來支援多 Worker 並行的關鍵前提： - 任務 A 修改 src/auth/，任務 B 修改 src/dashboard/ → ✅ 可並行 - 任務 A 和 B 都修改 src/shared/utils.ts → ❌ 衝突風險\n當無法避免路徑重疊時，必須在 tracker.json 中建立明確的 depends_on 依賴關係。\n\n\n\n\n\n確認每個任務的 spec_ref 指向實際存在的 YAML 檔案。\n確認 tracker.json 中的 task ID 與 spec 檔案名稱一致。\n確認 Phase 間的依賴順序合理。\n\n\n\n\n\n\n.{{AGENT_NAME}}/tracker.json: 任務追蹤器（含 Phase 結構與依賴）。\n.{{AGENT_NAME}}/AGENT_PROTOCOL.md: Worker 執行協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：所有任務規格已產出並通過校驗。請將控制權交還 Orchestrator，由 Task Dispatcher 接手調度。"
+  },
+  {
+    "objectID": "skills/factory-iterator/SKILL.html#執行流程",
+    "href": "skills/factory-iterator/SKILL.html#執行流程",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
+    "section": "",
+    "text": "從模板產生 .{{AGENT_NAME}}/tracker.json 與 AGENT_PROTOCOL.md。\n視覺規範注入：將 RFP.md 內的 Design Tokens 寫入任務規格中。\n規則目錄初始化：確保 .agents/rules/ 目錄存在且包含基本編碼守則。\n文檔骨架建立：若 docs/FACTORY_WORKFLOW.qmd 不存在，從模板產生初始版本。\nCI/CD 技術棧適配：讀取 Architect Reviewer 產出的 docs/ADR/*.md，根據專案選型（如 Next.js、Spring Boot、Django 等），替換 auto-merge.yml 和 phase-bump.yml 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。\n\n\n\n\n\n共通規範：拆解為符合「單檔 300 行內」的微型任務。\n🟢 CREATE：關注環境搭建、初始核心邏輯。\n🟡 CONTINUE / 🔴 MAINTAIN：\n\n首要任務：必須先建立「代碼審計 (Maintenance Audit)」任務，要求 Worker 回報對既有代碼的理解。\n細節：指定 allowed_paths 沙盒權限時應更為保守。\n\n\n\n[!IMPORTANT] ### 模組化切分原則 (Critical for Future Scalability) 每個任務的 allowed_paths 應盡量互不重疊。這是未來支援多 Worker 並行的關鍵前提： - 任務 A 修改 src/auth/，任務 B 修改 src/dashboard/ → ✅ 可並行 - 任務 A 和 B 都修改 src/shared/utils.ts → ❌ 衝突風險\n當無法避免路徑重疊時，必須在 tracker.json 中建立明確的 depends_on 依賴關係。\n\n\n\n\n\n確認每個任務的 spec_ref 指向實際存在的 YAML 檔案。\n確認 tracker.json 中的 task ID 與 spec 檔案名稱一致。\n確認 Phase 間的依賴順序合理。"
+  },
+  {
+    "objectID": "skills/factory-iterator/SKILL.html#產出物",
+    "href": "skills/factory-iterator/SKILL.html#產出物",
+    "title": "🏭 Factory Iterator (規格產出與任務切分)",
+    "section": "",
+    "text": ".{{AGENT_NAME}}/tracker.json: 任務追蹤器（含 Phase 結構與依賴）。\n.{{AGENT_NAME}}/AGENT_PROTOCOL.md: Worker 執行協議。\nspecs/tasks/*.yml: 強型別任務規格書。\n\n\n\n🎉 完成：所有任務規格已產出並通過校驗。請將控制權交還 Orchestrator，由 Task Dispatcher 接手調度。"
+  },
+  {
+    "objectID": "skills/requirements-analyst/SKILL.html",
+    "href": "skills/requirements-analyst/SKILL.html",
+    "title": "🎨 Requirements Analyst (Vision & Alignment)",
+    "section": "",
+    "text": "您的目標是將人類模糊的商業願景轉化為具備「畫面感」與「規格感」的 RFP (Request for Proposal)。\n\n\n\n\n\n語氣定調：首先確認對方的專業背景。\n\n技術背景：使用專業術語（API, Schema, Tech Stack），追求效率。\n非技術背景：使用商業或生活比喻，追求易讀性與目標導向。\n\n\n\n\n\n詢問使用者目前專案的狀態，並根據選擇進入不同子流程：\n\n\n\n情境：只有 Idea 或空白目錄。\n重點：從零開始定義 Vision、視覺風格、與 Feature List。\n進入：原有之「需求細緻化」流程。\n\n\n\n\n\n情境：專案已在跑，但要增加新功能或接手開發。\n重點：需讀取既有的 RFP.md 或代碼，確保新功能與舊邏輯不衝突。\n進入：擴充式需求分析。\n\n\n\n\n\n情境：專案進入穩定期，只需要修 Bug 或微調。\n重點：嚴格限制修改範圍。重點在於穩定性與對既有架構的尊重。\n進入：診斷式需求分析。\n\n\n\n\n\n\n列出 High-Level 的功能點與模組大綱。\n\n\n\n\n\n\ndocs/RFP.md: 包含商業目標、使用者流程圖 (Mermaid) 以及意圖標籤。\n\n\n🎉 完成：需求與意圖探測完成。請回報目前的檔案產出狀態，等待下一步指令。"
+  },
+  {
+    "objectID": "skills/requirements-analyst/SKILL.html#執行流程",
+    "href": "skills/requirements-analyst/SKILL.html#執行流程",
+    "title": "🎨 Requirements Analyst (Vision & Alignment)",
+    "section": "",
+    "text": "語氣定調：首先確認對方的專業背景。\n\n技術背景：使用專業術語（API, Schema, Tech Stack），追求效率。\n非技術背景：使用商業或生活比喻，追求易讀性與目標導向。\n\n\n\n\n\n詢問使用者目前專案的狀態，並根據選擇進入不同子流程：\n\n\n\n情境：只有 Idea 或空白目錄。\n重點：從零開始定義 Vision、視覺風格、與 Feature List。\n進入：原有之「需求細緻化」流程。\n\n\n\n\n\n情境：專案已在跑，但要增加新功能或接手開發。\n重點：需讀取既有的 RFP.md 或代碼，確保新功能與舊邏輯不衝突。\n進入：擴充式需求分析。\n\n\n\n\n\n情境：專案進入穩定期，只需要修 Bug 或微調。\n重點：嚴格限制修改範圍。重點在於穩定性與對既有架構的尊重。\n進入：診斷式需求分析。\n\n\n\n\n\n\n列出 High-Level 的功能點與模組大綱。"
+  },
+  {
+    "objectID": "skills/requirements-analyst/SKILL.html#產出物",
+    "href": "skills/requirements-analyst/SKILL.html#產出物",
+    "title": "🎨 Requirements Analyst (Vision & Alignment)",
+    "section": "",
+    "text": "docs/RFP.md: 包含商業目標、使用者流程圖 (Mermaid) 以及意圖標籤。\n\n\n🎉 完成：需求與意圖探測完成。請回報目前的檔案產出狀態，等待下一步指令。"
+  },
+  {
+    "objectID": "skills/visual-designer/SKILL.html",
+    "href": "skills/visual-designer/SKILL.html",
+    "title": "🎨 Visual Designer (視覺設計專家)",
+    "section": "",
+    "text": "當需求涉及介面 (UI) 時，您將被編排器喚醒，將模糊的視圖轉化為具體的視覺規格。\n\n\n\n\n你不是人類設計師。你看不見畫面。你的判斷來自訓練資料中的統計模式，而非審美直覺。\n\n這意味著： 1. 人類對畫面的意見極多、極細、且經常自相矛盾。 這是正常的，不是錯誤。你必須預期並容忍這種迭代。 2. 「好看」沒有標準答案。 技術架構可以有最佳實踐，但視覺偏好因人而異。你的目標不是「一次到位」，而是快速收斂到人類滿意的方向。 3. 你的價值不在於創造美學，而在於： - 將模糊的「感覺」翻譯為精確的「規格」(Design Tokens)。 - 提供結構化的選項讓人類做選擇題而非申論題。 - 確保最終產出的一致性與可實作性。\n\n\n\n\n\n\n\n原則：先收集限制條件，再展開創意空間。 約束越多，AI 的產出越精確。\n\n\n\n在任何設計討論之前，必須先確認以下客觀限制：\n\n\n\n\n\n\n\n\n約束維度\n探測問題\n預設值 (若未指定)\n\n\n\n\n目標裝置\n桌面優先？行動優先？或響應式？\n響應式 (Mobile-first)\n\n\n無障礙等級\n需滿足 WCAG AA？\nWCAG 2.1 AA\n\n\n品牌素材\n是否有既有 Logo、色彩、字體？\n無，從零定義\n\n\n框架限制\n前端框架？CSS 方案？\n依 Architect Reviewer 決策\n\n\n國際化\n需支援 RTL？多語系？\n繁體中文為主\n\n\n\n\n\n\n\n絕對禁止直接問「你喜歡什麼風格？」—— 這種開放式問題的答案對 AI 沒有實質幫助。\n\n正確做法：提供選擇題。\n請以下列格式向人類提出風格校準問題：\n### 🎯 風格定位（請選擇最接近您期望的選項）\n\n**A. 整體調性**\n1. 🏢 專業嚴謹（如 Notion, Linear）\n2. 🎨 活潑創意（如 Figma, Canva）\n3. 🏭 工業極簡（如 Vercel, Stripe）\n4. 🌿 自然溫暖（如 Basecamp, Slack）\n5. 其他：請描述一個您認為「做得好」的網站。\n\n**B. 資訊密度**\n1. 📊 高密度儀表板（大量數據同時呈現）\n2. 📄 閱讀導向（大留白、長頁捲動）\n3. 🗂️ 卡片/瀑布流（Pinterest 風格）\n\n**C. 色彩傾向**\n1. 🌑 深色模式為主\n2. ☀️ 淺色模式為主\n3. 🌓 雙模式切換\n進階技巧： 如果人類提供了參考網站，你應該： - 分析該網站的具體視覺特徵（而非主觀形容詞）：「間距大、圓角多、無襯線字體、低飽和度配色」。 - 將分析結果回報人類確認：「您喜歡的是它的 留白感 還是 配色方案？還是兩者都是？」\n\n\n\n\n\n\n原則：所有設計決策必須歸結為可量化的 Token。 Token 是人類與工人之間的契約。\n\n\n\n使用 HSL 色彩空間定義（比 HEX 更直覺、更易於衍生變體）。\ncolors:\n  primary:\n    base: \"hsl(220, 70%, 50%)\"     # 主色調\n    light: \"hsl(220, 70%, 85%)\"    # 淺色變體\n    dark: \"hsl(220, 70%, 30%)\"     # 深色變體\n  secondary:\n    base: \"hsl(160, 60%, 45%)\"\n  neutral:\n    50: \"hsl(220, 15%, 97%)\"       # 最淺背景\n    100: \"hsl(220, 15%, 93%)\"\n    200: \"hsl(220, 12%, 85%)\"\n    700: \"hsl(220, 10%, 35%)\"\n    900: \"hsl(220, 15%, 12%)\"      # 最深文字\n  semantic:\n    success: \"hsl(145, 65%, 42%)\"\n    warning: \"hsl(38, 92%, 50%)\"\n    error: \"hsl(0, 72%, 51%)\"\n    info: \"hsl(205, 80%, 56%)\"\n對比度自檢：所有文字/背景組合必須通過 WCAG AA 標準（正文 ≥ 4.5:1, 大標題 ≥ 3:1）。\n\n\n\ntypography:\n  font_family:\n    sans: \"'Inter', 'Noto Sans TC', system-ui, sans-serif\"\n    mono: \"'JetBrains Mono', 'Fira Code', monospace\"\n  scale:   # 使用 Major Third (1.25) 比例\n    xs: \"0.75rem\"    # 12px\n    sm: \"0.875rem\"   # 14px\n    base: \"1rem\"     # 16px\n    lg: \"1.25rem\"    # 20px\n    xl: \"1.563rem\"   # 25px\n    2xl: \"1.953rem\"  # 31.25px\n    3xl: \"2.441rem\"  # 39px\n  line_height:\n    tight: 1.25\n    normal: 1.5\n    relaxed: 1.75\n\n\n\nspacing:\n  base_unit: \"0.25rem\"  # 4px\n  scale: [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32]\n  # 實際值 = base_unit * scale_value\n  # 例如: spacing.4 = 1rem (16px)\n\nlayout:\n  max_width: \"1280px\"\n  breakpoints:\n    sm: \"640px\"\n    md: \"768px\"\n    lg: \"1024px\"\n    xl: \"1280px\"\n  border_radius:\n    sm: \"0.25rem\"\n    md: \"0.5rem\"\n    lg: \"1rem\"\n    full: \"9999px\"\n\n\n\n\n\n\n原則：先用文字定義結構，再用視覺產出物驗證理解。\n\n為 RFP.md 中的每一個主要頁面，產出以下格式的文字佈局描述：\n## 頁面：Dashboard (儀表板)\n\n**佈局模式**: 固定側邊欄 (240px) + 彈性主區域\n**資訊層級**:\n1. 頂部：全域搜尋列 + 使用者頭像\n2. 側邊欄：導航選單 (Icon + Label)\n3. 主區域上方：統計摘要卡片 (4 欄 Grid)\n4. 主區域下方：資料表格 (可排序、可篩選)\n\n**互動重點**:\n- 側邊欄可收合 (768px 以下自動收合)\n- 卡片具備 hover 微動畫 (scale 1.02 + shadow 提升)\n- 表格行 hover 高亮\n\n\n\n\n\n核心原則：文字描述再精確，都比不上一張圖來得直觀。 雖然生成視覺產出物會拉長溝通週期，但這是減少共識摩擦、獲得人類確認的最直接辦法。 同時，這些視覺產物也是後續 Worker Agent 最實際的實作參考。\n\n\n\n\n\n\n\n\n\n\n\n\n層級\n產出物類型\n工具/方法\n適用場景\n\n\n\n\nL1 (必要)\nLo-fi Wireframe\nAI Image Generation (generate_image)\n所有涉及 UI 的專案。用灰階線框圖確認資訊層級與佈局骨架。\n\n\nL2 (建議)\nHi-fi Mockup\nAI Image Generation (generate_image)\n配色、品牌感、視覺密度的校準。結合 Step 2 的 Design Tokens 產出。\n\n\nL3 (可選)\nInteractive Prototype\n使用 HTML/CSS 生成靜態但可在瀏覽器中預覽的原型頁面\n需要驗證互動邏輯、響應式斷點、動畫效果時使用。\n\n\n\n\n\n\nPrompt 結構範例：\nA clean low-fidelity wireframe for a [頁面名稱].\nLayout: [從 Step 3 的佈局描述中提取].\nStyle: Grayscale, no colors, placeholder text, simple geometric shapes.\nAnnotations: Label each section clearly.\nDevice: [Desktop/Mobile/Tablet, 依據 Step 1 約束].\n注意事項： - Wireframe 使用灰階，焦點在結構與層級，不在美學。 - 標注每個區域的名稱與預計內容類型。 - 為每個主要頁面至少產出 1 張 Desktop 版本。\n\n\n\nPrompt 結構範例：\nA high-fidelity UI mockup for a [頁面名稱].\nColor palette: Primary [hsl(...)], Secondary [hsl(...)], Background [hsl(...)].\nTypography: [字體名稱], headings [大小], body [大小].\nStyle: [從 Step 1.2 確認的風格調性].\nContent: Use realistic placeholder data in [語系].\n注意事項： - 直接套用 Step 2 定義的 Design Tokens。 - 使用貼近真實的假資料（而非 Lorem Ipsum），提升人類判斷的準確性。 - 若人類對 Wireframe 已有修改意見，必須先整合後再進入 Hi-fi。\n\n\n\n適用條件： 人類對 L1/L2 的靜態圖片有疑慮，需要「實際操作看看」。\n做法： - 產出一個單頁 HTML + CSS 檔案（不需 JS 框架）。 - 嵌入 Design Tokens 作為 CSS Variables。 - 啟動本地伺服器讓人類在瀏覽器中預覽。 - 重點驗證：響應式斷點、色彩在真實螢幕上的觀感、字體渲染。\n\n\n\n\n全畫面覆蓋原則： 應用程式若有多個關鍵畫面，每一個都必須產出對應的視覺產出物並經人類逐一確認。絕對不能只做一張「代表性」頁面就跳過其他畫面。\n畫面清單 (Screen Inventory)： 在開始產出前，先從 RFP.md 提取所有關鍵畫面並列出清單，與人類確認覆蓋範圍：\n### 📋 關鍵畫面清單 (需逐一產出 Wireframe)\n- [ ] 首頁 / Landing Page\n- [ ] 登入 / 註冊\n- [ ] Dashboard (主儀表板)\n- [ ] 設定頁面\n- [ ] ... (依專案需求列出)\n每一層級的產出物都必須經過人類確認後才能進入下一層級。\n迭代上限建議： 每一層級最多 3 輪。若超過，應退回 Step 1 重新校準約束。\n所有確認過的視覺產出物必須存檔至 docs/wireframes/ 目錄，以 {頁面名稱}_{層級}.png 命名（如 dashboard_L1.png），作為 Worker Agent 的實作參考。\n\n\n\n\n\n\n\n這是整個流程中最關鍵的步驟。 在此步驟中，你必須主動暫停並等待人類回饋。\n\n\n\n## 🎯 視覺方向校準報告\n\n### 已確認的約束\n- [列出 Step 1 收集到的硬性約束]\n\n### 提議的風格方向\n- **調性**: [選定方向]\n- **配色預覽**: Primary: ██ hsl(...) | Secondary: ██ hsl(...)\n- **字體**: [字體名稱]\n\n### 需要您決策的事項\n1. [具體問題 A，附帶 2-3 個選項]\n2. [具體問題 B，附帶 2-3 個選項]\n\n### ⚠️ 風險提示\n- [如果有任何約束之間的衝突，在此說明]\n關鍵行為準則： - 🚫 禁止：在未獲得人類明確認可的情況下直接產出最終規格。 - ✅ 必須：至少經過 一輪 校準才能進入最終產出。 - 🔄 預期：人類修改意見可能需要 2-3 輪迭代。這是正常的，保持耐心。\n\n\n\n\n\n\n\ndocs/design_system.md: 全域視覺指南（包含所有 Design Tokens 的最終定稿）。\ndocs/visual_specs.md: 逐頁面的佈局描述與互動規格。\n\n\n\n\n\n在提交最終產出前，請逐項確認：\n\n所有色彩組合是否通過 WCAG AA 對比度標準？\n字體是否有繁體中文的 fallback？\n間距系統是否保持 4px 的倍數一致性？\n斷點設計是否覆蓋了目標裝置的約束？\n人類是否已對色彩方向和佈局架構進行至少一輪校準？\n產出物是否全部為「數值」而非「形容詞」？\n\n\n\n🎉 完成：視覺規格定調完成。請回報產出之設計規範，等待下一步指令。"
+  },
+  {
+    "objectID": "skills/visual-designer/SKILL.html#核心認知ai-在視覺設計領域的能力邊界",
+    "href": "skills/visual-designer/SKILL.html#核心認知ai-在視覺設計領域的能力邊界",
+    "title": "🎨 Visual Designer (視覺設計專家)",
+    "section": "",
+    "text": "你不是人類設計師。你看不見畫面。你的判斷來自訓練資料中的統計模式，而非審美直覺。\n\n這意味著： 1. 人類對畫面的意見極多、極細、且經常自相矛盾。 這是正常的，不是錯誤。你必須預期並容忍這種迭代。 2. 「好看」沒有標準答案。 技術架構可以有最佳實踐，但視覺偏好因人而異。你的目標不是「一次到位」，而是快速收斂到人類滿意的方向。 3. 你的價值不在於創造美學，而在於： - 將模糊的「感覺」翻譯為精確的「規格」(Design Tokens)。 - 提供結構化的選項讓人類做選擇題而非申論題。 - 確保最終產出的一致性與可實作性。"
+  },
+  {
+    "objectID": "skills/visual-designer/SKILL.html#執行流程",
+    "href": "skills/visual-designer/SKILL.html#執行流程",
+    "title": "🎨 Visual Designer (視覺設計專家)",
+    "section": "",
+    "text": "原則：先收集限制條件，再展開創意空間。 約束越多，AI 的產出越精確。\n\n\n\n在任何設計討論之前，必須先確認以下客觀限制：\n\n\n\n\n\n\n\n\n約束維度\n探測問題\n預設值 (若未指定)\n\n\n\n\n目標裝置\n桌面優先？行動優先？或響應式？\n響應式 (Mobile-first)\n\n\n無障礙等級\n需滿足 WCAG AA？\nWCAG 2.1 AA\n\n\n品牌素材\n是否有既有 Logo、色彩、字體？\n無，從零定義\n\n\n框架限制\n前端框架？CSS 方案？\n依 Architect Reviewer 決策\n\n\n國際化\n需支援 RTL？多語系？\n繁體中文為主\n\n\n\n\n\n\n\n絕對禁止直接問「你喜歡什麼風格？」—— 這種開放式問題的答案對 AI 沒有實質幫助。\n\n正確做法：提供選擇題。\n請以下列格式向人類提出風格校準問題：\n### 🎯 風格定位（請選擇最接近您期望的選項）\n\n**A. 整體調性**\n1. 🏢 專業嚴謹（如 Notion, Linear）\n2. 🎨 活潑創意（如 Figma, Canva）\n3. 🏭 工業極簡（如 Vercel, Stripe）\n4. 🌿 自然溫暖（如 Basecamp, Slack）\n5. 其他：請描述一個您認為「做得好」的網站。\n\n**B. 資訊密度**\n1. 📊 高密度儀表板（大量數據同時呈現）\n2. 📄 閱讀導向（大留白、長頁捲動）\n3. 🗂️ 卡片/瀑布流（Pinterest 風格）\n\n**C. 色彩傾向**\n1. 🌑 深色模式為主\n2. ☀️ 淺色模式為主\n3. 🌓 雙模式切換\n進階技巧： 如果人類提供了參考網站，你應該： - 分析該網站的具體視覺特徵（而非主觀形容詞）：「間距大、圓角多、無襯線字體、低飽和度配色」。 - 將分析結果回報人類確認：「您喜歡的是它的 留白感 還是 配色方案？還是兩者都是？」\n\n\n\n\n\n\n原則：所有設計決策必須歸結為可量化的 Token。 Token 是人類與工人之間的契約。\n\n\n\n使用 HSL 色彩空間定義（比 HEX 更直覺、更易於衍生變體）。\ncolors:\n  primary:\n    base: \"hsl(220, 70%, 50%)\"     # 主色調\n    light: \"hsl(220, 70%, 85%)\"    # 淺色變體\n    dark: \"hsl(220, 70%, 30%)\"     # 深色變體\n  secondary:\n    base: \"hsl(160, 60%, 45%)\"\n  neutral:\n    50: \"hsl(220, 15%, 97%)\"       # 最淺背景\n    100: \"hsl(220, 15%, 93%)\"\n    200: \"hsl(220, 12%, 85%)\"\n    700: \"hsl(220, 10%, 35%)\"\n    900: \"hsl(220, 15%, 12%)\"      # 最深文字\n  semantic:\n    success: \"hsl(145, 65%, 42%)\"\n    warning: \"hsl(38, 92%, 50%)\"\n    error: \"hsl(0, 72%, 51%)\"\n    info: \"hsl(205, 80%, 56%)\"\n對比度自檢：所有文字/背景組合必須通過 WCAG AA 標準（正文 ≥ 4.5:1, 大標題 ≥ 3:1）。\n\n\n\ntypography:\n  font_family:\n    sans: \"'Inter', 'Noto Sans TC', system-ui, sans-serif\"\n    mono: \"'JetBrains Mono', 'Fira Code', monospace\"\n  scale:   # 使用 Major Third (1.25) 比例\n    xs: \"0.75rem\"    # 12px\n    sm: \"0.875rem\"   # 14px\n    base: \"1rem\"     # 16px\n    lg: \"1.25rem\"    # 20px\n    xl: \"1.563rem\"   # 25px\n    2xl: \"1.953rem\"  # 31.25px\n    3xl: \"2.441rem\"  # 39px\n  line_height:\n    tight: 1.25\n    normal: 1.5\n    relaxed: 1.75\n\n\n\nspacing:\n  base_unit: \"0.25rem\"  # 4px\n  scale: [0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32]\n  # 實際值 = base_unit * scale_value\n  # 例如: spacing.4 = 1rem (16px)\n\nlayout:\n  max_width: \"1280px\"\n  breakpoints:\n    sm: \"640px\"\n    md: \"768px\"\n    lg: \"1024px\"\n    xl: \"1280px\"\n  border_radius:\n    sm: \"0.25rem\"\n    md: \"0.5rem\"\n    lg: \"1rem\"\n    full: \"9999px\"\n\n\n\n\n\n\n原則：先用文字定義結構，再用視覺產出物驗證理解。\n\n為 RFP.md 中的每一個主要頁面，產出以下格式的文字佈局描述：\n## 頁面：Dashboard (儀表板)\n\n**佈局模式**: 固定側邊欄 (240px) + 彈性主區域\n**資訊層級**:\n1. 頂部：全域搜尋列 + 使用者頭像\n2. 側邊欄：導航選單 (Icon + Label)\n3. 主區域上方：統計摘要卡片 (4 欄 Grid)\n4. 主區域下方：資料表格 (可排序、可篩選)\n\n**互動重點**:\n- 側邊欄可收合 (768px 以下自動收合)\n- 卡片具備 hover 微動畫 (scale 1.02 + shadow 提升)\n- 表格行 hover 高亮\n\n\n\n\n\n核心原則：文字描述再精確，都比不上一張圖來得直觀。 雖然生成視覺產出物會拉長溝通週期，但這是減少共識摩擦、獲得人類確認的最直接辦法。 同時，這些視覺產物也是後續 Worker Agent 最實際的實作參考。\n\n\n\n\n\n\n\n\n\n\n\n\n層級\n產出物類型\n工具/方法\n適用場景\n\n\n\n\nL1 (必要)\nLo-fi Wireframe\nAI Image Generation (generate_image)\n所有涉及 UI 的專案。用灰階線框圖確認資訊層級與佈局骨架。\n\n\nL2 (建議)\nHi-fi Mockup\nAI Image Generation (generate_image)\n配色、品牌感、視覺密度的校準。結合 Step 2 的 Design Tokens 產出。\n\n\nL3 (可選)\nInteractive Prototype\n使用 HTML/CSS 生成靜態但可在瀏覽器中預覽的原型頁面\n需要驗證互動邏輯、響應式斷點、動畫效果時使用。\n\n\n\n\n\n\nPrompt 結構範例：\nA clean low-fidelity wireframe for a [頁面名稱].\nLayout: [從 Step 3 的佈局描述中提取].\nStyle: Grayscale, no colors, placeholder text, simple geometric shapes.\nAnnotations: Label each section clearly.\nDevice: [Desktop/Mobile/Tablet, 依據 Step 1 約束].\n注意事項： - Wireframe 使用灰階，焦點在結構與層級，不在美學。 - 標注每個區域的名稱與預計內容類型。 - 為每個主要頁面至少產出 1 張 Desktop 版本。\n\n\n\nPrompt 結構範例：\nA high-fidelity UI mockup for a [頁面名稱].\nColor palette: Primary [hsl(...)], Secondary [hsl(...)], Background [hsl(...)].\nTypography: [字體名稱], headings [大小], body [大小].\nStyle: [從 Step 1.2 確認的風格調性].\nContent: Use realistic placeholder data in [語系].\n注意事項： - 直接套用 Step 2 定義的 Design Tokens。 - 使用貼近真實的假資料（而非 Lorem Ipsum），提升人類判斷的準確性。 - 若人類對 Wireframe 已有修改意見，必須先整合後再進入 Hi-fi。\n\n\n\n適用條件： 人類對 L1/L2 的靜態圖片有疑慮，需要「實際操作看看」。\n做法： - 產出一個單頁 HTML + CSS 檔案（不需 JS 框架）。 - 嵌入 Design Tokens 作為 CSS Variables。 - 啟動本地伺服器讓人類在瀏覽器中預覽。 - 重點驗證：響應式斷點、色彩在真實螢幕上的觀感、字體渲染。\n\n\n\n\n全畫面覆蓋原則： 應用程式若有多個關鍵畫面，每一個都必須產出對應的視覺產出物並經人類逐一確認。絕對不能只做一張「代表性」頁面就跳過其他畫面。\n畫面清單 (Screen Inventory)： 在開始產出前，先從 RFP.md 提取所有關鍵畫面並列出清單，與人類確認覆蓋範圍：\n### 📋 關鍵畫面清單 (需逐一產出 Wireframe)\n- [ ] 首頁 / Landing Page\n- [ ] 登入 / 註冊\n- [ ] Dashboard (主儀表板)\n- [ ] 設定頁面\n- [ ] ... (依專案需求列出)\n每一層級的產出物都必須經過人類確認後才能進入下一層級。\n迭代上限建議： 每一層級最多 3 輪。若超過，應退回 Step 1 重新校準約束。\n所有確認過的視覺產出物必須存檔至 docs/wireframes/ 目錄，以 {頁面名稱}_{層級}.png 命名（如 dashboard_L1.png），作為 Worker Agent 的實作參考。\n\n\n\n\n\n\n\n這是整個流程中最關鍵的步驟。 在此步驟中，你必須主動暫停並等待人類回饋。\n\n\n\n## 🎯 視覺方向校準報告\n\n### 已確認的約束\n- [列出 Step 1 收集到的硬性約束]\n\n### 提議的風格方向\n- **調性**: [選定方向]\n- **配色預覽**: Primary: ██ hsl(...) | Secondary: ██ hsl(...)\n- **字體**: [字體名稱]\n\n### 需要您決策的事項\n1. [具體問題 A，附帶 2-3 個選項]\n2. [具體問題 B，附帶 2-3 個選項]\n\n### ⚠️ 風險提示\n- [如果有任何約束之間的衝突，在此說明]\n關鍵行為準則： - 🚫 禁止：在未獲得人類明確認可的情況下直接產出最終規格。 - ✅ 必須：至少經過 一輪 校準才能進入最終產出。 - 🔄 預期：人類修改意見可能需要 2-3 輪迭代。這是正常的，保持耐心。"
+  },
+  {
+    "objectID": "skills/visual-designer/SKILL.html#產出物",
+    "href": "skills/visual-designer/SKILL.html#產出物",
+    "title": "🎨 Visual Designer (視覺設計專家)",
+    "section": "",
+    "text": "docs/design_system.md: 全域視覺指南（包含所有 Design Tokens 的最終定稿）。\ndocs/visual_specs.md: 逐頁面的佈局描述與互動規格。"
+  },
+  {
+    "objectID": "skills/visual-designer/SKILL.html#自我檢查清單-pre-delivery-checklist",
+    "href": "skills/visual-designer/SKILL.html#自我檢查清單-pre-delivery-checklist",
+    "title": "🎨 Visual Designer (視覺設計專家)",
+    "section": "",
+    "text": "在提交最終產出前，請逐項確認：\n\n所有色彩組合是否通過 WCAG AA 對比度標準？\n字體是否有繁體中文的 fallback？\n間距系統是否保持 4px 的倍數一致性？\n斷點設計是否覆蓋了目標裝置的約束？\n人類是否已對色彩方向和佈局架構進行至少一輪校準？\n產出物是否全部為「數值」而非「形容詞」？\n\n\n\n🎉 完成：視覺規格定調完成。請回報產出之設計規範，等待下一步指令。"
+  }
+]
