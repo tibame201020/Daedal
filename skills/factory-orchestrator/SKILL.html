@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -173,15 +173,19 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#factory-orchestrator-總指揮官" id="toc-factory-orchestrator-總指揮官" class="nav-link active" data-scroll-target="#factory-orchestrator-總指揮官">🏁 Factory Orchestrator (總指揮官)</a>
+  <li><a href="#daedal-ecosystem-roles-世界觀定義" id="toc-daedal-ecosystem-roles-世界觀定義" class="nav-link active" data-scroll-target="#daedal-ecosystem-roles-世界觀定義">� Daedal Ecosystem Roles (世界觀定義)</a>
+  <ul class="collapse">
+  <li><a href="#external-extensions-外部擴充" id="toc-external-extensions-外部擴充" class="nav-link" data-scroll-target="#external-extensions-外部擴充">🧩 External Extensions (外部擴充)</a></li>
+  </ul></li>
+  <li><a href="#factory-orchestrator-總指揮官" id="toc-factory-orchestrator-總指揮官" class="nav-link" data-scroll-target="#factory-orchestrator-總指揮官">�🏁 Factory Orchestrator (總指揮官)</a>
   <ul class="collapse">
   <li><a href="#指令流程" id="toc-指令流程" class="nav-link" data-scroll-target="#指令流程">📖 指令流程</a>
   <ul class="collapse">
   <li><a href="#意圖與背景確認" id="toc-意圖與背景確認" class="nav-link" data-scroll-target="#意圖與背景確認">1. 意圖與背景確認</a></li>
   <li><a href="#動態路徑管理" id="toc-動態路徑管理" class="nav-link" data-scroll-target="#動態路徑管理">2. 動態路徑管理</a></li>
-  <li><a href="#技術評審與模擬" id="toc-技術評審與模擬" class="nav-link" data-scroll-target="#技術評審與模擬">3. 技術評審與模擬</a></li>
-  <li><a href="#任務規格產出" id="toc-任務規格產出" class="nav-link" data-scroll-target="#任務規格產出">4. 任務規格產出</a></li>
-  <li><a href="#任務調度教導-one-shot-instruction" id="toc-任務調度教導-one-shot-instruction" class="nav-link" data-scroll-target="#任務調度教導-one-shot-instruction">5. 任務調度教導 (One-Shot Instruction)</a></li>
+  <li><a href="#技術評議與守門人模擬-review-gatekeeper-simulation" id="toc-技術評議與守門人模擬-review-gatekeeper-simulation" class="nav-link" data-scroll-target="#技術評議與守門人模擬-review-gatekeeper-simulation">3. 技術評議與守門人模擬 (Review &amp; Gatekeeper Simulation)</a></li>
+  <li><a href="#戰略審計與-labyrinth-定義-audit-labyrinth-definition" id="toc-戰略審計與-labyrinth-定義-audit-labyrinth-definition" class="nav-link" data-scroll-target="#戰略審計與-labyrinth-定義-audit-labyrinth-definition">4. 戰略審計與 Labyrinth 定義 (Audit &amp; Labyrinth Definition)</a></li>
+  <li><a href="#事後評議與治理演進-post-mortem-governance-evolution" id="toc-事後評議與治理演進-post-mortem-governance-evolution" class="nav-link" data-scroll-target="#事後評議與治理演進-post-mortem-governance-evolution">6. 事後評議與治理演進 (Post-Mortem &amp; Governance Evolution)</a></li>
   <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</a></li>
   </ul></li>
   <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
@@ -195,9 +199,70 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<hr>
+<section id="daedal-ecosystem-roles-世界觀定義" class="level1">
+<h1>� Daedal Ecosystem Roles (世界觀定義)</h1>
+<blockquote class="blockquote">
+<p><strong>作為總指揮，您必須理解各角色的職責與邊界。</strong></p>
+</blockquote>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">角色</th>
+<th style="text-align: left;">定義</th>
+<th style="text-align: left;">職責</th>
+<th style="text-align: left;">邊界</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>Daedal</strong></td>
+<td style="text-align: left;">框架與協議</td>
+<td style="text-align: left;">定義工廠規則 (Skill, Protocol, Template)</td>
+<td style="text-align: left;">不參與代碼產出</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Labyrinth</strong></td>
+<td style="text-align: left;">專案結構</td>
+<td style="text-align: left;">存放狀態 (tracker.json)、規格 (Specs) 與 CI</td>
+<td style="text-align: left;">無決策權，由 Git 驅動</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>Ikaros</strong></td>
+<td style="text-align: left;">執行工人</td>
+<td style="text-align: left;">狹義的任務執行者 (Worker Agents)</td>
+<td style="text-align: left;">嚴禁飛出 <code>allowed_paths</code> 或修改規則</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>CI</strong></td>
+<td style="text-align: left;">物理仲裁</td>
+<td style="text-align: left;">CI/CD 流程，負責測試驗證與 Phase 推進</td>
+<td style="text-align: left;">最終裁決者，無生成邏輯</td>
+</tr>
+</tbody>
+</table>
+<section id="external-extensions-外部擴充" class="level2">
+<h2 class="anchored" data-anchor-id="external-extensions-外部擴充">🧩 External Extensions (外部擴充)</h2>
+<blockquote class="blockquote">
+<p><strong>選配組件，核心流程不依賴其存在。</strong></p>
+</blockquote>
+<ul>
+<li><strong>Knossos (控制塔)</strong>：外部觀測儀表板。Daedal 應確保產出物格式符合其監聽規格，但在 Knossos 不存在時也必須能獨立運作。</li>
+</ul>
+</section>
+</section>
 <section id="factory-orchestrator-總指揮官" class="level1">
-<h1>🏁 Factory Orchestrator (總指揮官)</h1>
+<h1>�🏁 Factory Orchestrator (總指揮官)</h1>
 <p>您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。</p>
+<blockquote class="blockquote">
+<p>[!IMPORTANT] <strong>治理原則 (Governance Mandate)</strong>： 您不只是在跑流程，您是在維護 <strong>Daedal 生態系</strong>。 1. <strong>保護 Ikaros</strong>：確保產出的任務規格 (Labyrinth) 足夠微型化，防止 Worker 認知過載。 2. <strong>捍衛 Labyrinth</strong>：嚴禁任何會導致 <code>tracker.json</code> 狀態不一致的調度行為。</p>
+</blockquote>
 <section id="指令流程" class="level2">
 <h2 class="anchored" data-anchor-id="指令流程">📖 指令流程</h2>
 <section id="意圖與背景確認" class="level3">
@@ -208,17 +273,34 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="動態路徑管理">2. 動態路徑管理</h3>
 <p>根據需求分析的結果，決定下一步： - <strong>若涉及 UI/UX 畫面感</strong>：引導前往 <strong><a href="../../skills/visual-designer/SKILL.html">Visual Designer</a></strong>。 - <strong>若為純後端/API/CLI</strong>：跳過視覺設計，直接前往 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong>。</p>
 </section>
-<section id="技術評審與模擬" class="level3">
-<h3 class="anchored" data-anchor-id="技術評審與模擬">3. 技術評審與模擬</h3>
-<p>引導完成 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong> 的技術選型與沙盤推演。</p>
+<section id="技術評議與守門人模擬-review-gatekeeper-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="技術評議與守門人模擬-review-gatekeeper-simulation">3. 技術評議與守門人模擬 (Review &amp; Gatekeeper Simulation)</h3>
+<ul>
+<li>引導完成 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong> 的技術選型。</li>
+<li>🛡️ <strong>強制模擬 (Gatekeeper Simulation)</strong>：在進入 Iterator 前，您必須「腦內推演」目前的解決方案。
+<ul>
+<li><strong>目標</strong>：偵測架構位移（如：從 Single-project 變更為 Fleet 管理）。</li>
+<li><strong>產出</strong>：產出一個內部的「模擬報告」，若發現重大設計黑盒，請指示回退至 Step 1。</li>
+</ul></li>
+</ul>
 </section>
-<section id="任務規格產出" class="level3">
-<h3 class="anchored" data-anchor-id="任務規格產出">4. 任務規格產出</h3>
-<p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出模組化的任務規格與 <code>tracker.json</code>。</p>
+<section id="戰略審計與-labyrinth-定義-audit-labyrinth-definition" class="level3">
+<h3 class="anchored" data-anchor-id="戰略審計與-labyrinth-定義-audit-labyrinth-definition">4. 戰略審計與 Labyrinth 定義 (Audit &amp; Labyrinth Definition)</h3>
+<ul>
+<li><p>🛡️ <strong>衝刺盲點防禦 (Sprint Blindness Audit)</strong>：在呼叫 Iterator 前，掃描所有模組的橫向依賴。</p></li>
+<li><p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出 <strong>Labyrinth</strong> 的核心規格物（<code>tracker.json</code> 與 <code>specs/</code>）。</p></li>
+<li><p><strong>關鍵意識</strong>：您正在為 <strong>Ikaros</strong> 打造一個安全且受控的飛行邊界。</p></li>
+<li><p>Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。</p></li>
+</ul>
 </section>
-<section id="任務調度教導-one-shot-instruction" class="level3">
-<h3 class="anchored" data-anchor-id="任務調度教導-one-shot-instruction">5. 任務調度教導 (One-Shot Instruction)</h3>
-<p>引導 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong> 執行<strong>一次性</strong>教導： - 產出<strong>可重複使用的 Worker Prompt</strong>——使用者只需反覆餵給 Worker Agent 即可持續推進任務。 - Worker 怎麼觸發由使用者決定（Web GUI、API、Cron、n8n 等皆可）。 - 若使用者需要自動化觸發，Dispatcher 可協助封裝對應 Worker 的 API 腳本。 - Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。</p>
+<section id="事後評議與治理演進-post-mortem-governance-evolution" class="level3">
+<h3 class="anchored" data-anchor-id="事後評議與治理演進-post-mortem-governance-evolution">6. 事後評議與治理演進 (Post-Mortem &amp; Governance Evolution)</h3>
+<ul>
+<li><strong>持續反饋</strong>：在每個大型 Phase 結束或全案完工時，您<strong>必須</strong>檢視本次協作中的治理效率。</li>
+<li><strong>產出建議</strong>：若發現框架邏輯 (Daedal) 或專案結構 (Labyrinth) 存在缺陷，請參考 <code>skills/factory-iterator/assets/templates/ADVISORY_TEMPLATE.md</code> 格式產出新的 <strong>Advisory</strong>。</li>
+<li><strong>進化日誌</strong>：彙整所有觀測結果至專案根目錄的 <code>ADVISORY_LOG.qmd</code> 或 <code>docs/governance-evolution.qmd</code>。</li>
+<li><strong>目標</strong>：提升工廠魯棒性，減少未來協作中的人類介入需求。</li>
+</ul>
 </section>
 <section id="模式感知接力-mode-aware-relay" class="level3">
 <h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>
@@ -265,7 +347,11 @@ ul.task-list li input[type="checkbox"] {
 <li><strong>元件化思維 (Component Thinking)</strong>：將子 Skill 視為純粹的「處理函數」。您負責提供輸入 (Input) 並接收其產出 (Output)。</li>
 <li><strong>禁止反向耦合</strong>：子 Skill 絕不應知道您的存在或下一步流程。所有的跳轉、決定與上下文傳遞，純屬您的職責。</li>
 <li><strong>透明化引導</strong>：在呼叫完子 Skill 並確認其 Output 後，由您主動向使用者發起下一個階段的邀請。</li>
-<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您是 <strong>完全掌握整個文檔門戶 (Quarto Portal)</strong> 的唯一擁有者 (Sole Owner)。這包含根目錄的 <code>index.qmd</code>、<code>docs/*.qmd</code>、<code>_quarto.yml</code> 以及所有架構視圖。任何 Skill 邏輯的修改、ADR 的產出，都必須由您（或您指派的 Architect）反映在文件中。Worker 若發現文件與實際程式碼不符，應在 PR 中提出建議，但<strong>不得直接修改文檔</strong>。</li>
+<li><strong>📚 文學化維護 (Literate Maintenance)</strong>：身為總指揮，您是 <strong>完全掌握整個文檔門戶 (Quarto Portal)</strong> 的唯一擁有者 (Sole Owner)。這包含根目錄的 <code>index.qmd</code>、<code>docs/*.qmd</code>、<code>_quarto.yml</code> 以及所有架構視圖。
+<ul>
+<li><strong>意識目標</strong>：確保文檔觀測資料與物理代碼對齊，維護 Labyrinth 的資訊對稱。</li>
+</ul></li>
+<li><strong>🛡️ 治理合規 (Governance Compliance)</strong>：在每次大規模派發任務前，讀取 <code>.agents/rules/GOVERNANCE.md</code> 以重新校準您的治理權限與義務。</li>
 </ul>
 <hr>
 <blockquote class="blockquote">
@@ -350,7 +436,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/tibame201020\.github\.io\/Daedal\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

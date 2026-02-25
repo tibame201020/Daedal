@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -179,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#step-1-建廠與環境部署-scaffolding" id="toc-step-1-建廠與環境部署-scaffolding" class="nav-link" data-scroll-target="#step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</a></li>
   <li><a href="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" id="toc-step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="nav-link" data-scroll-target="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</a></li>
-  <li><a href="#step-3-規格校驗-spec-integrity-check" id="toc-step-3-規格校驗-spec-integrity-check" class="nav-link" data-scroll-target="#step-3-規格校驗-spec-integrity-check">Step 3: 規格校驗 (Spec Integrity Check)</a></li>
+  <li><a href="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" id="toc-step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" class="nav-link" data-scroll-target="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit">Step 3: 規格校驗與願景對齊 (Integrity &amp; Reverse-Chain Audit)</a></li>
   </ul></li>
   <li><a href="#產出物" id="toc-產出物" class="nav-link" data-scroll-target="#產出物">🛠️ 產出物</a></li>
   </ul></li>
@@ -227,9 +227,14 @@ ul.task-list li input[type="checkbox"] {
 <p>當無法避免路徑重疊時，必須在 <code>tracker.json</code> 中建立明確的 <code>depends_on</code> 依賴關係。</p>
 </blockquote>
 </section>
-<section id="step-3-規格校驗-spec-integrity-check" class="level3">
-<h3 class="anchored" data-anchor-id="step-3-規格校驗-spec-integrity-check">Step 3: 規格校驗 (Spec Integrity Check)</h3>
+<section id="step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-規格校驗與願景對齊-integrity-reverse-chain-audit">Step 3: 規格校驗與願景對齊 (Integrity &amp; Reverse-Chain Audit)</h3>
 <ul>
+<li>🛡️ <strong>反向鏈審計 (Reverse-Chain Audit)</strong>：對照產出的 Specs 與原始 <code>RFP.md</code> 願景。
+<ul>
+<li><strong>自我探詢</strong>：這跟兩步驟前的 RFP 願景是否衝突？是否遺失了核心功能？</li>
+<li><strong>判定</strong>：若無法給出具備邏輯論據的回答，則禁止提交，並發起 Resync 流程。</li>
+</ul></li>
 <li>確認每個任務的 <code>spec_ref</code> 指向實際存在的 YAML 檔案。</li>
 <li>確認 <code>tracker.json</code> 中的 task ID 與 spec 檔案名稱一致。</li>
 <li>確認 Phase 間的依賴順序合理。</li>
@@ -326,7 +331,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/tibame201020\.github\.io\/Daedal\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

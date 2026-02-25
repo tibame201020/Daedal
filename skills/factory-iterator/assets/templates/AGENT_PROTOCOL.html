@@ -40,7 +40,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../../site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -175,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#agent_name-agent-execution-protocol" id="toc-agent_name-agent-execution-protocol" class="nav-link active" data-scroll-target="#agent_name-agent-execution-protocol">{{AGENT_NAME}} Agent Execution Protocol</a>
   <ul class="collapse">
   <li><a href="#角色聲明" id="toc-角色聲明" class="nav-link" data-scroll-target="#角色聲明">⚠️ 角色聲明</a></li>
-  <li><a href="#step-1-讀取狀態與尋找任務-state-read-task-discovery" id="toc-step-1-讀取狀態與尋找任務-state-read-task-discovery" class="nav-link" data-scroll-target="#step-1-讀取狀態與尋找任務-state-read-task-discovery">Step 1: 讀取狀態與尋找任務 (State Read &amp; Task Discovery)</a></li>
+  <li><a href="#step-1-讀取狀態與環境對齊-state-read-hard-alignment" id="toc-step-1-讀取狀態與環境對齊-state-read-hard-alignment" class="nav-link" data-scroll-target="#step-1-讀取狀態與環境對齊-state-read-hard-alignment">Step 1: 讀取狀態與環境對齊 (State Read &amp; Hard Alignment)</a></li>
   <li><a href="#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" id="toc-step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" class="nav-link" data-scroll-target="#step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout">Step 2: 互斥鎖檢查與分支建立 (Branch-as-Lock &amp; Checkout)</a></li>
   <li><a href="#step-3-載入規格與上下文-load-spec-context" id="toc-step-3-載入規格與上下文-load-spec-context" class="nav-link" data-scroll-target="#step-3-載入規格與上下文-load-spec-context">Step 3: 載入規格與上下文 (Load Spec &amp; Context)</a></li>
   <li><a href="#step-4-實作功能-implement" id="toc-step-4-實作功能-implement" class="nav-link" data-scroll-target="#step-4-實作功能-implement">Step 4: 實作功能 (Implement)</a></li>
@@ -208,12 +208,17 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <hr>
 </section>
-<section id="step-1-讀取狀態與尋找任務-state-read-task-discovery" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-讀取狀態與尋找任務-state-read-task-discovery">Step 1: 讀取狀態與尋找任務 (State Read &amp; Task Discovery)</h2>
+<section id="step-1-讀取狀態與環境對齊-state-read-hard-alignment" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-讀取狀態與環境對齊-state-read-hard-alignment">Step 1: 讀取狀態與環境對齊 (State Read &amp; Hard Alignment)</h2>
 <blockquote class="blockquote">
 <p><strong>此步驟由 Dispatcher 教導，Worker 機械性執行。</strong></p>
 </blockquote>
 <ol type="1">
+<li>🛡️ <strong>環境硬對齊 (Hard Alignment Check)</strong>：
+<ul>
+<li>執行 <code>git branch --show-current</code> 與 <code>git remote -v</code>。</li>
+<li><strong>禁止猜測</strong>：若當前分支與目標 <code>{BASE_BRANCH}</code> 不符，或遠端路徑異常，必須先修正環境而非盲目執行。</li>
+</ul></li>
 <li><strong>讀取 <code>.{{AGENT_NAME}}/tracker.json</code></strong>。</li>
 <li>找到 <code>current_phase</code> 中第一個 <code>status == "pending"</code> 的任務。</li>
 <li>🛡️ <strong>健康檢查</strong>：若該任務的 <code>attempts</code> &gt;= 5，視為「持續性死鎖」，<strong>停止執行</strong>並回報人類。</li>
@@ -296,6 +301,10 @@ git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code></pre></li>
 <li>完整讀取任務對應的 <code>spec_ref</code> 檔案。</li>
 <li><strong>嚴格限令</strong>：禁止「猜測」任務，必須依此檔案為唯一準則。</li>
 </ul></li>
+<li><strong>🔄 邊界校準 (Boundary Calibration)</strong>：
+<ul>
+<li>若偵測到 Spec 所要求的技術棧、依賴或架構與當前 Labyrinth 結構存在<strong>嚴重衝突</strong>，或發現與原始願景發生 <strong>Source Vision Drift</strong>，您必須<strong>強制暫停</strong>並要求管理員重新執行 Orchestrator Resync。</li>
+</ul></li>
 <li><strong>維護模式審計 (Maintenance/Audit Step)</strong>：
 <ul>
 <li>若專案已有既有程式碼，您<strong>必須</strong>先執行 <code>list_dir</code> 與 <code>grep_search</code> 遍歷涉及的模組。</li>
@@ -341,17 +350,8 @@ git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code></pre></li>
 <ul>
 <li><strong>Phase 1 (Setup)</strong>：僅強制要求測試 1-4 項 (基礎守後)。</li>
 <li><strong>Phase 2+ (Implementation)</strong>：必須全面涵蓋 1-8 項破壞性邊界測試。</li>
-</ul>
-<ol type="1">
-<li><code>Null/Undefined</code> 行為。</li>
-<li>空陣列 / 空字串傳入。</li>
-<li>Spec 中定義的 <code>negative_test_cases</code>。</li>
-<li>邊界數值 (Max/Min)。</li>
-<li>錯誤路徑 (網路請求失敗、Timeout、DB 失聯)。</li>
-<li><strong>併發競爭 (Race Conditions)</strong>。</li>
-<li>極端大資料量 (10k+ items) 效能分析。</li>
-<li>特殊字元 (Unicode, Emoji, SQL injection 防禦)。</li>
-</ol></li>
+</ul></li>
+<li><strong>🎨 ASCII-First 視圖</strong>：建議在回報架構變更或複雜邏輯時，使用 ASCII 繪圖輔助說明，確保結構層面的理解對齊。</li>
 <li>對照 Spec 的 Acceptance Criteria 與 Success Criteria 逐條自我檢查。</li>
 <li>若任何一條未通過，回到 Step 4 或 Step 5 修正，<strong>不得帶著失敗的測試提 PR</strong>。</li>
 </ul>
@@ -374,7 +374,11 @@ git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code></pre></li>
 <li><strong>路徑審計報告</strong>：聲明所有變更均符合 <code>allowed_paths</code>。</li>
 </ul></li>
 <li><strong>必須</strong>添加 GitHub Label <code>auto-merge</code> 以觸發自動合併。</li>
-<li><strong>推薦指令</strong>：<code>gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body "{description}" --label "auto-merge"</code></li>
+<li><strong>📁 檔案交換協議 (File-Based Protocol)</strong>：
+<ul>
+<li>當 PR Body 或變更說明過長時，<strong>禁止透過 CLI 變數傳遞</strong>，應寫入一個 <code>.jules/pr_body.txt</code> 並在 <code>gh pr create --body-file</code> 中引用，以避開 Windows Shell 長度限制。</li>
+</ul></li>
+<li><strong>推薦指令</strong>：<code>gh pr create --title "[{{AGENT_NAME}}] {task_title}" --body-file .{{AGENT_NAME}}/pr_body.txt --label "auto-merge"</code></li>
 </ul></li>
 </ul>
 <hr>
@@ -460,7 +464,7 @@ git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code></pre></li>
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/tibame201020\.github\.io\/Daedal\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
