@@ -103,7 +103,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -222,7 +222,7 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>本協議由 <strong>Task Dispatcher</strong> 編寫。Ikaros 在 <strong>Labyrinth</strong> 中的每一步飛行，都必須遵循 <code>.labyrinth/tasks/</code> 中的狀態邊界，並確保其與 <code>labyrinth.yml</code> 藍圖同步。</p>
+<p>本協議由 <strong>Task Dispatcher</strong> 編寫。Ikaros 在 <strong>Labyrinth</strong> 中的每一步飛行，都必須遵循 <code>tracker.json</code> 的狀態約束。</p>
 </div>
 </div>
 <p>Ikaros 的完整生命週期：</p>
@@ -231,18 +231,20 @@ Important
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">graph TD
-    Read[🔍 讀取分配任務] --&gt; Sync{🛡️ 藍圖 Hash 校驗}
-    Sync -- "✅ 匹配" --&gt; Lock{分支互斥檢查}
-    Sync -- "❌ 斷層" --&gt; Die((🛑 停止執行))
-    Lock -- 可領取 --&gt; Branch[切分支實作]
+<pre class="mermaid mermaid-js">graph LR
+    Read[讀取 Labyrinth] --&gt; Lock{互斥鎖檢查}
+    Lock -- 可領取 --&gt; Branch[切 Branch]
     Lock -- CI 失敗 --&gt; Recover[Recover &amp; Retry]
-    Branch --&gt; Impl[實作代碼]
-    Impl --&gt; PR[提交 PR]
+    Lock -- 鎖定中 --&gt; Skip[跳過]
+    Branch --&gt; Spec[載入 Specs]
+    Spec --&gt; Impl[實作功能]
+    Recover --&gt; Branch
+    Impl --&gt; Test[驗證品質]
+    Test --&gt; PR[提交 PR]
     PR --&gt; Done((結束))
 
-    style Sync fill:#fff3e0,stroke:#e65100
-    style Die fill:#ffebee,stroke:#c62828
+    style Read fill:#fff3e0,stroke:#e65100
+    style Recover fill:#ffebee,stroke:#c62828
     style Done fill:#c8e6c9,stroke:#2e7d32
 </pre>
 </div>
@@ -263,7 +265,7 @@ Important
 </ul></li>
 <li><p><strong>自我修復與回航 (Self-Healing)</strong></p>
 <ul>
-<li>偵測到 CI 失敗時，自動執行恢復流程（關 PR → 由 <strong>Arbitrator</strong> 遞增 <code>attempts</code> → 重試）。</li>
+<li>偵測到 CI 失敗時，自動執行恢復流程（關 PR → 遞增 <code>attempts</code> → 重試）。</li>
 <li><code>attempts</code> ≥ 5 次 → 停止飛行，尋求 <strong>Knossos</strong> (人類) 的介入。</li>
 </ul></li>
 </ol>

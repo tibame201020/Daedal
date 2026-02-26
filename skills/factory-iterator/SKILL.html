@@ -101,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -177,8 +177,8 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#執行流程" id="toc-執行流程" class="nav-link" data-scroll-target="#執行流程">📖 執行流程</a>
   <ul class="collapse">
-  <li><a href="#step-1-文學化藍圖編譯-labyrinth-compilation" id="toc-step-1-文學化藍圖編譯-labyrinth-compilation" class="nav-link" data-scroll-target="#step-1-文學化藍圖編譯-labyrinth-compilation">Step 1: 文學化藍圖編譯 (Labyrinth Compilation)</a></li>
-  <li><a href="#step-2-物理建廠與環境部署-labyrinth-scaffolding" id="toc-step-2-物理建廠與環境部署-labyrinth-scaffolding" class="nav-link" data-scroll-target="#step-2-物理建廠與環境部署-labyrinth-scaffolding">Step 2: 物理建廠與環境部署 (Labyrinth Scaffolding)</a></li>
+  <li><a href="#step-1-建廠與環境部署-scaffolding" id="toc-step-1-建廠與環境部署-scaffolding" class="nav-link" data-scroll-target="#step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</a></li>
+  <li><a href="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" id="toc-step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="nav-link" data-scroll-target="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</a></li>
   <li><a href="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" id="toc-step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" class="nav-link" data-scroll-target="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit">Step 3: 規格校驗與願景對齊 (Integrity &amp; Reverse-Chain Audit)</a></li>
   </ul></li>
   <li><a href="#產出物" id="toc-產出物" class="nav-link" data-scroll-target="#產出物">🛠️ 產出物</a></li>
@@ -201,24 +201,19 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="執行流程" class="level2">
 <h2 class="anchored" data-anchor-id="執行流程">📖 執行流程</h2>
-<section id="step-1-文學化藍圖編譯-labyrinth-compilation" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-文學化藍圖編譯-labyrinth-compilation">Step 1: 文學化藍圖編譯 (Labyrinth Compilation)</h3>
+<section id="step-1-建廠與環境部署-scaffolding" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</h3>
 <ul>
-<li><strong>藍圖讀取</strong>：掃描根目錄下的 <code>labyrinth.yml</code>。若不存在，則從 <code>assets/templates/</code> 建立初始藍圖供人類編輯。</li>
-<li><strong>原子化膨脹 (Task Expansion)</strong>：將藍圖中的高階任務清單「編譯」為 <code>.labyrinth/tasks/task-xxx.json</code> 原子檔案。
-<ul>
-<li><strong>🛡️ 欄位鎖定 (Inertia Check)</strong>：若任務已存在且標註為 <code>human-edited</code>，編譯器禁止覆蓋該任務的 <code>spec_ref</code> 或 <code>title</code>。</li>
-<li><strong>🛡️ Hash 注入</strong>：為每個 JSON 任務注入 <code>metadata.blueprint_hash</code>，供 Worker 在執行前驗證。</li>
-</ul></li>
-<li><strong>🛡️ 模式識別</strong>：根據任務 <code>tags</code>（如 <code>backend</code>, <code>ui</code>），自動從 <code>extensions/</code> 關聯對應的技術規範。</li>
-<li><strong>產出編譯視圖</strong>：執行 <code>jq -n '[inputs]' .labyrinth/tasks/*.json &gt; .labyrinth/tracker.json</code>。</li>
+<li>從模板產生 <code>.{{AGENT_NAME}}/tracker.json</code> 與 <code>AGENT_PROTOCOL.md</code>。</li>
+<li><strong>視覺規範注入</strong>：將 <code>RFP.md</code> 內的 Design Tokens 寫入任務規格中。</li>
+<li><strong>規則目錄初始化</strong>：確保 <code>.agents/rules/</code> 目錄存在且包含基本編碼守則。</li>
+<li><strong>文檔骨架建立</strong>：若 <code>docs/FACTORY_WORKFLOW.qmd</code> 不存在，從模板產生初始版本。</li>
+<li><strong>CI/CD 技術棧適配</strong>：讀取 Architect Reviewer 產出的 <code>docs/ADR/*.md</code>，根據專案選型（如 Next.js、Spring Boot、Django 等），<strong>替換</strong> <code>auto-merge.yml</code> 和 <code>phase-bump.yml</code> 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。</li>
 </ul>
 </section>
-<section id="step-2-物理建廠與環境部署-labyrinth-scaffolding" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-物理建廠與環境部署-labyrinth-scaffolding">Step 2: 物理建廠與環境部署 (Labyrinth Scaffolding)</h3>
+<section id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</h3>
 <ul>
-<li><strong>環境初始化</strong>：部署 <code>AGENT_PROTOCOL.md</code>、<code>metadata.json</code> 以及 GitHub Actions 治理腳本。</li>
-<li><strong>🛡️ 心跳同步</strong>：確保 <code>metadata.json</code> 記錄當前的 <code>last_arbitration</code> 時間。</li>
 <li><strong>共通規範</strong>：拆解為符合「單檔 300 行內」的微型任務。</li>
 <li><strong>🟢 CREATE</strong>：關注環境搭建、初始核心邏輯。</li>
 <li><strong>🟡 CONTINUE / 🔴 MAINTAIN</strong>：
@@ -239,12 +234,6 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><strong>自我探詢</strong>：這跟兩步驟前的 RFP 願景是否衝突？是否遺失了核心功能？</li>
 <li><strong>判定</strong>：若無法給出具備邏輯論據的回答，則禁止提交，並發起 Resync 流程。</li>
-</ul></li>
-<li>🛡️ <strong>Labyrinth Guard (一致性守衛)</strong>：
-<ul>
-<li>驗證 <code>tracker.json</code> 的 <code>current_phase</code> 是否存在於 <code>phases</code> 陣列中。</li>
-<li>驗證所有任務 ID 的全域唯一性。</li>
-<li>驗證 <code>depends_on</code> 的邏輯閉環（無循環依賴）。</li>
 </ul></li>
 <li>確認每個任務的 <code>spec_ref</code> 指向實際存在的 YAML 檔案。</li>
 <li>確認 <code>tracker.json</code> 中的 task ID 與 spec 檔案名稱一致。</li>

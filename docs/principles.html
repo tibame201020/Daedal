@@ -100,7 +100,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -208,7 +208,7 @@ ul.task-list li input[type="checkbox"] {
 <p>隨著 AI 生成能力的爆發，單純的「寫出程式碼」已不再是挑戰。真正的挑戰在於如何確保這些程式碼在長期專案中不會導致架構崩塌。</p>
 <section id="唯一的真理merge-才是推進" class="level3">
 <h3 class="anchored" data-anchor-id="唯一的真理merge-才是推進">唯一的真理：Merge 才是推進</h3>
-<p>我們將專案狀態固化在 <code>.labyrinth/tasks/</code> 的原子化檔案中。這是 Labyrinth 的物理定律，並與 <code>labyrinth.yml</code> 藍圖保持強同步。</p>
+<p>我們將專案狀態固化在 <code>tracker.json</code> 中。這不是一般的 Json，它是 Labyrinth 的物理定律。</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -220,10 +220,9 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><strong>[導航]</strong> <strong>Orchestrator</strong> 根據人類手寫的 <code>labyrinth.yml</code> 藍圖引導開發。</li>
-<li><strong>[編譯]</strong> <strong>Iterator</strong> 將藍圖膨脹為 <code>.labyrinth/tasks/task-xxx.json</code> 執行態。</li>
-<li><strong>[領取]</strong> <strong>Ikaros</strong> 通過 Hash 校驗後領取任務。</li>
-<li><strong>[仲裁]</strong> <strong>CI</strong> 擔任裁判。通過測試後合併，由 <strong>Arbitrator</strong> 推動狀態變更。</li>
+<li><strong>[觀測]</strong> <strong>Knossos</strong> 偵測到可執行的任務。</li>
+<li><strong>[領取]</strong> <strong>Ikaros</strong> 讀取 tracker 並創建 <code>task-{id}</code> 分支。</li>
+<li><strong>[仲裁]</strong> <strong>CI</strong> 擔任裁判。通過測試後合併，主分支的 <code>tracker.json</code> 狀態才算正式推進。</li>
 </ol>
 </div>
 </div>

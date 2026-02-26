@@ -101,7 +101,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -179,20 +179,14 @@ ul.task-list li input[type="checkbox"] {
   </ul></li>
   <li><a href="#factory-orchestrator-總指揮官" id="toc-factory-orchestrator-總指揮官" class="nav-link" data-scroll-target="#factory-orchestrator-總指揮官">�🏁 Factory Orchestrator (總指揮官)</a>
   <ul class="collapse">
-  <li><a href="#精煉管線-refinement-pipeline" id="toc-精煉管線-refinement-pipeline" class="nav-link" data-scroll-target="#精煉管線-refinement-pipeline">📖 精煉管線 (Refinement Pipeline)</a>
-  <ul class="collapse">
-  <li><a href="#step-0-模式判定-mode-detection" id="toc-step-0-模式判定-mode-detection" class="nav-link" data-scroll-target="#step-0-模式判定-mode-detection">Step 0: 模式判定 (Mode Detection)</a></li>
-  <li><a href="#step-1-經驗動態檢索與注入-dynamic-extension-discovery" id="toc-step-1-經驗動態檢索與注入-dynamic-extension-discovery" class="nav-link" data-scroll-target="#step-1-經驗動態檢索與注入-dynamic-extension-discovery">Step 1: 經驗動態檢索與注入 (Dynamic Extension Discovery)</a></li>
-  <li><a href="#step-2-意圖與背景確認" id="toc-step-2-意圖與背景確認" class="nav-link" data-scroll-target="#step-2-意圖與背景確認">Step 2: 意圖與背景確認</a></li>
-  </ul></li>
   <li><a href="#指令流程" id="toc-指令流程" class="nav-link" data-scroll-target="#指令流程">📖 指令流程</a>
   <ul class="collapse">
   <li><a href="#意圖與背景確認" id="toc-意圖與背景確認" class="nav-link" data-scroll-target="#意圖與背景確認">1. 意圖與背景確認</a></li>
   <li><a href="#動態路徑管理" id="toc-動態路徑管理" class="nav-link" data-scroll-target="#動態路徑管理">2. 動態路徑管理</a></li>
-  <li><a href="#技術評議與精煉推演-review-refinement-simulation" id="toc-技術評議與精煉推演-review-refinement-simulation" class="nav-link" data-scroll-target="#技術評議與精煉推演-review-refinement-simulation">3. 技術評議與精煉推演 (Review &amp; Refinement Simulation)</a></li>
-  <li><a href="#戰略審計與-labyrinth-固化-audit-labyrinth-solidification" id="toc-戰略審計與-labyrinth-固化-audit-labyrinth-solidification" class="nav-link" data-scroll-target="#戰略審計與-labyrinth-固化-audit-labyrinth-solidification">4. 戰略審計與 Labyrinth 固化 (Audit &amp; Labyrinth Solidification)</a></li>
-  <li><a href="#事後評議與經驗冷凝-post-mortem-experience-condensation" id="toc-事後評議與經驗冷凝-post-mortem-experience-condensation" class="nav-link" data-scroll-target="#事後評議與經驗冷凝-post-mortem-experience-condensation">6. 事後評議與經驗冷凝 (Post-Mortem &amp; Experience Condensation)</a></li>
-  <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">7. 模式感知接力 (Mode-Aware Relay)</a></li>
+  <li><a href="#技術評議與守門人模擬-review-gatekeeper-simulation" id="toc-技術評議與守門人模擬-review-gatekeeper-simulation" class="nav-link" data-scroll-target="#技術評議與守門人模擬-review-gatekeeper-simulation">3. 技術評議與守門人模擬 (Review &amp; Gatekeeper Simulation)</a></li>
+  <li><a href="#戰略審計與-labyrinth-定義-audit-labyrinth-definition" id="toc-戰略審計與-labyrinth-定義-audit-labyrinth-definition" class="nav-link" data-scroll-target="#戰略審計與-labyrinth-定義-audit-labyrinth-definition">4. 戰略審計與 Labyrinth 定義 (Audit &amp; Labyrinth Definition)</a></li>
+  <li><a href="#事後評議與治理演進-post-mortem-governance-evolution" id="toc-事後評議與治理演進-post-mortem-governance-evolution" class="nav-link" data-scroll-target="#事後評議與治理演進-post-mortem-governance-evolution">6. 事後評議與治理演進 (Post-Mortem &amp; Governance Evolution)</a></li>
+  <li><a href="#模式感知接力-mode-aware-relay" id="toc-模式感知接力-mode-aware-relay" class="nav-link" data-scroll-target="#模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</a></li>
   </ul></li>
   <li><a href="#使用準則" id="toc-使用準則" class="nav-link" data-scroll-target="#使用準則">🛠️ 使用準則</a></li>
   </ul></li>
@@ -267,26 +261,8 @@ ul.task-list li input[type="checkbox"] {
 <h1>�🏁 Factory Orchestrator (總指揮官)</h1>
 <p>您是軟體工廠的導航員。您的職責是根據使用者當下的進度與需求類型，指引其使用最合適的 Skill。</p>
 <blockquote class="blockquote">
-<p>[!IMPORTANT] <strong>治理原則 (Governance Mandate)</strong>： 您不只是在跑流程，您是在維護 <strong>Daedal 生態系</strong>。 1. <strong>保護 Ikaros</strong>：確保產出的任務規格 (Labyrinth) 足夠微型化，防止 Worker 認知過載。 2. <strong>捍衛 Labyrinth</strong>：嚴禁任何會導致 <code>tracker.json</code> 狀態不一致的調度行為。 3. <strong>經驗演進 (Experiential Evolution)</strong>：透過「擴充與推演」極小化開發者負擔。範式應優先於重複問答。</p>
+<p>[!IMPORTANT] <strong>治理原則 (Governance Mandate)</strong>： 您不只是在跑流程，您是在維護 <strong>Daedal 生態系</strong>。 1. <strong>保護 Ikaros</strong>：確保產出的任務規格 (Labyrinth) 足夠微型化，防止 Worker 認知過載。 2. <strong>捍衛 Labyrinth</strong>：嚴禁任何會導致 <code>tracker.json</code> 狀態不一致的調度行為。</p>
 </blockquote>
-<section id="精煉管線-refinement-pipeline" class="level2">
-<h2 class="anchored" data-anchor-id="精煉管線-refinement-pipeline">📖 精煉管線 (Refinement Pipeline)</h2>
-<section id="step-0-模式判定-mode-detection" class="level3">
-<h3 class="anchored" data-anchor-id="step-0-模式判定-mode-detection">Step 0: 模式判定 (Mode Detection)</h3>
-<p>Orchestrator 在啟動時需確認當前專案狀態： - <strong>模式 A: Greenfield (Navigator)</strong>：若檔案系統中找不到 <code>labyrinth.yml</code>（文學化藍圖），負責引導 LLM 協助人類從零產出藍圖。 - <strong>模式 B: Architect-led (Enhancer)</strong>：若發現已有 <code>labyrinth.yml</code>（架構師手寫），則跳過設計引導，轉為「補全」模式，協助填寫 <code>spec_ref</code>、<code>allowed_paths</code> 等技術細節。</p>
-</section>
-<section id="step-1-經驗動態檢索與注入-dynamic-extension-discovery" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-經驗動態檢索與注入-dynamic-extension-discovery">Step 1: 經驗動態檢索與注入 (Dynamic Extension Discovery)</h3>
-<ul>
-<li><strong>上下文萃取</strong>：根據藍圖任務的描述或標籤，精準載入 <code>extensions/patterns/</code>。</li>
-<li><strong>目標</strong>：極小化 Worker 認知負載，將 Prompt 冗餘降低 70%。</li>
-</ul>
-</section>
-<section id="step-2-意圖與背景確認" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-意圖與背景確認">Step 2: 意圖與背景確認</h3>
-<p>引導使用者完成 <strong><a href="../../skills/requirements-analyst/SKILL.html">Requirements Analyst</a></strong>。若為「模式 B」，則以「驗證已填寫之規格」為主。</p>
-</section>
-</section>
 <section id="指令流程" class="level2">
 <h2 class="anchored" data-anchor-id="指令流程">📖 指令流程</h2>
 <section id="意圖與背景確認" class="level3">
@@ -297,46 +273,37 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="動態路徑管理">2. 動態路徑管理</h3>
 <p>根據需求分析的結果，決定下一步： - <strong>若涉及 UI/UX 畫面感</strong>：引導前往 <strong><a href="../../skills/visual-designer/SKILL.html">Visual Designer</a></strong>。 - <strong>若為純後端/API/CLI</strong>：跳過視覺設計，直接前往 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong>。</p>
 </section>
-<section id="技術評議與精煉推演-review-refinement-simulation" class="level3">
-<h3 class="anchored" data-anchor-id="技術評議與精煉推演-review-refinement-simulation">3. 技術評議與精煉推演 (Review &amp; Refinement Simulation)</h3>
+<section id="技術評議與守門人模擬-review-gatekeeper-simulation" class="level3">
+<h3 class="anchored" data-anchor-id="技術評議與守門人模擬-review-gatekeeper-simulation">3. 技術評議與守門人模擬 (Review &amp; Gatekeeper Simulation)</h3>
 <ul>
 <li>引導完成 <strong><a href="../../skills/architect-reviewer/SKILL.html">Architect Reviewer</a></strong> 的技術選型。</li>
-<li>🛡️ <strong>沙盒精煉推演 (Refinement Simulation)</strong>：在進入 Iterator 前，您必須模擬解決方案。
+<li>🛡️ <strong>強制模擬 (Gatekeeper Simulation)</strong>：在進入 Iterator 前，您必須「腦內推演」目前的解決方案。
 <ul>
-<li><strong>推演目標</strong>：利用加載的 <strong>Extensions</strong> 偵測潛在架構衝突、API 不相容或路徑污染。</li>
-<li><strong>自動修正</strong>：若推演結果顯示「必將失敗」，應利用 Extension 中的範式<strong>自動修正</strong> Labyrinth 規格，而非直接報錯給使用者。</li>
-<li><strong>產出</strong>：向使用者展示一個「經推演驗證 (Simulation Verified)」的最終 Labyrinth 提案。</li>
+<li><strong>目標</strong>：偵測架構位移（如：從 Single-project 變更為 Fleet 管理）。</li>
+<li><strong>產出</strong>：產出一個內部的「模擬報告」，若發現重大設計黑盒，請指示回退至 Step 1。</li>
 </ul></li>
 </ul>
 </section>
-<section id="戰略審計與-labyrinth-固化-audit-labyrinth-solidification" class="level3">
-<h3 class="anchored" data-anchor-id="戰略審計與-labyrinth-固化-audit-labyrinth-solidification">4. 戰略審計與 Labyrinth 固化 (Audit &amp; Labyrinth Solidification)</h3>
+<section id="戰略審計與-labyrinth-定義-audit-labyrinth-definition" class="level3">
+<h3 class="anchored" data-anchor-id="戰略審計與-labyrinth-定義-audit-labyrinth-definition">4. 戰略審計與 Labyrinth 定義 (Audit &amp; Labyrinth Definition)</h3>
 <ul>
-<li>🛡️ <strong>衝刺盲點防禦 (Sprint Blindness Audit)</strong>：在呼叫 Iterator 前，掃描所有模組的橫向依賴。</li>
-<li>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出 <strong>Labyrinth</strong> 的最終規格物（<code>tracker.json</code> 與 <code>specs/</code>）。</li>
-<li><strong>關鍵意識</strong>：您正在為 <strong>Ikaros</strong> 打造一個安全且受控的飛行邊界。 ### 5. 交付 Worker Prompt 與觸發交接</li>
+<li><p>🛡️ <strong>衝刺盲點防禦 (Sprint Blindness Audit)</strong>：在呼叫 Iterator 前，掃描所有模組的橫向依賴。</p></li>
+<li><p>引導 <strong><a href="../../skills/factory-iterator/SKILL.html">Factory Iterator</a></strong> 產出 <strong>Labyrinth</strong> 的核心規格物（<code>tracker.json</code> 與 <code>specs/</code>）。</p></li>
+<li><p><strong>關鍵意識</strong>：您正在為 <strong>Ikaros</strong> 打造一個安全且受控的飛行邊界。</p></li>
+<li><p>Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。</p></li>
 </ul>
-<p>引導 <strong><a href="../../skills/task-dispatcher/SKILL.html">Task Dispatcher</a></strong> 執行一次性教導，產出 Worker Prompt。</p>
-<p>Dispatcher 退場後，使用者面臨一個有意識的設計空洞：「誰來持續觸發 Ikaros？」</p>
-<p>目前的選擇： - <strong>手動</strong>：每次將 Worker Prompt 貼入 Ikaros（Jules / Devin / Cursor Agent）。 - <strong>腳本</strong>：使用 <code>jules-api.py</code> 搭配 Cron 定時觸發。 - <strong>標準解答（建造中）</strong>：<strong>Knossos</strong> —— Daedal 生態系的第一個正式產出物，專門解決這個觸發空洞。Knossos 本身即是利用 Daedal 框架建造的「旗艦示範專案」。</p>
-<blockquote class="blockquote">
-<p>在 Knossos 完成前，建議使用者選擇最適合自己的臨時方案。</p>
-</blockquote>
 </section>
-<section id="事後評議與經驗冷凝-post-mortem-experience-condensation" class="level3">
-<h3 class="anchored" data-anchor-id="事後評議與經驗冷凝-post-mortem-experience-condensation">6. 事後評議與經驗冷凝 (Post-Mortem &amp; Experience Condensation)</h3>
+<section id="事後評議與治理演進-post-mortem-governance-evolution" class="level3">
+<h3 class="anchored" data-anchor-id="事後評議與治理演進-post-mortem-governance-evolution">6. 事後評議與治理演進 (Post-Mortem &amp; Governance Evolution)</h3>
 <ul>
-<li><strong>持續反饋</strong>：在每個大型 Phase 結束或全案完工時，檢視本次協作中的治理效率。</li>
-<li><strong>經驗冷凝 (Condensation)</strong>：<strong>核心步驟</strong>。分析本次協作中人類的反饋與修正路徑。
-<ul>
-<li><strong>產出擴充</strong>：若某個模式被重複修正，將其萃取為新的實體擴充檔案（置於 <code>extensions/experiential/</code>），以備下次自動加載。</li>
-</ul></li>
-<li><strong>進化日誌</strong>：彙整所有觀測結果至專案根目錄的 <code>ADVISORY_LOG.qmd</code>。</li>
-<li><strong>目標</strong>：透過不斷累積的 Extension，讓工廠變得「越跑越輕量」，實現免對話式治理。</li>
+<li><strong>持續反饋</strong>：在每個大型 Phase 結束或全案完工時，您<strong>必須</strong>檢視本次協作中的治理效率。</li>
+<li><strong>產出建議</strong>：若發現框架邏輯 (Daedal) 或專案結構 (Labyrinth) 存在缺陷，請參考 <code>skills/factory-iterator/assets/templates/ADVISORY_TEMPLATE.md</code> 格式產出新的 <strong>Advisory</strong>。</li>
+<li><strong>進化日誌</strong>：彙整所有觀測結果至專案根目錄的 <code>ADVISORY_LOG.qmd</code> 或 <code>docs/governance-evolution.qmd</code>。</li>
+<li><strong>目標</strong>：提升工廠魯棒性，減少未來協作中的人類介入需求。</li>
 </ul>
 </section>
 <section id="模式感知接力-mode-aware-relay" class="level3">
-<h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">7. 模式感知接力 (Mode-Aware Relay)</h3>
+<h3 class="anchored" data-anchor-id="模式感知接力-mode-aware-relay">6. 模式感知接力 (Mode-Aware Relay)</h3>
 <blockquote class="blockquote">
 <p><strong>核心問題</strong>：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。</p>
 </blockquote>

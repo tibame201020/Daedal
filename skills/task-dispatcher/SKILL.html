@@ -136,7 +136,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -214,7 +214,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#執行流程僅執行一次" id="toc-執行流程僅執行一次" class="nav-link" data-scroll-target="#執行流程僅執行一次">📖 執行流程（僅執行一次）</a>
   <ul class="collapse">
   <li><a href="#step-1-讀取建廠產出物" id="toc-step-1-讀取建廠產出物" class="nav-link" data-scroll-target="#step-1-讀取建廠產出物">Step 1: 讀取建廠產出物</a></li>
-  <li><a href="#step-2.-產出可重複使用的-worker-prompt-核心教材" id="toc-step-2.-產出可重複使用的-worker-prompt-核心教材" class="nav-link" data-scroll-target="#step-2.-產出可重複使用的-worker-prompt-核心教材">Step 2. 產出可重複使用的 Worker Prompt (核心教材)</a></li>
+  <li><a href="#step-2-產出可重複使用的-worker-prompt-核心教材" id="toc-step-2-產出可重複使用的-worker-prompt-核心教材" class="nav-link" data-scroll-target="#step-2-產出可重複使用的-worker-prompt-核心教材">Step 2: 產出可重複使用的 Worker Prompt (核心教材)</a></li>
   <li><a href="#step-3-教導使用者如何觸發-worker-可選" id="toc-step-3-教導使用者如何觸發-worker-可選" class="nav-link" data-scroll-target="#step-3-教導使用者如何觸發-worker-可選">Step 3: 教導使用者如何觸發 Worker (可選)</a></li>
   </ul></li>
   <li><a href="#產出物清單" id="toc-產出物清單" class="nav-link" data-scroll-target="#產出物清單">🛠️ 產出物清單</a></li>
@@ -254,29 +254,56 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>確認使用者已提供的資訊：<strong>Agent Name</strong>、<strong>Base Branch</strong>、<strong>Repo URL</strong>。</li>
 </ul>
 </section>
-<section id="step-2.-產出可重複使用的-worker-prompt-核心教材" class="level3">
-<h3 class="anchored" data-anchor-id="step-2.-產出可重複使用的-worker-prompt-核心教材">Step 2. 產出可重複使用的 Worker Prompt (核心教材)</h3>
+<section id="step-2-產出可重複使用的-worker-prompt-核心教材" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-產出可重複使用的-worker-prompt-核心教材">Step 2: 產出可重複使用的 Worker Prompt (核心教材)</h3>
 <blockquote class="blockquote">
 <p><strong>這是你唯一且最重要的交付物。</strong></p>
 </blockquote>
-<p>根據專案的具體資訊，產出以下格式的 Prompt。 <strong>使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動遵循物理協議推進任務直到完工。</strong></p>
+<p>根據專案的具體資訊，產出以下格式的 Prompt。 <strong>使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動推進任務直到完工。</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## 📋 Worker 自動執行 Prompt（可重複使用）</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🚨 核心執行協議 (Physical Protocol)</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>你**必須嚴格遵循**位於本 Repository 中的實體協議文件：</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>👉 **`.{{AGENT_NAME}}/AGENT_PROTOCOL.md`**</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>該文件包含了關於：</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**讀取狀態與心跳校驗** (防止治理系統癱瘓)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**分支管理與互斥鎖** (防止任務衝突與失敗恢復)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**規格載入與路徑審計** (遵循 allowed_paths 邊界)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**TDD 實作與 PR 提交規範**</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🛠️ 啟動指令</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>請直接讀取上述協議文件並從 **Step 1** 開始執行。嚴禁猜測流程或繞過協議中的安全檢查。</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>你的目標是在 Labyrinth 結構內，穩定、可預測地完成 pending 任務。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. 讀取狀態</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.{{AGENT_NAME}}/tracker.json`</span>。</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>找到 <span class="in">`current_phase`</span> 中第一個 <span class="in">`status == "pending"`</span> 的任務。</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若該任務的 <span class="in">`attempts`</span> &gt;= 5，停止並回報人類。</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若沒有 pending 任務，回報「所有任務已完成或等待 CI」。</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 互斥鎖檢查</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>檢查遠端是否存在分支 <span class="in">`{AGENT_NAME}/{{BASE_BRANCH}}/task-{task_id}`</span>。</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若不存在：領取此任務。</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>若存在：檢查 PR 狀態。</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>無 PR 或 CLOSED → 刪除舊分支，重新領取。</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN + CI 通過或進行中 → 跳過此任務，等待合併。</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>OPEN + CI **失敗** → 執行恢復流程：</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="ss">    1. </span>關閉失敗的 PR：<span class="in">`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="ss">    2. </span>刪除遠端分支：<span class="in">`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    3. </span>跳過此任務，嘗試下一個 pending 任務</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    - </span>_(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 建立工作環境</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git fetch origin &amp;&amp; git checkout {{BASE_BRANCH}} &amp;&amp; git pull`</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git commit --allow-empty -m "chore: start {task_id}"`</span> (Heartbeat)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="fu">### 4. 規則預載與規格讀取</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取 <span class="in">`.agents/rules/`</span> 中的所有編碼規則。</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>讀取任務對應的 <span class="in">`spec_ref`</span> 檔案（位於 <span class="in">`specs/tasks/`</span> 下）。</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>嚴格依照 Spec 實作，禁止猜測。</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="fu">### 5. 實作與驗證</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>依照 Spec 實作功能 + 單元測試。</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>遵守認知上限：檔案 ≤ 300 行，禁止 God Object。</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>路徑審計：<span class="in">`git diff --name-only`</span> 必須全部落在 <span class="in">`allowed_paths`</span> 內。</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="fu">### 6. 提交 PR</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>將 tracker.json 中該任務的 status 更新為 <span class="in">`completed`</span>。</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>提交 PR：<span class="in">`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote class="blockquote">
 <p>[!IMPORTANT] <strong>佔位符替換規則</strong>：你必須根據使用者提供的資訊，將 <code>{AGENT_NAME}</code>、<code>{BASE_BRANCH}</code> 等佔位符替換為確定性的硬編碼值。 產出的 Prompt 必須是「零修改、直接餵」的成品。</p>
 </blockquote>
@@ -290,13 +317,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p><strong>這一步取決於使用者選擇的 Worker 以及觸發方式。</strong></p>
 </blockquote>
-<p>使用者可以透過<strong>任何方式</strong>觸發 Worker；Daedal 官方推薦使用 <strong>Knossos</strong> 作為標準調度層。</p>
+<p>使用者可以透過<strong>任何方式</strong>觸發 Worker：</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
 <th style="text-align: left;">觸發方式</th>
@@ -306,26 +328,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>🏛️ Knossos</strong></td>
-<td style="text-align: left;"><strong>官方推薦</strong>。專為 Daedal 設計的標準調度與觀測中心</td>
-<td style="text-align: left;">⭐ 推薦</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;"><strong>Web GUI</strong></td>
 <td style="text-align: left;">直接在 Worker 的網頁介面貼上 Prompt</td>
 <td style="text-align: left;">⭐ 最簡單</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"><strong>API 呼叫</strong></td>
 <td style="text-align: left;">透過 Worker 的 REST API 傳送 Prompt</td>
 <td style="text-align: left;">⭐⭐</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;"><strong>Cron + API 腳本</strong></td>
 <td style="text-align: left;">定時自動觸發 Worker API</td>
 <td style="text-align: left;">⭐⭐⭐</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;"><strong>n8n / Zapier</strong></td>
 <td style="text-align: left;">多步驟自動化（含通知、錯誤處理）</td>
 <td style="text-align: left;">⭐⭐⭐⭐</td>

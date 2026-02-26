@@ -138,7 +138,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/tibame201020/Daedal"> <i class="bi bi-github" role="img">
+    <a class="nav-link" href="https://github.com/tibame201020/app-generator"> <i class="bi bi-github" role="img">
 </i> 
 <span class="menu-text"></span></a>
   </li>  
@@ -271,12 +271,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre class="mermaid mermaid-js">graph TD
     User([👩‍💻 人類意圖]) --&gt; Knossos[🏛️ Knossos 調度中心]
     Knossos -- "點火/觸發" --&gt; P1[[Phase 1: Discovery]]
-    P1 --&gt; P2[[Phase 2: Tech Design]]
+    P1 --&gt; P2[[Phas 2: Tech Design]]
     P2 --&gt; P3[[Phase 3: Labyrinth Construction]]
     P3 --&gt; P4[[Phase 4: Ikaros Flight]]
     P4 --&gt; P5[[Phase 5: CI Arbitration]]
     P5 -- "反饋/重試" --&gt; P4
-    P5 -- "Merge &amp; Phase 推進" --&gt; Knossos
+    P5 -- "Merg &amp; Phase 推進" --&gt; Knossos
     Knossos -- "完成" --&gt; Done((🚀 發布))
 
     subgraph Labyrinth["🏰 Labyrinth (專案結構)"]
@@ -311,15 +311,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph TD
-    User([👩‍💻 人類意圖]) --&gt; Blue[📄 labyrinth.yml (文學化藍圖)]
-    Blue --&gt; Iter[🏭 Factory Iterator (編譯器)]
-    Iter --&gt; Lab[(.labyrinth/tasks/*.json)]
-    Iter --&gt; Track[(tracker.json 唯讀視圖)]
-    
-    subgraph Roles["🤝 人機協作"]
-        Nav[Navigator 模式] -.-&gt; Blue
-        Enh[Enhancer 模式] -.-&gt; Blue
-    end
+    Knossos[🏛️ Knossos] --&gt; ReqA[需求分析師]
+    ReqA --&gt; UI_Check{需要 UI?}
+    UI_Check -- 是 --&gt; VisD[視覺設計師]
+    UI_Check -- 否 --&gt; Arch[架構審查]
+    VisD --&gt; Arch
+    Arch --&gt; Iter[工廠迭代器]
+    Iter --&gt; Specs[(Labyrinth Specs)]
+    Iter --&gt; Track[(tracker.json)]
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -352,15 +351,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div>
 <pre class="mermaid mermaid-js">graph TD
     Knossos[🏛️ Knossos] --&gt; Ikaros[🕊️ Ikaros Worker]
-    Ikaros -- "🛡️ Sync Check" --&gt; Sync{藍圖 Hash 對齊?}
-    Sync -- "✅ 對齊" --&gt; Lab[".labyrinth/tasks/*.json (讀取任務)"]
-    Sync -- "❌ 斷層" --&gt; Die((🛑 停止執行))
-    Lab --&gt; Impl[實作代碼]
-    Impl --&gt; PR[提交 PR]
-    PR --&gt; CI{⚖️ CI 仲裁}
+    Ikaros -- "讀取 Labyrinth" --&gt; Lab{tracker.json}
+    Lab -- "領取任務" --&gt; Impl[實作代碼]
+    Impl -- "提交 PR" --&gt; CI{⚖️ CI 仲裁}
     CI -- "🟢 通過" --&gt; Merge[Merge to Main]
-    Merge --&gt; Arbitrator[🔍 Arbitrator (狀態更新)]
-    Arbitrator --&gt; Lab
+    CI -- "🔴 失敗" --&gt; Recover[自我修復/重試]
+    Merge --&gt; Knossos
+    Recover --&gt; Ikaros
 
     style Knossos fill:#fff3e0,stroke:#e65100
     style Ikaros fill:#f3e5f5,stroke:#7b1fa2
@@ -424,32 +421,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td style="text-align: left;">1</td>
 <td style="text-align: left;">Requirements Analyst</td>
-<td style="text-align: left;">Navigator/Enhancer</td>
-<td style="text-align: left;">意圖分析與藍圖引導/補全</td>
+<td style="text-align: left;">Discovery</td>
+<td style="text-align: left;">意圖分類與需求收集</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">2</td>
-<td style="text-align: left;">Factory Iterator</td>
-<td style="text-align: left;">Labyrinth Compiler</td>
-<td style="text-align: left;">將 <code>labyrinth.yml</code> 編譯為原子任務狀態</td>
+<td style="text-align: left;">Architect Reviewer</td>
+<td style="text-align: left;">Design</td>
+<td style="text-align: left;">技術選型與 ADR 產出</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">3</td>
-<td style="text-align: left;">Arbitrator</td>
-<td style="text-align: left;">CI Guardian</td>
-<td style="text-align: left;">透過分析 PR 異動與分支狀態，仲裁任務進度</td>
+<td style="text-align: left;">Factory Iterator</td>
+<td style="text-align: left;">Construction</td>
+<td style="text-align: left;">構建 <strong>Labyrinth</strong> (Specs, Tracker)</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">4</td>
-<td style="text-align: left;"><strong>Ikaros</strong></td>
-<td style="text-align: left;">Worker</td>
-<td style="text-align: left;">遵從協議、在 Labyrinth 護欄內飛行的執行者</td>
+<td style="text-align: left;">Task Dispatcher</td>
+<td style="text-align: left;">Trigger</td>
+<td style="text-align: left;">產出 Ikaros 飛行指令 (Worker Prompt)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">5</td>
+<td style="text-align: left;"><strong>Ikaros</strong></td>
+<td style="text-align: left;">Worker</td>
+<td style="text-align: left;">符合協議的自服務執行者</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
 <td style="text-align: left;"><strong>Knossos</strong></td>
 <td style="text-align: left;">Dashboard</td>
-<td style="text-align: left;">專案進度觀測與觸發中心 (Observer)</td>
+<td style="text-align: left;">專案進度觀測與觸發中心</td>
 </tr>
 </tbody>
 </table>
