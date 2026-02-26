@@ -11,7 +11,7 @@ website:
         text: "🔄 流程藍圖"
     right:
       - icon: github
-        href: https://github.com/tibame201020/app-generator
+        href: https://github.com/tibame201020/Daedal
   
   sidebar:
     style: "floating"
