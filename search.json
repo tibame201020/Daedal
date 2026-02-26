@@ -338,7 +338,7 @@
     "href": "index.html",
     "title": "🏭 Daedal: The Structured AI Software Factory",
     "section": "",
-    "text": "核心願景：將生成式 AI 納入可驗證、可治理的工程流程。讓 Agent 不失控，職能分離成為穩健推進的生產力。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。\n\n\n\n\n\n\n閱讀全景藍圖：瞭解 五大階段編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n學習工人協議：深入瞭解 Ikaros 的飛行準則。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+    "text": "核心願景：將生成式 AI 納入可驗證、可治理的工程流程。讓 Agent 不失控，職能分離成為穩健推進的生產力。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。\n\n\n\n\n\nDaedal 3.0 採用「文學化架構 (Literate Architecture)」，一切從藍圖開始：\n\n\n建立或修改根目錄下的 labyrinth.yml。這是你與 AI 之間的執行契約。 （參考：skills/factory-iterator/assets/templates/labyrinth-template.yml）\n\n\n\n使用 IDE 喚醒 Factory Orchestrator 技能。 它會偵測到你的 labyrinth.yml，進入「Enhancer 模式」，協助你補全技術規格與路徑護欄。\n\n\n\n設計確認後，由 Factory Iterator 將 labyrinth.yml 「編譯」為分布式的任務狀態 (.labyrinth/tasks/*.json)，並部署 CI 護欄。\n\n\n\n迷宮已建好。派遣任何符合協議的 AI Agent 讀取 AGENT_PROTOCOL.md。它們將會依照藍圖指定的路徑安全地實作代碼。\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
   },
   {
     "objectID": "index.html#治理架構-the-5-components",
@@ -348,11 +348,11 @@
     "text": "為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。"
   },
   {
-    "objectID": "index.html#快速開始",
-    "href": "index.html#快速開始",
+    "objectID": "index.html#快速上手-quick-start",
+    "href": "index.html#快速上手-quick-start",
     "title": "🏭 Daedal: The Structured AI Software Factory",
     "section": "",
-    "text": "閱讀全景藍圖：瞭解 五大階段編排。\n啟動編排器：執行 factory-orchestrator 技能進行探索。\n學習工人協議：深入瞭解 Ikaros 的飛行準則。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+    "text": "Daedal 3.0 採用「文學化架構 (Literate Architecture)」，一切從藍圖開始：\n\n\n建立或修改根目錄下的 labyrinth.yml。這是你與 AI 之間的執行契約。 （參考：skills/factory-iterator/assets/templates/labyrinth-template.yml）\n\n\n\n使用 IDE 喚醒 Factory Orchestrator 技能。 它會偵測到你的 labyrinth.yml，進入「Enhancer 模式」，協助你補全技術規格與路徑護欄。\n\n\n\n設計確認後，由 Factory Iterator 將 labyrinth.yml 「編譯」為分布式的任務狀態 (.labyrinth/tasks/*.json)，並部署 CI 護欄。\n\n\n\n迷宮已建好。派遣任何符合協議的 AI Agent 讀取 AGENT_PROTOCOL.md。它們將會依照藍圖指定的路徑安全地實作代碼。\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
   },
   {
     "objectID": "docs/extensions.html",

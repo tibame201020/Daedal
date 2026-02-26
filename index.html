@@ -175,7 +175,13 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#daedal-結構化軟體工廠" id="toc-daedal-結構化軟體工廠" class="nav-link active" data-scroll-target="#daedal-結構化軟體工廠">🏭 Daedal 結構化軟體工廠</a>
   <ul class="collapse">
   <li><a href="#治理架構-the-5-components" id="toc-治理架構-the-5-components" class="nav-link" data-scroll-target="#治理架構-the-5-components">🏗️ 治理架構 (The 5 Components)</a></li>
-  <li><a href="#快速開始" id="toc-快速開始" class="nav-link" data-scroll-target="#快速開始">🚀 快速開始</a></li>
+  <li><a href="#快速上手-quick-start" id="toc-快速上手-quick-start" class="nav-link" data-scroll-target="#快速上手-quick-start">🚀 快速上手 (Quick Start)</a>
+  <ul class="collapse">
+  <li><a href="#撰寫專案藍圖-source-of-truth" id="toc-撰寫專案藍圖-source-of-truth" class="nav-link" data-scroll-target="#撰寫專案藍圖-source-of-truth">1. 撰寫專案藍圖 (Source of Truth)</a></li>
+  <li><a href="#人機協作補全-enhancer-mode" id="toc-人機協作補全-enhancer-mode" class="nav-link" data-scroll-target="#人機協作補全-enhancer-mode">2. 人機協作補全 (Enhancer Mode)</a></li>
+  <li><a href="#編譯為執行態-labyrinth-compilation" id="toc-編譯為執行態-labyrinth-compilation" class="nav-link" data-scroll-target="#編譯為執行態-labyrinth-compilation">3. 編譯為執行態 (Labyrinth Compilation)</a></li>
+  <li><a href="#工人起飛-ikaros-flight" id="toc-工人起飛-ikaros-flight" class="nav-link" data-scroll-target="#工人起飛-ikaros-flight">4. 工人起飛 (Ikaros Flight)</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -234,19 +240,31 @@ ul.task-list li input[type="checkbox"] {
 </section>
 </div>
 </section>
-<section id="快速開始" class="level2">
-<h2 class="anchored" data-anchor-id="快速開始">🚀 快速開始</h2>
-<ol type="1">
-<li><p><strong>閱讀全景藍圖</strong>：瞭解 <a href="./docs/FACTORY_WORKFLOW.html">五大階段編排</a>。</p></li>
-<li><p><strong>啟動編排器</strong>：執行 <code>factory-orchestrator</code> 技能進行探索。</p></li>
-<li><p><strong>學習工人協議</strong>：深入瞭解 <a href="./docs/worker-protocol.html">Ikaros 的飛行準則</a>。</p></li>
-</ol>
+<section id="快速上手-quick-start" class="level2">
+<h2 class="anchored" data-anchor-id="快速上手-quick-start">🚀 快速上手 (Quick Start)</h2>
+<p>Daedal 3.0 採用「文學化架構 (Literate Architecture)」，一切從藍圖開始：</p>
+<section id="撰寫專案藍圖-source-of-truth" class="level3">
+<h3 class="anchored" data-anchor-id="撰寫專案藍圖-source-of-truth">1. 撰寫專案藍圖 (Source of Truth)</h3>
+<p>建立或修改根目錄下的 <code>labyrinth.yml</code>。這是你與 AI 之間的執行契約。 （參考：<code>skills/factory-iterator/assets/templates/labyrinth-template.yml</code>）</p>
+</section>
+<section id="人機協作補全-enhancer-mode" class="level3">
+<h3 class="anchored" data-anchor-id="人機協作補全-enhancer-mode">2. 人機協作補全 (Enhancer Mode)</h3>
+<p>使用 IDE 喚醒 <strong>Factory Orchestrator</strong> 技能。 它會偵測到你的 <code>labyrinth.yml</code>，進入「Enhancer 模式」，協助你補全技術規格與路徑護欄。</p>
+</section>
+<section id="編譯為執行態-labyrinth-compilation" class="level3">
+<h3 class="anchored" data-anchor-id="編譯為執行態-labyrinth-compilation">3. 編譯為執行態 (Labyrinth Compilation)</h3>
+<p>設計確認後，由 <strong>Factory Iterator</strong> 將 <code>labyrinth.yml</code> 「編譯」為分布式的任務狀態 (<code>.labyrinth/tasks/*.json</code>)，並部署 CI 護欄。</p>
+</section>
+<section id="工人起飛-ikaros-flight" class="level3">
+<h3 class="anchored" data-anchor-id="工人起飛-ikaros-flight">4. 工人起飛 (Ikaros Flight)</h3>
+<p>迷宮已建好。派遣任何符合協議的 AI Agent 讀取 <code>AGENT_PROTOCOL.md</code>。它們將會依照藍圖指定的路徑安全地實作代碼。</p>
 <hr>
 <blockquote class="blockquote">
 <p>💡 <strong>總結</strong>：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過<strong>權力分離</strong>與 <strong>CI 驅動進度</strong>，將生成的「自由」轉化為工程的「確定性」。</p>
 </blockquote>
 
 
+</section>
 </section>
 </section>
 
