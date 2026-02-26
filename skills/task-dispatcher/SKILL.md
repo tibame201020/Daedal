@@ -101,10 +101,11 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 
 > **這一步取決於使用者選擇的 Worker 以及觸發方式。**
 
-使用者可以透過**任何方式**觸發 Worker：
+使用者可以透過**任何方式**觸發 Worker；Daedal 官方推薦使用 **Knossos** 作為標準調度層。
 
 | 觸發方式 | 說明 | 複雜度 |
 |:---|:---|:---|
+| **🏛️ Knossos** | **官方推薦**。專為 Daedal 設計的標準調度與觀測中心 | ⭐ 推薦 |
 | **Web GUI** | 直接在 Worker 的網頁介面貼上 Prompt | ⭐ 最簡單 |
 | **API 呼叫** | 透過 Worker 的 REST API 傳送 Prompt | ⭐⭐ |
 | **Cron + API 腳本** | 定時自動觸發 Worker API | ⭐⭐⭐ |

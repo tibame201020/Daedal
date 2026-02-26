@@ -5,7 +5,7 @@ subtitle: "The Literate State Machine of Software Production"
 
 # 🏭 Daedal 核心流程藍圖
 
-> [!NOTE] 本文不僅是說明文件，也是工廠的**即時觀測面板**。
+> \[!NOTE\] 本文不僅是說明文件，也是工廠的**即時觀測面板**。
 
 ## 🏗️ 核心架構：五大組件協作
 
@@ -19,12 +19,12 @@ subtitle: "The Literate State Machine of Software Production"
 graph TD
     User([👩‍💻 人類意圖]) --> Knossos[🏛️ Knossos 調度中心]
     Knossos -- "點火/觸發" --> P1[[Phase 1: Discovery]]
-    P1 --> P2[[Phas 2: Tech Design]]
+    P1 --> P2[[Phase 2: Tech Design]]
     P2 --> P3[[Phase 3: Labyrinth Construction]]
     P3 --> P4[[Phase 4: Ikaros Flight]]
     P4 --> P5[[Phase 5: CI Arbitration]]
     P5 -- "反饋/重試" --> P4
-    P5 -- "Merg & Phase 推進" --> Knossos
+    P5 -- "Merge & Phase 推進" --> Knossos
     Knossos -- "完成" --> Done((🚀 發布))
 
     subgraph Labyrinth["🏰 Labyrinth (專案結構)"]
@@ -65,6 +65,7 @@ graph TD
 
 ::: callout-note
 #### 🏛️ Knossos = 導航，而非動力
+
 Knossos 負責觀測 `tracker.json` 並在合適時機觸發 Ikaros。Ikaros 則是自主讀取 Labyrinth 結構進行實作。
 :::
 
@@ -90,6 +91,7 @@ graph TD
 
 ::: callout-tip
 ### 觀測中心
+
 以下區塊直接讀取專案內的 `tracker.json`，提供 **Knossos** 視角的即時數據。
 :::
 
@@ -112,15 +114,15 @@ else:
 
 ## 🛠️ 角色清單 (Ecosystem Roles)
 
-| \# | 角色名稱 | 系統別名 | 職責 |
-|:--|:--|:--|:--|
-| 1 | Requirements Analyst | Discovery | 意圖分類與需求收集 |
-| 2 | Architect Reviewer | Design | 技術選型與 ADR 產出 |
-| 3 | Factory Iterator | Construction | 構建 **Labyrinth** (Specs, Tracker) |
-| 4 | Task Dispatcher | Trigger | 產出 Ikaros 飛行指令 (Worker Prompt) |
-| 5 | **Ikaros** | Worker | 符合協議的自服務執行者 |
-| 6 | **Knossos** | Dashboard | 專案進度觀測與觸發中心 |
+| \#  | 角色名稱             | 系統別名     | 職責                                 |
+|:-----------------|:-----------------|:-----------------|:-----------------|
+| 1   | Requirements Analyst | Discovery    | 意圖分類與需求收集                   |
+| 2   | Architect Reviewer   | Design       | 技術選型與 ADR 產出                  |
+| 3   | Factory Iterator     | Construction | 構建 **Labyrinth** (Specs, Tracker)  |
+| 4   | Task Dispatcher      | Trigger      | 產出 Ikaros 飛行指令 (Worker Prompt) |
+| 5   | **Ikaros**           | Worker       | 符合協議的自服務執行者               |
+| 6   | **Knossos**          | Dashboard    | 專案進度觀測與觸發中心               |
 
----
+------------------------------------------------------------------------
 
-> [!TIP] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. Every flight must be recorded.
+> \[!TIP\] **Literate Strategy**: By using `.qmd`, we ensure that the documentation evolves with the code. Every flight must be recorded.

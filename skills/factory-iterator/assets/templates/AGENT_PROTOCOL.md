@@ -23,7 +23,10 @@
    - 執行 `git branch --show-current` 與 `git remote -v`。
    - **禁止猜測**：若當前分支與目標 `{{BASE_BRANCH}}` 不符，或遠端路徑異常，必須先修正環境而非盲目執行。
 2. **讀取 `.{{AGENT_NAME}}/tracker.json`**。
-3. 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
+3. 🛡️ **Labyrinth 心跳校驗 (Heartbeat Check)**：
+   - 讀取 `.metadata.last_arbitration`。
+   - 與當前系統時間對比。若差距 > 4 小時（或 4 倍的 `arbitration_interval`），**停止執行**並回報：「Labyrinth 停更，治理系統已癱瘓 (Arbitrator Paralysis)」。
+4. 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
 4. 🛡️ **健康檢查**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，**停止執行**並回報人類。
 5. 若沒有 `pending` 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。
 

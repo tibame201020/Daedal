@@ -1,5 +1,9 @@
 {
     "project": "YOUR_PROJECT_NAME",
+    "metadata": {
+        "last_arbitration": "2024-01-01T00:00:00Z",
+        "arbitration_interval": "1h"
+    },
     "current_phase": "Phase 1: Setup",
     "phases": [
         {

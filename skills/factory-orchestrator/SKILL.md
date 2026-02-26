@@ -50,8 +50,18 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 - 🛡️ **衝刺盲點防禦 (Sprint Blindness Audit)**：在呼叫 Iterator 前，掃描所有模組的橫向依賴。
 - 引導 **[Factory Iterator](../factory-iterator/SKILL.md)** 產出 **Labyrinth** 的核心規格物（`tracker.json` 與 `specs/`）。
 - **關鍵意識**：您正在為 **Ikaros** 打造一個安全且受控的飛行邊界。
+### 5. 交付 Worker Prompt 與觸發交接
 
-- Dispatcher 完成教導後即退場。後續由「Worker + CI/CD」自動循環運作至完工。
+引導 **[Task Dispatcher](../task-dispatcher/SKILL.md)** 執行一次性教導，產出 Worker Prompt。
+
+Dispatcher 退場後，使用者面臨一個有意識的設計空洞：「誰來持續觸發 Ikaros？」
+
+目前的選擇：
+- **手動**：每次將 Worker Prompt 貼入 Ikaros（Jules / Devin / Cursor Agent）。
+- **腳本**：使用 `jules-api.py` 搭配 Cron 定時觸發。
+- **標準解答（建造中）**：**Knossos** —— Daedal 生態系的第一個正式產出物，專門解決這個觸發空洞。Knossos 本身即是利用 Daedal 框架建造的「旗艦示範專案」。
+
+> 在 Knossos 完成前，建議使用者選擇最適合自己的臨時方案。
 
 ### 6. 事後評議與治理演進 (Post-Mortem & Governance Evolution)
 - **持續反饋**：在每個大型 Phase 結束或全案完工時，您**必須**檢視本次協作中的治理效率。
@@ -59,7 +69,7 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 - **進化日誌**：彙整所有觀測結果至專案根目錄的 `ADVISORY_LOG.qmd` 或 `docs/governance-evolution.qmd`。
 - **目標**：提升工廠魯棒性，減少未來協作中的人類介入需求。
 
-### 6. 模式感知接力 (Mode-Aware Relay)
+### 7. 模式感知接力 (Mode-Aware Relay)
 
 > **核心問題**：不是每次都從 Step 1 走到 Step 5。根據 Requirements Analyst 判定的模式，Orchestrator 必須知道「從哪裡接入、跳過什麼」。
 

@@ -77,10 +77,14 @@ jobs:
             fi
           done
 
-          if [[ "$NEED_PUSH" == "true" ]]; then
             echo "🔄 Attempting Transaction: Push tracker & purge branches..."
+            
+            # 更新 Labyrinth Heartbeat (last_arbitration)
+            current_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+            jq --arg ts "$current_iso" '.metadata.last_arbitration = $ts' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
+            
             git add .{{AGENT_NAME}}/tracker.json
-            git commit -m "chore(arbitrator): cleanup stale tasks and synchronize attempts"
+            git commit -m "chore(arbitrator): cleanup stale tasks and update heartbeat"
 
             # 使用 force-with-lease 避免覆蓋 main 分支的併發合併
             if git push origin {{BASE_BRANCH}} --force-with-lease; then

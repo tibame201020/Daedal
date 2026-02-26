@@ -14,14 +14,16 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 
 ## 📖 執行流程
 
-### Step 1: 建廠與環境部署 (Scaffolding)
-- 從模板產生 `.{{AGENT_NAME}}/tracker.json` 與 `AGENT_PROTOCOL.md`。
-- **視覺規範注入**：將 `RFP.md` 內的 Design Tokens 寫入任務規格中。
+### Step 1: 物理建廠與環境部署 (Labyrinth Scaffolding)
+- **基礎設施部署**：從模板產生 `.{{AGENT_NAME}}/tracker.json`、`AGENT_PROTOCOL.md` 以及 GitHub Actions 模板。
 - **規則目錄初始化**：確保 `.agents/rules/` 目錄存在且包含基本編碼守則。
-- **文檔骨架建立**：若 `docs/FACTORY_WORKFLOW.qmd` 不存在，從模板產生初始版本。
-- **CI/CD 技術棧適配**：讀取 Architect Reviewer 產出的 `docs/ADR/*.md`，根據專案選型（如 Next.js、Spring Boot、Django 等），**替換** `auto-merge.yml` 和 `phase-bump.yml` 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。
+- **文檔骨架建立**：產生初始版的 `docs/FACTORY_WORKFLOW.qmd`。
+- **組立式 CI 配置**：根據 Architect Reviewer 評選的技術棧，**組合**對應的 CI 片段。
+    - *原則：不再讓 Agent 去「編輯」Yaml 邏輯，而是將標準測試片段「注入」進模板位置。*
 
-### Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)
+### Step 2: 邏輯規格拆解 (Labyrinth Specification)
+- **任務拆解與模組化**：根據 `RFP.md` 產出高內聚、低耦合的任務清單。
+- **視覺規範注入**：將 Design Tokens 寫入任務的 `spec_ref` 檔案。
 - **共通規範**：拆解為符合「單檔 300 行內」的微型任務。
 - **🟢 CREATE**：關注環境搭建、初始核心邏輯。
 - **🟡 CONTINUE / 🔴 MAINTAIN**：
@@ -40,6 +42,10 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 - 🛡️ **反向鏈審計 (Reverse-Chain Audit)**：對照產出的 Specs 與原始 `RFP.md` 願景。
   - **自我探詢**：這跟兩步驟前的 RFP 願景是否衝突？是否遺失了核心功能？
   - **判定**：若無法給出具備邏輯論據的回答，則禁止提交，並發起 Resync 流程。
+- 🛡️ **Labyrinth Guard (一致性守衛)**：
+  - 驗證 `tracker.json` 的 `current_phase` 是否存在於 `phases` 陣列中。
+  - 驗證所有任務 ID 的全域唯一性。
+  - 驗證 `depends_on` 的邏輯閉環（無循環依賴）。
 - 確認每個任務的 `spec_ref` 指向實際存在的 YAML 檔案。
 - 確認 `tracker.json` 中的 task ID 與 spec 檔案名稱一致。
 - 確認 Phase 間的依賴順序合理。

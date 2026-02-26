@@ -31,6 +31,13 @@ jobs:
           CURRENT_PHASE=$(jq -r '.current_phase' $TRACKER)
           echo "Current Phase: $CURRENT_PHASE"
 
+          # 🛡️ Labyrinth Guard: 驗證當前 Phase 是否存在
+          PHASE_EXISTS=$(jq -r --arg cp "$CURRENT_PHASE" '.phases | any(.name == $cp)' $TRACKER)
+          if [ "$PHASE_EXISTS" != "true" ]; then
+            echo "❌ Labyrinth Error: Current Phase '$CURRENT_PHASE' not found in phases list."
+            exit 1
+          fi
+
           # 檢查當前 Phase 是否所有任務皆已 completed
           # ⚠️ jq 的 `all` 對空陣列回傳 true，必須先檢查 length > 0
           ALL_DONE=$(jq -r --arg cp "$CURRENT_PHASE" '
