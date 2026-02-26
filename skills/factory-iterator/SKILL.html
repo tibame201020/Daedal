@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -177,8 +177,8 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#執行流程" id="toc-執行流程" class="nav-link" data-scroll-target="#執行流程">📖 執行流程</a>
   <ul class="collapse">
-  <li><a href="#step-1-建廠與環境部署-scaffolding" id="toc-step-1-建廠與環境部署-scaffolding" class="nav-link" data-scroll-target="#step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</a></li>
-  <li><a href="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" id="toc-step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="nav-link" data-scroll-target="#step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</a></li>
+  <li><a href="#step-1-物理建廠與環境部署-labyrinth-scaffolding" id="toc-step-1-物理建廠與環境部署-labyrinth-scaffolding" class="nav-link" data-scroll-target="#step-1-物理建廠與環境部署-labyrinth-scaffolding">Step 1: 物理建廠與環境部署 (Labyrinth Scaffolding)</a></li>
+  <li><a href="#step-2-任務拆解與-dag-建立-task-decomposition" id="toc-step-2-任務拆解與-dag-建立-task-decomposition" class="nav-link" data-scroll-target="#step-2-任務拆解與-dag-建立-task-decomposition">Step 2: 任務拆解與 DAG 建立 (Task Decomposition)</a></li>
   <li><a href="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" id="toc-step-3-規格校驗與願景對齊-integrity-reverse-chain-audit" class="nav-link" data-scroll-target="#step-3-規格校驗與願景對齊-integrity-reverse-chain-audit">Step 3: 規格校驗與願景對齊 (Integrity &amp; Reverse-Chain Audit)</a></li>
   </ul></li>
   <li><a href="#產出物" id="toc-產出物" class="nav-link" data-scroll-target="#產出物">🛠️ 產出物</a></li>
@@ -201,19 +201,31 @@ ul.task-list li input[type="checkbox"] {
 <hr>
 <section id="執行流程" class="level2">
 <h2 class="anchored" data-anchor-id="執行流程">📖 執行流程</h2>
-<section id="step-1-建廠與環境部署-scaffolding" class="level3">
-<h3 class="anchored" data-anchor-id="step-1-建廠與環境部署-scaffolding">Step 1: 建廠與環境部署 (Scaffolding)</h3>
+<section id="step-1-物理建廠與環境部署-labyrinth-scaffolding" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-物理建廠與環境部署-labyrinth-scaffolding">Step 1: 物理建廠與環境部署 (Labyrinth Scaffolding)</h3>
 <ul>
-<li>從模板產生 <code>.{{AGENT_NAME}}/tracker.json</code> 與 <code>AGENT_PROTOCOL.md</code>。</li>
-<li><strong>視覺規範注入</strong>：將 <code>RFP.md</code> 內的 Design Tokens 寫入任務規格中。</li>
+<li><strong>基礎設施部署</strong>：從模板產生 <code>.{{AGENT_NAME}}/tracker.json</code>、<code>AGENT_PROTOCOL.md</code> 以及 GitHub Actions 模板。
+<ul>
+<li><strong>🛡️ 心跳初始化 (Heartbeat Initialization)</strong>：建立 <code>tracker.json</code> 時，<strong>必須</strong>將 <code>metadata.last_arbitration</code> 設置為當前的 ISO 8601 時間戳記，以避免 Worker 啟動時發生 Day 0 死鎖。</li>
+</ul></li>
 <li><strong>規則目錄初始化</strong>：確保 <code>.agents/rules/</code> 目錄存在且包含基本編碼守則。</li>
-<li><strong>文檔骨架建立</strong>：若 <code>docs/FACTORY_WORKFLOW.qmd</code> 不存在，從模板產生初始版本。</li>
-<li><strong>CI/CD 技術棧適配</strong>：讀取 Architect Reviewer 產出的 <code>docs/ADR/*.md</code>，根據專案選型（如 Next.js、Spring Boot、Django 等），<strong>替換</strong> <code>auto-merge.yml</code> 和 <code>phase-bump.yml</code> 模板中的 Backend Tests / Frontend Checks 區塊。禁止留下與實際技術棧不符的 CI 指令。</li>
+<li><strong>文檔骨架建立</strong>：產生初始版的 <code>docs/FACTORY_WORKFLOW.qmd</code>。</li>
+<li><strong>組立式 CI 配置</strong>：根據 Architect Reviewer 評選的技術棧，<strong>組合</strong>對應的 CI 片段。
+<ul>
+<li><em>原則：不再讓 Agent 去「編輯」Yaml 邏輯，而是將標準測試片段「注入」進模板位置。</em></li>
+</ul></li>
 </ul>
 </section>
-<section id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking" class="level3">
-<h3 class="anchored" data-anchor-id="step-2-任務拆解與模組化-intent-aware-modular-micro-tasking">Step 2: 任務拆解與模組化 (Intent-Aware Modular Micro-Tasking)</h3>
+<section id="step-2-任務拆解與-dag-建立-task-decomposition" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-任務拆解與-dag-建立-task-decomposition">Step 2: 任務拆解與 DAG 建立 (Task Decomposition)</h3>
 <ul>
+<li><strong>微型化拆解</strong>：將需求分解為 3-5 個原子任務（每個任務 ≤ 300 行異動）。</li>
+<li><strong>依賴管理</strong>：建立 <code>depends_on</code> 鏈條，防止併發導致的代碼衝突。</li>
+<li><strong>🛡️ 邊界正義 (Path Justice Check)</strong>：產出 <code>allowed_paths</code> 時，<strong>必須</strong>包含所有涉及的模組路徑。
+<ul>
+<li><strong>禁令</strong>：嚴禁產出空的或不足以完成任務的 <code>allowed_paths</code>。若不確定，寧可給予寬鬆的目錄邊界（如 <code>src/**</code>），也不要讓 Worker 因路徑約束而死鎖。</li>
+</ul></li>
+<li><strong>產出 <code>tracker.json</code></strong>。</li>
 <li><strong>共通規範</strong>：拆解為符合「單檔 300 行內」的微型任務。</li>
 <li><strong>🟢 CREATE</strong>：關注環境搭建、初始核心邏輯。</li>
 <li><strong>🟡 CONTINUE / 🔴 MAINTAIN</strong>：
@@ -234,6 +246,12 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li><strong>自我探詢</strong>：這跟兩步驟前的 RFP 願景是否衝突？是否遺失了核心功能？</li>
 <li><strong>判定</strong>：若無法給出具備邏輯論據的回答，則禁止提交，並發起 Resync 流程。</li>
+</ul></li>
+<li>🛡️ <strong>Labyrinth Guard (一致性守衛)</strong>：
+<ul>
+<li>驗證 <code>tracker.json</code> 的 <code>current_phase</code> 是否存在於 <code>phases</code> 陣列中。</li>
+<li>驗證所有任務 ID 的全域唯一性。</li>
+<li>驗證 <code>depends_on</code> 的邏輯閉環（無循環依賴）。</li>
 </ul></li>
 <li>確認每個任務的 <code>spec_ref</code> 指向實際存在的 YAML 檔案。</li>
 <li>確認 <code>tracker.json</code> 中的 task ID 與 spec 檔案名稱一致。</li>

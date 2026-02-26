@@ -40,7 +40,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-afa37c5c79185640b9c231024f4fe5ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -181,11 +181,18 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#daedal-結構定義者" id="toc-daedal-結構定義者" class="nav-link" data-scroll-target="#daedal-結構定義者">3.1 Daedal — 結構定義者</a></li>
   <li><a href="#labyrinth-專案結構" id="toc-labyrinth-專案結構" class="nav-link" data-scroll-target="#labyrinth-專案結構">3.2 Labyrinth — 專案結構</a></li>
   <li><a href="#ikaros-執行者" id="toc-ikaros-執行者" class="nav-link" data-scroll-target="#ikaros-執行者">3.3 Ikaros — 執行者</a></li>
-  <li><a href="#knossos-控制平面" id="toc-knossos-控制平面" class="nav-link" data-scroll-target="#knossos-控制平面">3.4 Knossos — 控制平面</a></li>
+  <li><a href="#knossos-標準調度層-standard-dispatching-layer" id="toc-knossos-標準調度層-standard-dispatching-layer" class="nav-link" data-scroll-target="#knossos-標準調度層-standard-dispatching-layer">3.4 Knossos — 標準調度層 (Standard Dispatching Layer)</a></li>
   <li><a href="#仲裁層-cicd" id="toc-仲裁層-cicd" class="nav-link" data-scroll-target="#仲裁層-cicd">3.5 仲裁層 — CI/CD</a></li>
   </ul></li>
-  <li><a href="#權力分離模型" id="toc-權力分離模型" class="nav-link" data-scroll-target="#權力分離模型">4. 權力分離模型</a></li>
-  <li><a href="#反模式與風險控制" id="toc-反模式與風險控制" class="nav-link" data-scroll-target="#反模式與風險控制">5. 反模式與風險控制</a></li>
+  <li><a href="#權力分離模型" id="toc-權力分離模型" class="nav-link" data-scroll-target="#權力分離模型">4. 權力分離模型</a>
+  <ul class="collapse">
+  <li><a href="#無隱性依賴原則-zero-implicit-dependency" id="toc-無隱性依賴原則-zero-implicit-dependency" class="nav-link" data-scroll-target="#無隱性依賴原則-zero-implicit-dependency">4.1 無隱性依賴原則 (Zero-Implicit-Dependency)</a></li>
+  </ul></li>
+  <li><a href="#經驗演進與擴充體系-experiential-evolution-extension-system" id="toc-經驗演進與擴充體系-experiential-evolution-extension-system" class="nav-link" data-scroll-target="#經驗演進與擴充體系-experiential-evolution-extension-system">5. 經驗演進與擴充體系 (Experiential Evolution &amp; Extension System)</a>
+  <ul class="collapse">
+  <li><a href="#治理負擔與精煉管線-refinement-pipeline" id="toc-治理負擔與精煉管線-refinement-pipeline" class="nav-link" data-scroll-target="#治理負擔與精煉管線-refinement-pipeline">5.1 治理負擔與精煉管線 (Refinement Pipeline)</a></li>
+  <li><a href="#經驗冷凝循環-experience-condensation-loop" id="toc-經驗冷凝循環-experience-condensation-loop" class="nav-link" data-scroll-target="#經驗冷凝循環-experience-condensation-loop">5.2 經驗冷凝循環 (Experience Condensation Loop)</a></li>
+  </ul></li>
   <li><a href="#為何需要這種架構" id="toc-為何需要這種架構" class="nav-link" data-scroll-target="#為何需要這種架構">6. 為何需要這種架構？</a></li>
   <li><a href="#未來方向" id="toc-未來方向" class="nav-link" data-scroll-target="#未來方向">7. 未來方向</a></li>
   <li><a href="#總結" id="toc-總結" class="nav-link" data-scroll-target="#總結">8. 總結</a></li>
@@ -290,17 +297,15 @@ ul.task-list li input[type="checkbox"] {
 <p>Ikaros 可以飛。 但飛行高度由結構決定。</p>
 <hr>
 </section>
-<section id="knossos-控制平面" class="level3">
-<h3 class="anchored" data-anchor-id="knossos-控制平面">3.4 Knossos — 控制平面</h3>
-<p>Knossos 是觀測與觸發中心。</p>
-<p>人類在此：</p>
+<section id="knossos-標準調度層-standard-dispatching-layer" class="level3">
+<h3 class="anchored" data-anchor-id="knossos-標準調度層-standard-dispatching-layer">3.4 Knossos — 標準調度層 (Standard Dispatching Layer)</h3>
+<p>Knossos 是 Daedal 生態系中的標準調度中心，也是<strong>第一個完全基於 Daedal 框架開發的正式產物</strong>。</p>
+<p>在設計哲學上，Daedal 定義了靜態規則與結構，但框架有意識地留下了「誰來推動」的調度空洞。Knossos 作為 Daedal 技術棧的「旗艦示範作」，正是為點燃這個發動機而存在的標準解答。</p>
 <ul>
-<li>俯瞰整體狀態</li>
-<li>檢視任務進度</li>
-<li>查看 PR 與 CI</li>
-<li>手動或排程觸發 Worker</li>
+<li><strong>官方首選與自我實踐</strong>：Knossos 本身的開發流程即是 Daedal 治理邏輯的最佳實踐證明。</li>
+<li><strong>功能職責</strong>：人機調度介面、PR 與 CI 的觀測中心、任務觸發引擎。</li>
+<li><strong>與 Daedal 的關係</strong>：如同 Kubernetes 與 nginx-ingress 的關係——它是「欽點」的標準解答，旨在向世人展示：透過 Daedal 的結構，我們可以建造出高度穩定的治理平台。</li>
 </ul>
-<p>Knossos 不負責裁決。 它只是視角與調度介面。</p>
 <hr>
 </section>
 <section id="仲裁層-cicd" class="level3">
@@ -322,11 +327,18 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="權力分離模型">4. 權力分離模型</h2>
 <p>Daedal 的核心設計是權力分離。</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 16%">
+<col style="width: 20%">
+<col style="width: 25%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>層級</th>
 <th>職責</th>
 <th>不可做</th>
+<th>角色定位</th>
 </tr>
 </thead>
 <tbody>
@@ -334,34 +346,43 @@ ul.task-list li input[type="checkbox"] {
 <td>Daedal</td>
 <td>定義規則</td>
 <td>不生成代碼</td>
+<td>憲法 / 治理邏輯</td>
 </tr>
 <tr class="even">
 <td>Labyrinth</td>
 <td>承載結構</td>
 <td>不決策</td>
+<td>物理容器 / 迷宮</td>
 </tr>
 <tr class="odd">
 <td>Ikaros</td>
 <td>執行任務</td>
 <td>不裁決</td>
+<td>工人 / 引擎</td>
 </tr>
 <tr class="even">
 <td>Knossos</td>
-<td>觀測與觸發</td>
+<td><strong>標準調度與觀測</strong></td>
 <td>不繞過 CI</td>
+<td><strong>標準通訊官 (Optional)</strong></td>
 </tr>
 <tr class="odd">
 <td>CI</td>
 <td>仲裁</td>
 <td>不生成</td>
+<td>物理定律</td>
 </tr>
 </tbody>
 </table>
-<p>沒有任何單一角色擁有完整權力。</p>
-<hr>
-</section>
-<section id="反模式與風險控制" class="level2">
-<h2 class="anchored" data-anchor-id="反模式與風險控制">5. 反模式與風險控制</h2>
+<section id="無隱性依賴原則-zero-implicit-dependency" class="level3">
+<h3 class="anchored" data-anchor-id="無隱性依賴原則-zero-implicit-dependency">4.1 無隱性依賴原則 (Zero-Implicit-Dependency)</h3>
+<p>Daedal 的底層邏輯嚴格遵守「無隱性依賴」。這意味著即使沒有 Knossos，框架仍能完美運作：</p>
+<ul>
+<li><strong>Labyrinth 是自洽的</strong>：<code>tracker.json</code> 是基於標準 <code>jq</code> 即可操作的純文字 JSON，不包含任何外部 Dashboard 的專有欄位。</li>
+<li><strong>Arbitrator 是自治的</strong>：任務合併與 Phase 推進由 GitHub Actions (CI) 執行，這屬於項目的「物理定律」，不依賴任何外部調度器。</li>
+<li><strong>Ikaros 是去中心化的</strong>：Worker 遵循的 <code>AGENT_PROTOCOL.md</code> 僅依賴於 Git 分支與 <code>tracker.json</code> 狀態，不依賴於 Knossos 的觸發指令。</li>
+</ul>
+<p>Knossos 的存在是為了<strong>極小化人類的維運負擔</strong>，而非框架運行的前提。</p>
 <p>Daedal 將常見反模式具象化為「Minotaur」。</p>
 <p>Minotaur 包括：</p>
 <ul>
@@ -379,6 +400,31 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>將 Minotaur 拆解為可治理單元。</p>
 <hr>
+</section>
+</section>
+<section id="經驗演進與擴充體系-experiential-evolution-extension-system" class="level2">
+<h2 class="anchored" data-anchor-id="經驗演進與擴充體系-experiential-evolution-extension-system">5. 經驗演進與擴充體系 (Experiential Evolution &amp; Extension System)</h2>
+<section id="治理負擔與精煉管線-refinement-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="治理負擔與精煉管線-refinement-pipeline">5.1 治理負擔與精煉管線 (Refinement Pipeline)</h3>
+<p>為了極小化開發者的溝通與心智負擔，Daedal 引入了「擴充 (Extension)」與「沙盒推演 (Mental Simulation)」兩大緩衝機制。框架的目標是將開發者的角色從「作答者」轉變為「驗證者」。</p>
+<ul>
+<li><strong>自動化擴充 (Extensions)</strong>：將特定領域的經驗（如 API 規格、特定框架的編碼守則）從核心 Skill 中抽離，實現非侵入式的邏輯增強。</li>
+<li><strong>沙盒推演 (Mental Simulation)</strong>：在向人類提交 Labyrinth 提案前，Agent 會在背景模擬任務執行可能產生的衝突與風險，並利用 Extension 自動修正設計缺陷。</li>
+</ul>
+</section>
+<section id="經驗冷凝循環-experience-condensation-loop" class="level3">
+<h3 class="anchored" data-anchor-id="經驗冷凝循環-experience-condensation-loop">5.2 經驗冷凝循環 (Experience Condensation Loop)</h3>
+<p>Daedal 不僅是治理框架，它還是具備自我優化能力的「經驗容器」。透過 <strong>Post-Mortem（事後評議）</strong>，Agent 會將每輪協作中的教訓冷凝為實體擴充文件：</p>
+<ol type="1">
+<li><strong>實務回饋</strong>：Orchestrator 紀錄協作過程中的冗餘問答與失敗路徑。</li>
+<li><strong>邏輯冷凝</strong>：將這些模式轉化為 <code>extensions/experiential/</code> 下的範式文件。</li>
+<li><strong>預先加載</strong>：在下一次任務啟動時，Orchestrator 優先檢索 Extension，自動跳過已解決的認知落差，實現真正的「越跑越輕量」。</li>
+</ol>
+<blockquote class="blockquote">
+<p><strong>「Daedal 的終極價值不在於其初始的 Prompt，而在於其運作過程中不斷沉澱的治理經驗擴充庫。」</strong></p>
+</blockquote>
+<hr>
+</section>
 </section>
 <section id="為何需要這種架構" class="level2">
 <h2 class="anchored" data-anchor-id="為何需要這種架構">6. 為何需要這種架構？</h2>
