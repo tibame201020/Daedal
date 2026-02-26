@@ -16,6 +16,7 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 
 ### Step 1: 物理建廠與環境部署 (Labyrinth Scaffolding)
 - **基礎設施部署**：從模板產生 `.{{AGENT_NAME}}/tracker.json`、`AGENT_PROTOCOL.md` 以及 GitHub Actions 模板。
+    - **🛡️ 心跳初始化 (Heartbeat Initialization)**：建立 `tracker.json` 時，**必須**將 `metadata.last_arbitration` 設置為當前的 ISO 8601 時間戳記，以避免 Worker 啟動時發生 Day 0 死鎖。
 - **規則目錄初始化**：確保 `.agents/rules/` 目錄存在且包含基本編碼守則。
 - **文檔骨架建立**：產生初始版的 `docs/FACTORY_WORKFLOW.qmd`。
 - **組立式 CI 配置**：根據 Architect Reviewer 評選的技術棧，**組合**對應的 CI 片段。

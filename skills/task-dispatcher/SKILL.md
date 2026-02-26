@@ -33,58 +33,31 @@ description: 一次性教導者 (One-Shot Instructor)。在建廠後被喚醒一
 - 確認 `.agents/rules/` 規則目錄已初始化。
 - 確認使用者已提供的資訊：**Agent Name**、**Base Branch**、**Repo URL**。
 
-### Step 2: 產出可重複使用的 Worker Prompt (核心教材)
+### Step 2. 產出可重複使用的 Worker Prompt (核心教材)
 
 > **這是你唯一且最重要的交付物。**
 
 根據專案的具體資訊，產出以下格式的 Prompt。
-**使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動推進任務直到完工。**
+**使用者只需要把這段 Prompt 反覆餵給 Worker Agent，Worker 就會自動遵循物理協議推進任務直到完工。**
 
 ```markdown
 ## 📋 Worker 自動執行 Prompt（可重複使用）
 
-你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。請按照以下步驟執行：
+你是 {{AGENT_NAME}}，一個軟體工廠的執行工人。
 
-### 1. 讀取狀態
-- 讀取 `.{{AGENT_NAME}}/tracker.json`。
-- 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
-- 若該任務的 `attempts` >= 5，停止並回報人類。
-- 若沒有 pending 任務，回報「所有任務已完成或等待 CI」。
+### 🚨 核心執行協議 (Physical Protocol)
+你**必須嚴格遵循**位於本 Repository 中的實體協議文件：
+👉 **`.{{AGENT_NAME}}/AGENT_PROTOCOL.md`**
 
-### 2. 互斥鎖檢查
-- 檢查遠端是否存在分支 `{{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`。
-- 若不存在：領取此任務。
-- 若存在：檢查 PR 狀態。
-  - MERGED 但 tracker 仍 pending → 停止，回報 Transaction 不一致。
-  - 無 PR 或 CLOSED → 刪除舊分支，重新領取。
-  - OPEN + CI 通過或進行中 → 跳過此任務，等待合併。
-  - OPEN + CI **失敗** → 執行恢復流程：
-    1. 關閉失敗的 PR：`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
-    2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
-    3. 跳過此任務，嘗試下一個 pending 任務
-    - _(attempts 遞增由 cleanup-stale-tasks.yml Arbitrator 統一負責，Worker 不得修改 main 上的 tracker.json)_
+該文件包含了關於：
+1. **讀取狀態與心跳校驗** (防止治理系統癱瘓)
+2. **分支管理與互斥鎖** (防止任務衝突與失敗恢復)
+3. **規格載入與路徑審計** (遵循 allowed_paths 邊界)
+4. **TDD 實作與 PR 提交規範**
 
-### 3. 建立工作環境
-- `git fetch origin && git checkout {{BASE_BRANCH}} && git pull`
-- `git checkout -b {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
-- `git commit --allow-empty -m "chore: start {task_id}"` (Heartbeat)
-- `git push origin {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
-
-### 4. 規則預載與規格讀取
-- 讀取 `.agents/rules/` 中的所有編碼規則。
-- 讀取任務對應的 `spec_ref` 檔案（位於 `specs/tasks/` 下）。
-- 嚴格依照 Spec 實作，禁止猜測。
-
-### 5. 實作與驗證
-- 依照 Spec 實作功能 + 單元測試。
-- 遵守認知上限：檔案 ≤ 300 行，禁止 God Object。
-- 路徑審計：`git diff --name-only` 必須全部落在 `allowed_paths` 內。
-- TDD：Phase 1 測試 1-4 項，Phase 2+ 測試 1-8 項。
-
-### 6. 提交 PR
-- 將 tracker.json 中該任務的 status 更新為 `completed`。
-- 提交 PR：`gh pr create --title "[{{AGENT_NAME}}] {title}" --body "..." --label "auto-merge"`
-- PR 提交後你的任務結束。CI 與 Phase 推進由自動化處理。
+### 🛠️ 啟動指令
+請直接讀取上述協議文件並從 **Step 1** 開始執行。嚴禁猜測流程或繞過協議中的安全檢查。
+你的目標是在 Labyrinth 結構內，穩定、可預測地完成 pending 任務。
 ```
 
 > [!IMPORTANT]
