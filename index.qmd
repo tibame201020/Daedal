@@ -45,19 +45,22 @@ subtitle: "Enterprise-grade AI Production Line Pattern"
 
 ## 🚀 快速上手 (Quick Start)
 
-Daedal 3.0 採用「文學化架構 (Literate Architecture)」，一切從藍圖開始：
+Daedal 3.0 採用「文學化架構 (Literate Architecture)」。我們為不同背景的使用者準備了兩條路徑：
 
-### 1. 撰寫專案藍圖 (Source of Truth)
+### 🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)
+最流暢的體驗，無須事先學習 YAML。
 
-建立或修改根目錄下的 `labyrinth.yml`。這是你與 AI 之間的執行契約。 （參考：`skills/factory-iterator/assets/templates/labyrinth-template.yml`）
+1. **對話與釐清**：喚醒 **Factory Orchestrator** 技能，告訴它你想做什麼。它會負責釐清需求，並**自動為你產出** `labyrinth.yml` 藍圖。
+2. **編譯為執行態**：喚醒 **Factory Iterator** 技能將藍圖「編譯」為分布式的任務狀態 (`.labyrinth/tasks/*.json`)。
+3. **派遣工人起飛**：迷宮已建好。派遣任何符合協議的 AI Agent 依據藍圖軌道實作代碼。
 
-### 2. 人機協作補全 (Enhancer Mode)
+---
 
-使用 IDE 喚醒 **Factory Orchestrator** 技能。 它會偵測到你的 `labyrinth.yml`，進入「Enhancer 模式」，協助你補全技術規格與路徑護欄。
+### 🛠️ 進階路徑：由人類主導 (Architect-Led)
+適合技術背景強大，想自定義架構的使用者。
 
-### 3. 編譯為執行態 (Labyrinth Compilation)
-
-設計確認後，由 **Factory Iterator** 將 `labyrinth.yml` 「編譯」為分布式的任務狀態 (`.labyrinth/tasks/*.json`)，並部署 CI 護欄。
+1. **手寫藍圖**：直接在根目錄撰寫 `labyrinth.yml` 作為真值來源。
+2. **協作補全 (Optional)**：喚醒 **Factory Orchestrator**，它會偵測到藍圖，變為 `Enhancer` 模式協助你補齊技術規格。後續執行編譯與派遣即可。
 
 ### 4. 工人起飛 (Ikaros Flight)
 

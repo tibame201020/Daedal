@@ -166,19 +166,31 @@ Daedal 不是取代工程師。
 
 # 🚀 快速上手 (Quick Start)
 
-Daedal 3.0 採用「文學化架構」，讓專業架構師能直接掌控大局：
+Daedal 3.0 採用「文學化架構」。我們提供兩種啟動方式，適應不同背景的使用者：
 
-### Step 1: 撰寫文學化藍圖
-在專案根目錄建立 `labyrinth.yml`（可參考範本 `skills/factory-iterator/assets/templates/labyrinth-template.yml`），定義你的 Phase 與 Task 高階目標。
+## 🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)
+最流暢的 Daedal 體驗，適合非技術背景或不想手寫 YAML 的使用者。
 
-### Step 2: 喚醒 Orchestrator 進行補全
-使用你的 AI 助手（如 Cursor）呼叫 **Factory Orchestrator** 技能。它會偵測到藍圖，進入 `Enhancer` 模式，協助你補全技術細節與驗收標準。
+### Step 1: 喚醒 Orchestrator 進行討論
+使用你的 AI 助手（如 Cursor）呼叫 **Factory Orchestrator** 技能。用自然語言告訴它：「我想做一個...，請幫我規劃」。
+Orchestrator 會自動進入 `Navigator` 模式，為你釐清需求，並**自動生成** `labyrinth.yml` 藍圖。
 
-### Step 3: 編譯 Labyrinth
-確認規格後，由 **Factory Iterator** 將 `labyrinth.yml` 編譯為原子化的執行狀態 (`.labyrinth/tasks/*.json`)，並自動配置 CI 仲裁護欄。
+### Step 2: 編譯 Labyrinth
+藍圖生成後，喚醒 **Factory Iterator** 技能將 `labyrinth.yml` 編譯為原子化的執行狀態 (`.labyrinth/tasks/*.json`)。
 
-### Step 4: 派遣 Ikaros 工人
-Labyrinth 建構完成。現在你可以派遣任何符合協議的 Agent 進入專案，它們會遵循 `AGENT_PROTOCOL.md` 與藍圖 Hash 校驗，在絕對安全的軌道上為你生成代碼。
+### Step 3: 派遣 Ikaros 工人
+迷宮建構完成！派遣任何符合協議的 Agent 進入專案，它們會遵循藍圖 Hash 校驗，在絕對安全的軌道上實作代碼。
+
+---
+
+## 🛠️ 進階路徑：由架構師主導 (Architect-Led)
+適合具有技術背景，且偏好高強度掌控專案架構的使用者。
+
+### Step 1: 手寫文學化藍圖
+在根目錄手寫 `labyrinth.yml`（參考範本 `skills/factory-iterator/assets/templates/labyrinth-template.yml`）。你的手寫藍圖就是專案的最高法則。
+
+### Step 2: 喚醒 Orchestrator 進行補全 (Optional)
+需要時呼叫 **Factory Orchestrator** 技能。它會進入 `Enhancer` 模式，協助你補全技術細節與驗收標準。接下來即可進行編譯與派遣步驟。
 
 ---
 
