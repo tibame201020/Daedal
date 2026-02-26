@@ -1,0 +1,32 @@
+---
+name: sync-vulnerabilities
+category: experiential
+description: 針對 Git 分支治理中的非同步狀態與重試衝突的經驗冷凝。
+---
+
+# 🛡️ Git 治理狀態同步指南 (Sync Heuristics)
+
+> **場景**：涉及多 Worker 併發與排程 Arbitrator (CI) 的分散式任務系統。
+
+## 1. 衝突模式：重試競爭 (Retry Race)
+*   **模式描述**：Worker 在 Arbitrator 更新全域 `attempts` 之前就自行重試。
+*   **避坑指南**：
+    *   Worker 在發起 `Warm Recovery` 前，**必須**強制執行 `git fetch origin main` 並讀取最新的 `tracker.json`。
+    *   禁止基於「過時的本地狀態」判斷重試權限。
+
+## 2. 衝突模式：單一寫入點被刺 (Single-Writer Conflict)
+*   **模式描述**：多個 Worker 提交 PR 到含有 `tracker.json` 更新的分支，導致 Arbitrator 的 `force-with-lease` 推送失敗。
+*   **避坑指南**：
+    *   `tracker.json` 的 `status` 變更應設計為「追加式(Append-only)」或由 Arbitrator 統一匯總，而非由 Worker 直接在共用 JSON 中寫入。
+    *   推薦方案：Worker 產出訊號檔 (如 `.jules/task-done`)，由 Arbitrator 定時併回 Main。
+
+## 3. 分支生命週期：幽靈分支防範 (Phantom Branch Defense)
+*   **模式描述**：清理任務時，狀態更新成功但分支刪除失敗。
+*   **避坑指南**：
+    *   **交易原子化**：先刪除遠端分支，確認成功後再更新 Tracker 狀態。
+    *   設計「清理冪等性」：即便重複執行分支刪除也不會報錯中斷。
+
+## 4. 心跳判定：寂靜期間誤判 (Silent Period False Positives)
+*   **模式描述**：無任務期間 metadata 未更新，導致 Worker 誤判癱瘓。
+*   **避坑指南**：
+    *   心跳更新必須「無條件執行」，即使沒有任務需要清理，Arbitrator 也應更新時間戳並推送，維持「生機訊號」。

@@ -22,13 +22,15 @@
 1. 🛡️ **環境硬對齊 (Hard Alignment Check)**：
    - 執行 `git branch --show-current` 與 `git remote -v`。
    - **禁止猜測**：若當前分支與目標 `{{BASE_BRANCH}}` 不符，或遠端路徑異常，必須先修正環境而非盲目執行。
-2. **讀取 `.{{AGENT_NAME}}/tracker.json`**。
-3. 🛡️ **Labyrinth 心跳校驗 (Heartbeat Check)**：
-   - 讀取 `.metadata.last_arbitration`。
-   - 與當前系統時間對比。若差距 > 4 小時（或 4 倍的 `arbitration_interval`），**停止執行**並回報：「Labyrinth 停更，治理系統已癱瘓 (Arbitrator Paralysis)」。
-4. 找到 `current_phase` 中第一個 `status == "pending"` 的任務。
+2. **讀取 `.{{AGENT_NAME}}/tasks/` 中的目標任務檔案**。
+3. 🛡️ **文學化對齊校驗 (Literate Sync Check)**：
+   - 檢查 `labyrinth.yml` 的主版本號或 Hash。
+   - 若任務檔案中的 `metadata.blueprint_hash` 與當前藍圖不符，**停止執行**。
+   - **理由**：防止執行過時的「影子任務」，確保工人始終與人類架構師的最新願景對齊。
+4. 🛡️ **Labyrinth 心跳校驗 (Heartbeat Check)**：
+4. 按優先級找到第一個 `status == "pending"` 的任務檔案。
 4. 🛡️ **健康檢查**：若該任務的 `attempts` >= 5，視為「持續性死鎖」，**停止執行**並回報人類。
-5. 若沒有 `pending` 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。
+5. 若沒有 `pending` 任務，回報「所有任務已完成」並終止。
 
 ## Step 2: 互斥鎖檢查與分支建立 (Branch-as-Lock & Checkout)
 
@@ -46,7 +48,11 @@
 | `OPEN` + CI **失敗** | 🔁 失敗恢復 | 執行以下恢復流程 ⬇️ |
 
 **CI 失敗恢復流程 (Refined Recovery)：**
-1. 讀取任務的 `attempts` 次數：
+1. 🛡️ **強制同步與驗證 (Freshness Check)**：
+   - 執行 `git fetch origin {{BASE_BRANCH}}`。
+   - 讀取 `origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json` 中的 `attempts`。
+   - **禁令**：禁止使用 Feature Branch 本地緩存的 `tracker.json` 進行判定。
+2. 讀取任務的 `attempts` 次數：
    - **若 `attempts` < 3**：視為可能之 Flaky 或輕微錯誤。
      - **動作**: 在當前分支執行 `git commit --allow-empty -m "fix: retry CI (warm recovery)" && git push`。
      - **目標**: 原地重試，保留代碼資產。

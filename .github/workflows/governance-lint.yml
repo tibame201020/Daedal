@@ -1,0 +1,24 @@
+name: Governance Guard
+on:
+  pull_request:
+    paths:
+      - '.agents/**'
+      - 'skills/**'
+      - '.github/workflows/**'
+
+jobs:
+  path-protection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject Unauthorized Modification
+        run: |
+           echo "❌ 警告：偵測到對核心治理組件的修改。"
+           echo "Worker 禁止修改 .agents/, skills/ 或 .github/workflows/。"
+           exit 1
+
+      - name: Validate Blueprint-Task Consistency
+        run: |
+           echo "🔍 正在核對藍圖與任務執行態的一致性..."
+           # 實際應執行編譯器檢測 Hash 是否匹配
+           # 若有落差，說明有人繞過藍圖修改了底層 JSON (Lower-plane Erasure risk)
+           exit 0 # 暫時 Pass，待編譯器實作

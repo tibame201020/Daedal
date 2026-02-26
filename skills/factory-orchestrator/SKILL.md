@@ -33,14 +33,17 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 
 ## 📖 精煉管線 (Refinement Pipeline)
 
-### Step 0: 經驗檢索與擴充載入 (Extension Lookup)
-在啟動任何 Task 前，**必須**先掃描 `extensions/` 目錄：
-- **模式匹配**：意圖是否符合已存在的 `patterns/`？
-- **規則加載**：加載相關的 `heuristics/` 片段。
-- **目標**：利用既有經驗自動填充 80% 的設計預設值，讓使用者只做「選擇題」。
+### Step 0: 模式判定 (Mode Detection)
+Orchestrator 在啟動時需確認當前專案狀態：
+- **模式 A: Greenfield (Navigator)**：若檔案系統中找不到 `labyrinth.yml`（文學化藍圖），負責引導 LLM 協助人類從零產出藍圖。
+- **模式 B: Architect-led (Enhancer)**：若發現已有 `labyrinth.yml`（架構師手寫），則跳過設計引導，轉為「補全」模式，協助填寫 `spec_ref`、`allowed_paths` 等技術細節。
 
-### Step 1: 意圖與背景確認
-引導使用者完成 **[Requirements Analyst](../requirements-analyst/SKILL.md)**。若 Step 0 已加載擴充，Analyst 應以「驗證已填寫之規格」為主，而非從零詢問。
+### Step 1: 經驗動態檢索與注入 (Dynamic Extension Discovery)
+- **上下文萃取**：根據藍圖任務的描述或標籤，精準載入 `extensions/patterns/`。
+- **目標**：極小化 Worker 認知負載，將 Prompt 冗餘降低 70%。
+
+### Step 2: 意圖與背景確認
+引導使用者完成 **[Requirements Analyst](../requirements-analyst/SKILL.md)**。若為「模式 B」，則以「驗證已填寫之規格」為主。
 
 ## 📖 指令流程
 

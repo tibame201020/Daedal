@@ -22,29 +22,39 @@ jobs:
       - name: Detect and Arbitrate Tasks
         shell: bash
         run: |
-          # 1. 先同步主線狀態，極小化衝突風險
+          # 1. 同步狀態
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git pull --rebase origin {{BASE_BRANCH}}
 
-          # 2. 取得遠端分支列表
+          # 2. 驗證藍圖與任務同步性 (Sync Validation)
+          echo "🔍 Checking Blueprint-Task Sync..."
+          # 模擬校驗：若 labyrinth.yml 較新但 tasks/ 未更新，則警告
+          for task_file in .{{AGENT_NAME}}/tasks/*.json; do
+            if [[ labyrinth.yml -nt "$task_file" ]]; then
+              echo "⚠️ Warning: $task_file is older than labyrinth.yml. Compilation might be stale."
+            fi
+            jq empty "$task_file" || { echo "❌ Invalid JSON: $task_file"; exit 1; }
+          done
+
+          # 3. 遍歷遠端分支進行標註
           NEED_PUSH=false
           BRANCHES_TO_DELETE=()
           branches=$(git branch -r | grep "origin/{{AGENT_NAME}}/{{BASE_BRANCH}}/task-" | sed 's/origin\///')
           
           for branch in $branches; do
             task_id=$(echo $branch | sed 's|.*/task-||')
-            echo "🕵️ Analyzing branch: $branch (Task: $task_id)"
+            task_file=".{{AGENT_NAME}}/tasks/task-$task_id.json"
             
-            # 取得 PR 狀態（含 CI check 結果）
+            # 取得 PR 狀態
             pr_data=$(gh pr list --head "$branch" --state all --json state,statusCheckRollup --jq '.[0]' 2>/dev/null)
             pr_status=$(echo "$pr_data" | jq -r '.state // empty')
             
-            SHOULD_CLEANUP=false
-
-            if [[ "$pr_status" == "CLOSED" ]]; then
-              echo "⚠️ Task $task_id: Found CLOSED PR."
-              SHOULD_CLEANUP=true
+            if [[ "$pr_status" == "CLOSED" || "$pr_status" == "MERGED" ]]; then
+               # 若已合併，確保狀態更新
+               jq '.status = "completed"' "$task_file" > tmp.json && mv tmp.json "$task_file"
+               BRANCHES_TO_DELETE+=("$branch")
+               NEED_PUSH=true
             elif [[ "$pr_status" == "OPEN" ]]; then
               # 偵測 CI 失敗的 OPEN PR（Worker 可能已關閉 PR 並刪除分支，也可能尚未處理）
               ci_failed=$(echo "$pr_data" | jq -r '
@@ -53,7 +63,9 @@ jobs:
               if [[ "$ci_failed" == "true" ]]; then
                 echo "⚠️ Task $task_id: Found OPEN PR with CI failure. Closing and cleaning up."
                 gh pr close "$branch" --comment "🤖 Arbitrator: CI failed. Closing for retry." || true
-                SHOULD_CLEANUP=true
+                jq '.status = "failed" | .attempts += 1' "$task_file" > tmp.json && mv tmp.json "$task_file"
+                BRANCHES_TO_DELETE+=("$branch")
+                NEED_PUSH=true
               else
                 echo "ℹ️ Task $task_id: OPEN PR with CI passing or pending. Skipping."
               fi
@@ -62,42 +74,38 @@ jobs:
               current_time=$(date +%s)
               diff_hours=$(( (current_time - last_commit_time) / 3600 ))
               if [[ $diff_hours -ge 2 ]]; then
-                echo "⚠️ Task $task_id: Phantom branch detected (age >= 2h)."
-                SHOULD_CLEANUP=true
+                echo "⚠️ Task $task_id: Phantom branch detected (age >= 2h). Marking as failed."
+                jq '.status = "failed" | .attempts += 1' "$task_file" > tmp.json && mv tmp.json "$task_file"
+                BRANCHES_TO_DELETE+=("$branch")
+                NEED_PUSH=true
               else
                 echo "ℹ️ Task $task_id: Phantom branch is recent (${diff_hours}h < 2h). Waiting."
               fi
             fi
-
-            if [[ "$SHOULD_CLEANUP" == "true" ]]; then
-              # 先將 ID 加入待處裡清單，不立刻 commit
-              jq --arg id "$task_id" '(.phases[].tasks[] | select(.id == $id)).attempts += 1' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
-              BRANCHES_TO_DELETE+=("$branch")
-              NEED_PUSH=true
-            fi
+            # ... 其他失敗恢復邏輯比照辦理
           done
 
-            echo "🔄 Attempting Transaction: Push tracker & purge branches..."
-            
-            # 更新 Labyrinth Heartbeat (last_arbitration)
-            current_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-            jq --arg ts "$current_iso" '.metadata.last_arbitration = $ts' .{{AGENT_NAME}}/tracker.json > tmp.json && mv tmp.json .{{AGENT_NAME}}/tracker.json
-            
-            git add .{{AGENT_NAME}}/tracker.json
-            git commit -m "chore(arbitrator): cleanup stale tasks and update heartbeat"
+          # 4. 產出唯讀的 tracker.json 視圖 (Observer View)
+          echo "📊 Compiling Tracker View..."
+          mkdir -p .{{AGENT_NAME}}
+          jq -n '[inputs]' .{{AGENT_NAME}}/tasks/*.json > .{{AGENT_NAME}}/tracker.json
 
-            # 使用 force-with-lease 避免覆蓋 main 分支的併發合併
-            if git push origin {{BASE_BRANCH}} --force-with-lease; then
-              echo "✅ Tracker updated on main branch. Purging branches..."
-              for b in "${BRANCHES_TO_DELETE[@]}"; do
-                git push origin --delete "$b" || echo "⚠️ Failed to delete $b (might be manually deleted)"
-              done
-              echo "✅ All stale tasks handled successfully."
-            else
-              echo "❌ Race Condition: Push failed. Status will NOT be updated. Retrying next cycle."
-              # 不執行分支刪除，保持狀態一致性，下次 hourly 會重新讀取最新 Tracker 並重試
-              exit 1
-            fi
+          # 5. 更新心跳並推送 (Atomic Commit)
+          echo "🔄 Attempting Transaction: Push state & heartbeat..."
+          current_iso=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "{\"last_arbitration\": \"$current_iso\"}" > .{{AGENT_NAME}}/metadata.json
+          
+          git add .{{AGENT_NAME}}/tasks/*.json .{{AGENT_NAME}}/tracker.json .{{AGENT_NAME}}/metadata.json
+          git commit -m "chore(arbitrator): atomic task sync (heartbeat: $current_iso)" || echo "Nothing to sync"
+
+          if git push origin {{BASE_BRANCH}} --force-with-lease; then
+            echo "✅ State updated. Purging branches..."
+            for b in "${BRANCHES_TO_DELETE[@]}"; do
+              git push origin --delete "$b" || echo "⚠️ Failed to delete $b"
+            done
+          else
+            echo "❌ Race Condition: Push failed."
+            exit 1
           fi
           
     # [!] 注意：本腳本為邏輯範本，實際運作建議配合 jq 處理 JSON。

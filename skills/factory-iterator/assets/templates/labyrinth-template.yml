@@ -1,0 +1,32 @@
+# 🏰 Daedal Labyrinth Blueprint (人機共識契約)
+# ---------------------------------------------------------
+# 本文件為 Labyrinth 的源原始碼 (Source of Truth)。
+# 修改本文件後，由 `factory-iterator` 自動編譯為 .labyrinth/tasks/*.json。
+
+project: "YOUR_PROJECT_NAME"
+base_branch: "main"
+
+phases:
+  - id: phase_1
+    name: "🚀 快速啟動"
+    tasks:
+      - id: init_setup
+        title: "專案基礎環境初始化"
+        allowed_paths: ["package.json", "tsconfig.json"]
+        spec_ref: "specs/tasks/setup.yml"
+        
+      - id: db_design
+        title: "核心資料庫 Schema 定義"
+        allowed_paths: ["src/db/schema.ts"]
+        spec_ref: "specs/tasks/db.yml"
+        depends_on: [init_setup]
+
+  - id: phase_2
+    name: "🛠️ 核心功能開發"
+    tasks:
+      - id: api_auth
+        title: "JWT 身份驗證模組"
+        allowed_paths: ["src/auth/*", "tests/auth/*"]
+        spec_ref: "specs/tasks/auth.yml"
+        depends_on: [db_design]
+        tags: ["backend", "security"] # 用於動態經驗注入

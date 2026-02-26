@@ -69,20 +69,15 @@ Daedal 不生成程式碼。
 
 ---
 
-### 3.2 Labyrinth — 專案結構
+### 3.2 🏰 Labyrinth：治理藍圖與執行契約 (The Contract)
 
-每個專案都是一座 Labyrinth。
+在 3.0 版本中，Labyrinth 採用**二段式治理 (Two-stage Governance)**：
+1.  **文學化藍圖 (Literate Blueprint - `labyrinth.yml`)**：為人類專家、架構師設計的高級語言。採用 YAML 格式，專注於任務目標與路徑分配。
+2.  **執行狀態 (Executable State - `.labyrinth/tasks/*.json`)**：由 Labyrinth 編譯器產出的機器友善格式。具備原子性、可校驗性，供 Ikaros 工人與 Arbitrator 仲裁者讀取。
 
-它由以下組成：
-
-* 任務 DAG（tracker.json）
-* 規格藍圖（specs/*.yml）
-* 仲裁流程（CI workflows）
-
-Labyrinth 是靜態結構。
-
-它不思考。
-它只約束。
+#### 治理規則 (The First Constitution)
+*   **契約至上 (Contract Supremacy)**：任何代碼異動若偏離 Labyrinth 藍圖定義的路徑與目標，將被仲裁層強制沒收。
+*   **分離平面 (Separation of Planes)**：工人 (Ikaros) 僅能在數據平面 (Data Plane) 運作，嚴禁修改位於控制平面 (Control Plane) 的治理腳本與藍圖。
 
 ---
 
@@ -194,7 +189,11 @@ Daedal 不僅是治理框架，它還是具備自我優化能力的「經驗容�
 
 > **「Daedal 的終極價值不在於其初始的 Prompt，而在於其運作過程中不斷沉澱的治理經驗擴充庫。」**
 
----
+#### 5.3 治理精修：同步與原子性 (Governance Refinements)
+在實際模擬中，我們發現了 Git 狀態的分散式瓶頸，並已將其冷凝為核心協議的一部分：
+*   **Freshness Check**：Worker 在判定重試前必須執行 1:1 的遠端狀態對齊。
+*   **Atomic Arbitration**：Arbitrator 的心跳與清理被合併為原子交易。
+*   **Condensation Registry**：所有邏輯瑕疵均會自動轉化為 `extensions/experiential/` 下的規約。
 
 ## 6. 為何需要這種架構？
 

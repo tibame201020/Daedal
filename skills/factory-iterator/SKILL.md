@@ -14,20 +14,17 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 
 ## 📖 執行流程
 
-### Step 1: 物理建廠與環境部署 (Labyrinth Scaffolding)
-- **基礎設施部署**：從模板產生 `.{{AGENT_NAME}}/tracker.json`、`AGENT_PROTOCOL.md` 以及 GitHub Actions 模板。
-    - **🛡️ 心跳初始化 (Heartbeat Initialization)**：建立 `tracker.json` 時，**必須**將 `metadata.last_arbitration` 設置為當前的 ISO 8601 時間戳記，以避免 Worker 啟動時發生 Day 0 死鎖。
-- **規則目錄初始化**：確保 `.agents/rules/` 目錄存在且包含基本編碼守則。
-- **文檔骨架建立**：產生初始版的 `docs/FACTORY_WORKFLOW.qmd`。
-- **組立式 CI 配置**：根據 Architect Reviewer 評選的技術棧，**組合**對應的 CI 片段。
-    - *原則：不再讓 Agent 去「編輯」Yaml 邏輯，而是將標準測試片段「注入」進模板位置。*
+### Step 1: 文學化藍圖編譯 (Labyrinth Compilation)
+- **藍圖讀取**：掃描根目錄下的 `labyrinth.yml`。若不存在，則從 `assets/templates/` 建立初始藍圖供人類編輯。
+- **原子化膨脹 (Task Expansion)**：將藍圖中的高階任務清單「編譯」為 `.labyrinth/tasks/task-xxx.json` 原子檔案。
+    - **🛡️ 欄位鎖定 (Inertia Check)**：若任務已存在且標註為 `human-edited`，編譯器禁止覆蓋該任務的 `spec_ref` 或 `title`。
+    - **🛡️ Hash 注入**：為每個 JSON 任務注入 `metadata.blueprint_hash`，供 Worker 在執行前驗證。
+- **🛡️ 模式識別**：根據任務 `tags`（如 `backend`, `ui`），自動從 `extensions/` 關聯對應的技術規範。
+- **產出編譯視圖**：執行 `jq -n '[inputs]' .labyrinth/tasks/*.json > .labyrinth/tracker.json`。
 
-### Step 2: 任務拆解與 DAG 建立 (Task Decomposition)
-- **微型化拆解**：將需求分解為 3-5 個原子任務（每個任務 ≤ 300 行異動）。
-- **依賴管理**：建立 `depends_on` 鏈條，防止併發導致的代碼衝突。
-- **🛡️ 邊界正義 (Path Justice Check)**：產出 `allowed_paths` 時，**必須**包含所有涉及的模組路徑。
-    - **禁令**：嚴禁產出空的或不足以完成任務的 `allowed_paths`。若不確定，寧可給予寬鬆的目錄邊界（如 `src/**`），也不要讓 Worker 因路徑約束而死鎖。
-- **產出 `tracker.json`**。
+### Step 2: 物理建廠與環境部署 (Labyrinth Scaffolding)
+- **環境初始化**：部署 `AGENT_PROTOCOL.md`、`metadata.json` 以及 GitHub Actions 治理腳本。
+- **🛡️ 心跳同步**：確保 `metadata.json` 記錄當前的 `last_arbitration` 時間。
 - **共通規範**：拆解為符合「單檔 300 行內」的微型任務。
 - **🟢 CREATE**：關注環境搭建、初始核心邏輯。
 - **🟡 CONTINUE / 🔴 MAINTAIN**：

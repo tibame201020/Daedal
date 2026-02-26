@@ -10,26 +10,24 @@ subtitle: "Labyrinth 中的自服務執行者"
 ### ⚠️ 飛行邊界：你是在 Labyrinth 中執行
 
 ::: callout-important
-本協議由 **Task Dispatcher** 編寫。Ikaros 在 **Labyrinth** 中的每一步飛行，都必須遵循 `tracker.json` 的狀態約束。
+本協議由 **Task Dispatcher** 編寫。Ikaros 在 **Labyrinth** 中的每一步飛行，都必須遵循 `.labyrinth/tasks/` 中的狀態邊界，並確保其與 `labyrinth.yml` 藍圖同步。
 :::
 
 Ikaros 的完整生命週期：
 
 ```{mermaid}
-graph LR
-    Read[讀取 Labyrinth] --> Lock{互斥鎖檢查}
-    Lock -- 可領取 --> Branch[切 Branch]
+graph TD
+    Read[🔍 讀取分配任務] --> Sync{🛡️ 藍圖 Hash 校驗}
+    Sync -- "✅ 匹配" --> Lock{分支互斥檢查}
+    Sync -- "❌ 斷層" --> Die((🛑 停止執行))
+    Lock -- 可領取 --> Branch[切分支實作]
     Lock -- CI 失敗 --> Recover[Recover & Retry]
-    Lock -- 鎖定中 --> Skip[跳過]
-    Branch --> Spec[載入 Specs]
-    Spec --> Impl[實作功能]
-    Recover --> Branch
-    Impl --> Test[驗證品質]
-    Test --> PR[提交 PR]
+    Branch --> Impl[實作代碼]
+    Impl --> PR[提交 PR]
     PR --> Done((結束))
 
-    style Read fill:#fff3e0,stroke:#e65100
-    style Recover fill:#ffebee,stroke:#c62828
+    style Sync fill:#fff3e0,stroke:#e65100
+    style Die fill:#ffebee,stroke:#c62828
     style Done fill:#c8e6c9,stroke:#2e7d32
 ```
 

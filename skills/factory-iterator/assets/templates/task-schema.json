@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Daedal Task Definition",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "title": {
+            "type": "string"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "in-progress",
+                "completed",
+                "failed"
+            ]
+        },
+        "priority": {
+            "type": "integer"
+        },
+        "attempts": {
+            "type": "integer"
+        },
+        "depends_on": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "allowed_paths": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "spec_ref": {
+            "type": "string"
+        },
+        "metadata": {
+            "type": "object",
+            "properties": {
+                "agent_name": {
+                    "type": "string"
+                },
+                "last_updated": {
+                    "type": "string",
+                    "format": "date-time"
+                }
+            }
+        }
+    },
+    "required": [
+        "id",
+        "title",
+        "status",
+        "spec_ref"
+    ]
+}

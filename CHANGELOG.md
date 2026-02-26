@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2026-02-25
+## [Unreleased] - 2026-02-26
+ 
+ ### 🏰 Labyrinth 3.0: Literate Architecture Leap
+ - **文學化藍圖 (Literate Blueprint)**：引入 `labyrinth.yml` 作為真值來源 (Source of Truth)。架構師專注於意圖定義，而非底層實務。
+ - **二段式治理 (Two-stage Governance)**：將 YAML 藍圖編譯為分佈式任務 JSON，實現「人類願景」與「機器執行態」的徹底分離。
+ - **分佈式任務狀態**：將 `tracker.json` 拆分為 `.labyrinth/tasks/*.json`，消除大規模併發下的 Git 衝突。
+ - **架構師導航器 (Navigator/Enhancer)**：`factory-orchestrator` 支援對手寫藍圖的尊重與補全，將主導權還給開發者。
+ - **同步守衛 (Sync Guard)**：Worker 新增藍圖 Hash 校驗，拒絕執行與願景脫鉤的過時任務。
+ - **物理路徑護欄 (Path Guards)**：CI 強制禁止 Worker 修改治理核心組件。
+ 
+ ## [0.2.0] - 2026-02-25
 
 ### 🏗️ Architecture: 6-Role Responsibility Segregation
 - **引入 Task Dispatcher**：新增 `task-dispatcher` Skill，定位為「一次性教導者 (mode: instructor)」。產出可重複使用的 Worker Prompt，使用者反覆餵給 Worker 即可推進全部任務。

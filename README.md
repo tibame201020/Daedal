@@ -32,6 +32,10 @@ AI Agent 可以：
 Daedal 解決的不是「生成能力」，
 而是「生成治理」。
 
+- **治理勝於生成 (Governance over Generation)**: 核心理念是建立嚴格的結構約束，讓 AI 在既定軌道上運行。
+- **文學化治理 (Literate Governance)**: 修改 `labyrinth.yml` 藍圖，Daedal 即成為你的自動化執行引擎。
+- **物理性驗收 (Physical Arbitration)**: 透過 CI/CD 扮演「物理法則」，強制執行規格審計與合併守則。
+
 ---
 
 # Daedal 生態系統
@@ -62,9 +66,10 @@ Daedal 是幾何學。
 
 它包含：
 
-* `tracker.json`（任務狀態圖）
-* `specs/*.yml`（驗收標準）
-* CI workflows（自動仲裁）
+* `labyrinth.yml`（文學化藍圖 - Source of Truth）
+* `.labyrinth/tasks/*.json`（原子化執行狀態）
+* `tracker.json`（唯讀進度視圖）
+* CI workflows（自動仲裁物理法則）
 
 Labyrinth 是專案的骨架。
 Worker 只能沿著結構行走。

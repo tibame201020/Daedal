@@ -49,14 +49,15 @@ graph TD
 
 ```{mermaid}
 graph TD
-    Knossos[🏛️ Knossos] --> ReqA[需求分析師]
-    ReqA --> UI_Check{需要 UI?}
-    UI_Check -- 是 --> VisD[視覺設計師]
-    UI_Check -- 否 --> Arch[架構審查]
-    VisD --> Arch
-    Arch --> Iter[工廠迭代器]
-    Iter --> Specs[(Labyrinth Specs)]
-    Iter --> Track[(tracker.json)]
+    User([👩‍💻 人類意圖]) --> Blue[📄 labyrinth.yml (文學化藍圖)]
+    Blue --> Iter[🏭 Factory Iterator (編譯器)]
+    Iter --> Lab[(.labyrinth/tasks/*.json)]
+    Iter --> Track[(tracker.json 唯讀視圖)]
+    
+    subgraph Roles["🤝 人機協作"]
+        Nav[Navigator 模式] -.-> Blue
+        Enh[Enhancer 模式] -.-> Blue
+    end
 ```
 
 ### 2. Ikaros Flight & CI (執行與仲裁)
@@ -72,13 +73,15 @@ Knossos 負責觀測 `tracker.json` 並在合適時機觸發 Ikaros。Ikaros 則
 ```{mermaid}
 graph TD
     Knossos[🏛️ Knossos] --> Ikaros[🕊️ Ikaros Worker]
-    Ikaros -- "讀取 Labyrinth" --> Lab{tracker.json}
-    Lab -- "領取任務" --> Impl[實作代碼]
-    Impl -- "提交 PR" --> CI{⚖️ CI 仲裁}
+    Ikaros -- "🛡️ Sync Check" --> Sync{藍圖 Hash 對齊?}
+    Sync -- "✅ 對齊" --> Lab[".labyrinth/tasks/*.json (讀取任務)"]
+    Sync -- "❌ 斷層" --> Die((🛑 停止執行))
+    Lab --> Impl[實作代碼]
+    Impl --> PR[提交 PR]
+    PR --> CI{⚖️ CI 仲裁}
     CI -- "🟢 通過" --> Merge[Merge to Main]
-    CI -- "🔴 失敗" --> Recover[自我修復/重試]
-    Merge --> Knossos
-    Recover --> Ikaros
+    Merge --> Arbitrator[🔍 Arbitrator (狀態更新)]
+    Arbitrator --> Lab
 
     style Knossos fill:#fff3e0,stroke:#e65100
     style Ikaros fill:#f3e5f5,stroke:#7b1fa2
@@ -114,14 +117,13 @@ else:
 
 ## 🛠️ 角色清單 (Ecosystem Roles)
 
-| \#  | 角色名稱             | 系統別名     | 職責                                 |
+| \# | 角色名稱 | 系統別名 | 職責 |
 |:-----------------|:-----------------|:-----------------|:-----------------|
-| 1   | Requirements Analyst | Discovery    | 意圖分類與需求收集                   |
-| 2   | Architect Reviewer   | Design       | 技術選型與 ADR 產出                  |
-| 3   | Factory Iterator     | Construction | 構建 **Labyrinth** (Specs, Tracker)  |
-| 4   | Task Dispatcher      | Trigger      | 產出 Ikaros 飛行指令 (Worker Prompt) |
-| 5   | **Ikaros**           | Worker       | 符合協議的自服務執行者               |
-| 6   | **Knossos**          | Dashboard    | 專案進度觀測與觸發中心               |
+| 1 | Requirements Analyst | Navigator/Enhancer | 意圖分析與藍圖引導/補全 |
+| 2 | Factory Iterator | Labyrinth Compiler | 將 `labyrinth.yml` 編譯為原子任務狀態 |
+| 3 | Arbitrator | CI Guardian | 透過分析 PR 異動與分支狀態，仲裁任務進度 |
+| 4 | **Ikaros** | Worker | 遵從協議、在 Labyrinth 護欄內飛行的執行者 |
+| 5 | **Knossos** | Dashboard | 專案進度觀測與觸發中心 (Observer) |
 
 ------------------------------------------------------------------------
 
