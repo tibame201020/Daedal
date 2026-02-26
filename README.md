@@ -166,31 +166,32 @@ Daedal 不是取代工程師。
 
 # 🚀 快速上手 (Quick Start)
 
-Daedal 3.0 採用「文學化架構」。我們提供兩種啟動方式，適應不同背景的使用者：
+### 1. 準備工廠地基
+```bash
+git clone https://github.com/tibame201020/Daedal.git my-new-app
+cd my-new-app
+```
 
-## 🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)
-最流暢的 Daedal 體驗，適合非技術背景或不想手寫 YAML 的使用者。
+### 2. 喚醒總指揮 (Orchestrator)
+打開你偏好的 AI 工具（Claude Code、Cursor、Jules 等），輸入：
 
-### Step 1: 喚醒 Orchestrator 進行討論
-使用你的 AI 助手（如 Cursor）呼叫 **Factory Orchestrator** 技能。用自然語言告訴它：「我想做一個...，請幫我規劃」。
-Orchestrator 會自動進入 `Navigator` 模式，為你釐清需求，並**自動生成** `labyrinth.yml` 藍圖。
+> 👉 「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」
 
-### Step 2: 編譯 Labyrinth
-藍圖生成後，喚醒 **Factory Iterator** 技能將 `labyrinth.yml` 編譯為原子化的執行狀態 (`.labyrinth/tasks/*.json`)。
+Orchestrator 會依序引導你走過 5 個階段：
+- **Requirements Analyst** — 需求探測與意圖分類
+- **Visual Designer (可選)** — Design Tokens 與 Wireframe
+- **Architect Reviewer** — 技術選型與 ADR 產出
+- **Factory Iterator** — 任務拆解、CI/CD 適配、建廠部署
+- **Task Dispatcher** — 產出可重複使用的 Worker Prompt
 
-### Step 3: 派遣 Ikaros 工人
-迷宮建構完成！派遣任何符合協議的 Agent 進入專案，它們會遵循藍圖 Hash 校驗，在絕對安全的軌道上實作代碼。
+### 3. 放牛吃草 (Unleash the Worker)
+Dispatcher 會給你一段 Worker Prompt。 把這段 Prompt 反覆餵給你的 Worker Agent（例如 Jules），Worker 會自動：
+- 讀取 `.labyrinth/tasks/` 尋找任務 (由 `labyrinth.yml` 藍圖驅動)
+- 切 branch、實作、測試、提 PR
+- CI 自動 merge + 自動推進 Phase
+- 直到專案完工為止。
 
----
-
-## 🛠️ 進階路徑：由架構師主導 (Architect-Led)
-適合具有技術背景，且偏好高強度掌控專案架構的使用者。
-
-### Step 1: 手寫文學化藍圖
-在根目錄手寫 `labyrinth.yml`（參考範本 `skills/factory-iterator/assets/templates/labyrinth-template.yml`）。你的手寫藍圖就是專案的最高法則。
-
-### Step 2: 喚醒 Orchestrator 進行補全 (Optional)
-需要時呼叫 **Factory Orchestrator** 技能。它會進入 `Enhancer` 模式，協助你補全技術細節與驗收標準。接下來即可進行編譯與派遣步驟。
+*觸發方式由你決定：Web GUI、API、Cron、n8n 隨便你。*
 
 ---
 

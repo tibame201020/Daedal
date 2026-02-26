@@ -45,26 +45,24 @@ subtitle: "Enterprise-grade AI Production Line Pattern"
 
 ## 🚀 快速上手 (Quick Start)
 
-Daedal 3.0 採用「文學化架構 (Literate Architecture)」。我們為不同背景的使用者準備了兩條路徑：
+### 1. 準備工廠地基
 
-### 🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)
-最流暢的體驗，無須事先學習 YAML。
+``` bash
+git clone https://github.com/tibame201020/Daedal.git my-new-app
+cd my-new-app
+```
 
-1. **對話與釐清**：喚醒 **Factory Orchestrator** 技能，告訴它你想做什麼。它會負責釐清需求，並**自動為你產出** `labyrinth.yml` 藍圖。
-2. **編譯為執行態**：喚醒 **Factory Iterator** 技能將藍圖「編譯」為分布式的任務狀態 (`.labyrinth/tasks/*.json`)。
-3. **派遣工人起飛**：迷宮已建好。派遣任何符合協議的 AI Agent 依據藍圖軌道實作代碼。
+### 2. 喚醒總指揮 (Orchestrator)
 
----
+打開你偏好的 AI 工具，輸入： \> 👉 「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」
 
-### 🛠️ 進階路徑：由人類主導 (Architect-Led)
-適合技術背景強大，想自定義架構的使用者。
+Orchestrator 會依序引導你完成需求分析、架構設計、任務拆解與 CI/CD 部署。
 
-1. **手寫藍圖**：直接在根目錄撰寫 `labyrinth.yml` 作為真值來源。
-2. **協作補全 (Optional)**：喚醒 **Factory Orchestrator**，它會偵測到藍圖，變為 `Enhancer` 模式協助你補齊技術規格。後續執行編譯與派遣即可。
+### 3. 放牛吃草 (Unleash the Worker)
 
-### 4. 工人起飛 (Ikaros Flight)
+Dispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自動執行： - 讀取 `.labyrinth/tasks/`（基於 `labyrinth.yml` 藍圖） - 實作、測試、提交 PR - CI 自動仲裁與推進，直到完工。
 
-迷宮已建好。派遣任何符合協議的 AI Agent 讀取 `AGENT_PROTOCOL.md`。它們將會依照藍圖指定的路徑安全地實作代碼。
+------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 
