@@ -53,14 +53,16 @@ cd my-new-app
 ```
 
 ### 2. 喚醒總指揮 (Orchestrator)
+打開你偏好的 AI 工具，輸入：
+> 👉 「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」
 
-打開你偏好的 AI 工具，輸入： \> 👉 「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」
-
-Orchestrator 會依序引導你完成需求分析、架構設計、任務拆解與 CI/CD 部署。
+Orchestrator 會依序引導你完成需求分析 (Analyst)、視覺設計 (Designer)、架構評議與衝突模擬 (Reviewer)、Labyrinth 編譯 (Iterator) 與教導式派發 (Dispatcher)。
 
 ### 3. 放牛吃草 (Unleash the Worker)
-
-Dispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自動執行： - 讀取 `.labyrinth/tasks/`（基於 `labyrinth.yml` 藍圖） - 實作、測試、提交 PR - CI 自動仲裁與推進，直到完工。
+Dispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自主執行：
+- 讀取 `.labyrinth/tasks/` 中的原子任務 (與 `labyrinth.yml` 藍圖 Hash 對齊)
+- 實作、測試、提交 PR (受限於 `allowed_paths` 路徑護欄)
+- CI 自動仲裁與進度推進，直到完工。
 
 ------------------------------------------------------------------------
 

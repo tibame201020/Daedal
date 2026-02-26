@@ -177,18 +177,18 @@ cd my-new-app
 
 > 👉 「請讀取 `skills/factory-orchestrator/SKILL.md`，你是 Factory Orchestrator 總指揮官，我們準備開工。」
 
-Orchestrator 會依序引導你走過 5 個階段：
-- **Requirements Analyst** — 需求探測與意圖分類
-- **Visual Designer (可選)** — Design Tokens 與 Wireframe
-- **Architect Reviewer** — 技術選型與 ADR 產出
-- **Factory Iterator** — 任務拆解、CI/CD 適配、建廠部署
-- **Task Dispatcher** — 產出可重複使用的 Worker Prompt
+Orchestrator 會依序引導你完成以下五大精煉階段 (Refinement Pipeline)：
+- **Requirements Analyst** — 需求探測、意圖分類與願景定義
+- **Visual Designer (可選)** — 若涉及 UI/UX 則產出 Design Tokens 與 Wireframe
+- **Architect Reviewer** — 技術選型、ADR 產出與架構衝突模擬 (Simulation)
+- **Factory Iterator** — 分散式 Labyrinth 編譯 (將藍圖編譯為 `.labyrinth/tasks/` 原子任務)
+- **Task Dispatcher** — 經驗注入並產出可重複使用的 Worker Prompt (教導模式)
 
 ### 3. 放牛吃草 (Unleash the Worker)
-Dispatcher 會給你一段 Worker Prompt。 把這段 Prompt 反覆餵給你的 Worker Agent（例如 Jules），Worker 會自動：
-- 讀取 `.labyrinth/tasks/` 尋找任務 (由 `labyrinth.yml` 藍圖驅動)
-- 切 branch、實作、測試、提 PR
-- CI 自動 merge + 自動推進 Phase
+Dispatcher 會給你一段 Worker Prompt。 把這段 Prompt 反覆餵給你的 Worker Agent（例如 Jules），Worker 會自動依照協議執行：
+- 讀取 `.labyrinth/tasks/` 領取任務 (與 `labyrinth.yml` 藍圖執行 Hash 校驗)
+- 切 branch、實作、測試、提 PR (遵循路徑護欄 `allowed_paths`)
+- CI 自動仲裁 (Arbitration) 與 Merge，完成後自動推進 Phase
 - 直到專案完工為止。
 
 *觸發方式由你決定：Web GUI、API、Cron、n8n 隨便你。*
