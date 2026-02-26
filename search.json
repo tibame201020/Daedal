@@ -338,7 +338,7 @@
     "href": "index.html",
     "title": "🏭 Daedal: The Structured AI Software Factory",
     "section": "",
-    "text": "核心願景：將生成式 AI 納入可驗證、可治理的工程流程。讓 Agent 不失控，職能分離成為穩健推進的生產力。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。\n\n\n\n\n\nDaedal 3.0 採用「文學化架構 (Literate Architecture)」。我們為不同背景的使用者準備了兩條路徑：\n\n\n最流暢的體驗，無須事先學習 YAML。\n\n對話與釐清：喚醒 Factory Orchestrator 技能，告訴它你想做什麼。它會負責釐清需求，並自動為你產出 labyrinth.yml 藍圖。\n編譯為執行態：喚醒 Factory Iterator 技能將藍圖「編譯」為分布式的任務狀態 (.labyrinth/tasks/*.json)。\n派遣工人起飛：迷宮已建好。派遣任何符合協議的 AI Agent 依據藍圖軌道實作代碼。\n\n\n\n\n\n適合技術背景強大，想自定義架構的使用者。\n\n手寫藍圖：直接在根目錄撰寫 labyrinth.yml 作為真值來源。\n協作補全 (Optional)：喚醒 Factory Orchestrator，它會偵測到藍圖，變為 Enhancer 模式協助你補齊技術規格。後續執行編譯與派遣即可。\n\n\n\n\n迷宮已建好。派遣任何符合協議的 AI Agent 讀取 AGENT_PROTOCOL.md。它們將會依照藍圖指定的路徑安全地實作代碼。\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+    "text": "核心願景：將生成式 AI 納入可驗證、可治理的工程流程。讓 Agent 不失控，職能分離成為穩健推進的生產力。\n\n\n\n為了防止大型 AI 專案常見的幻覺崩潰與結構失控，Daedal 將職責嚴格拆分為五個獨立角色：\n\n\n\n定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。\n\n\n\n由 tracker.json 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。\n\n\n\n所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。\n\n\n\n人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。\n\n\n\n整個系統的物理法則。Merge 是唯一合法的狀態轉移。測試失敗即無法推進。\n\n\n\n\n\n\n\ngit clone https://github.com/tibame201020/Daedal.git my-new-app\ncd my-new-app\n\n\n\n打開你偏好的 AI 工具，輸入： &gt; 👉 「請讀取 skills/factory-orchestrator/SKILL.md，你是 Factory Orchestrator 總指揮官，我們準備開工。」\nOrchestrator 會依序引導你完成需求分析 (Analyst)、視覺設計 (Designer)、架構評議與衝突模擬 (Reviewer)、Labyrinth 編譯 (Iterator) 與教導式派發 (Dispatcher)。\n\n\n\nDispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自主執行： - 讀取 .labyrinth/tasks/ 中的原子任務 (與 labyrinth.yml 藍圖 Hash 對齊) - 實作、測試、提交 PR (受限於 allowed_paths 路徑護欄) - CI 自動仲裁與進度推進，直到完工。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
   },
   {
     "objectID": "index.html#治理架構-the-5-components",
@@ -352,7 +352,7 @@
     "href": "index.html#快速上手-quick-start",
     "title": "🏭 Daedal: The Structured AI Software Factory",
     "section": "",
-    "text": "Daedal 3.0 採用「文學化架構 (Literate Architecture)」。我們為不同背景的使用者準備了兩條路徑：\n\n\n最流暢的體驗，無須事先學習 YAML。\n\n對話與釐清：喚醒 Factory Orchestrator 技能，告訴它你想做什麼。它會負責釐清需求，並自動為你產出 labyrinth.yml 藍圖。\n編譯為執行態：喚醒 Factory Iterator 技能將藍圖「編譯」為分布式的任務狀態 (.labyrinth/tasks/*.json)。\n派遣工人起飛：迷宮已建好。派遣任何符合協議的 AI Agent 依據藍圖軌道實作代碼。\n\n\n\n\n\n適合技術背景強大，想自定義架構的使用者。\n\n手寫藍圖：直接在根目錄撰寫 labyrinth.yml 作為真值來源。\n協作補全 (Optional)：喚醒 Factory Orchestrator，它會偵測到藍圖，變為 Enhancer 模式協助你補齊技術規格。後續執行編譯與派遣即可。\n\n\n\n\n迷宮已建好。派遣任何符合協議的 AI Agent 讀取 AGENT_PROTOCOL.md。它們將會依照藍圖指定的路徑安全地實作代碼。\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
+    "text": "git clone https://github.com/tibame201020/Daedal.git my-new-app\ncd my-new-app\n\n\n\n打開你偏好的 AI 工具，輸入： &gt; 👉 「請讀取 skills/factory-orchestrator/SKILL.md，你是 Factory Orchestrator 總指揮官，我們準備開工。」\nOrchestrator 會依序引導你完成需求分析 (Analyst)、視覺設計 (Designer)、架構評議與衝突模擬 (Reviewer)、Labyrinth 編譯 (Iterator) 與教導式派發 (Dispatcher)。\n\n\n\nDispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自主執行： - 讀取 .labyrinth/tasks/ 中的原子任務 (與 labyrinth.yml 藍圖 Hash 對齊) - 實作、測試、提交 PR (受限於 allowed_paths 路徑護欄) - CI 自動仲裁與進度推進，直到完工。\n\n\n\n💡 總結：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過權力分離與 CI 驅動進度，將生成的「自由」轉化為工程的「確定性」。"
   },
   {
     "objectID": "docs/extensions.html",

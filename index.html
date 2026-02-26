@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -177,9 +212,9 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#治理架構-the-5-components" id="toc-治理架構-the-5-components" class="nav-link" data-scroll-target="#治理架構-the-5-components">🏗️ 治理架構 (The 5 Components)</a></li>
   <li><a href="#快速上手-quick-start" id="toc-快速上手-quick-start" class="nav-link" data-scroll-target="#快速上手-quick-start">🚀 快速上手 (Quick Start)</a>
   <ul class="collapse">
-  <li><a href="#推薦路徑讓指揮官為你生成-ai-guided" id="toc-推薦路徑讓指揮官為你生成-ai-guided" class="nav-link" data-scroll-target="#推薦路徑讓指揮官為你生成-ai-guided">🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)</a></li>
-  <li><a href="#進階路徑由人類主導-architect-led" id="toc-進階路徑由人類主導-architect-led" class="nav-link" data-scroll-target="#進階路徑由人類主導-architect-led">🛠️ 進階路徑：由人類主導 (Architect-Led)</a></li>
-  <li><a href="#工人起飛-ikaros-flight" id="toc-工人起飛-ikaros-flight" class="nav-link" data-scroll-target="#工人起飛-ikaros-flight">4. 工人起飛 (Ikaros Flight)</a></li>
+  <li><a href="#準備工廠地基" id="toc-準備工廠地基" class="nav-link" data-scroll-target="#準備工廠地基">1. 準備工廠地基</a></li>
+  <li><a href="#喚醒總指揮-orchestrator" id="toc-喚醒總指揮-orchestrator" class="nav-link" data-scroll-target="#喚醒總指揮-orchestrator">2. 喚醒總指揮 (Orchestrator)</a></li>
+  <li><a href="#放牛吃草-unleash-the-worker" id="toc-放牛吃草-unleash-the-worker" class="nav-link" data-scroll-target="#放牛吃草-unleash-the-worker">3. 放牛吃草 (Unleash the Worker)</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -241,28 +276,20 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="快速上手-quick-start" class="level2">
 <h2 class="anchored" data-anchor-id="快速上手-quick-start">🚀 快速上手 (Quick Start)</h2>
-<p>Daedal 3.0 採用「文學化架構 (Literate Architecture)」。我們為不同背景的使用者準備了兩條路徑：</p>
-<section id="推薦路徑讓指揮官為你生成-ai-guided" class="level3">
-<h3 class="anchored" data-anchor-id="推薦路徑讓指揮官為你生成-ai-guided">🌟 推薦路徑：讓指揮官為你生成 (AI-Guided)</h3>
-<p>最流暢的體驗，無須事先學習 YAML。</p>
-<ol type="1">
-<li><strong>對話與釐清</strong>：喚醒 <strong>Factory Orchestrator</strong> 技能，告訴它你想做什麼。它會負責釐清需求，並<strong>自動為你產出</strong> <code>labyrinth.yml</code> 藍圖。</li>
-<li><strong>編譯為執行態</strong>：喚醒 <strong>Factory Iterator</strong> 技能將藍圖「編譯」為分布式的任務狀態 (<code>.labyrinth/tasks/*.json</code>)。</li>
-<li><strong>派遣工人起飛</strong>：迷宮已建好。派遣任何符合協議的 AI Agent 依據藍圖軌道實作代碼。</li>
-</ol>
+<section id="準備工廠地基" class="level3">
+<h3 class="anchored" data-anchor-id="準備工廠地基">1. 準備工廠地基</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/tibame201020/Daedal.git my-new-app</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> my-new-app</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="喚醒總指揮-orchestrator" class="level3">
+<h3 class="anchored" data-anchor-id="喚醒總指揮-orchestrator">2. 喚醒總指揮 (Orchestrator)</h3>
+<p>打開你偏好的 AI 工具，輸入： &gt; 👉 「請讀取 <code>skills/factory-orchestrator/SKILL.md</code>，你是 Factory Orchestrator 總指揮官，我們準備開工。」</p>
+<p>Orchestrator 會依序引導你完成需求分析 (Analyst)、視覺設計 (Designer)、架構評議與衝突模擬 (Reviewer)、Labyrinth 編譯 (Iterator) 與教導式派發 (Dispatcher)。</p>
+</section>
+<section id="放牛吃草-unleash-the-worker" class="level3">
+<h3 class="anchored" data-anchor-id="放牛吃草-unleash-the-worker">3. 放牛吃草 (Unleash the Worker)</h3>
+<p>Dispatcher 會產出 Worker Prompt。把這段 Prompt 給你的 Worker Agent，它將自主執行： - 讀取 <code>.labyrinth/tasks/</code> 中的原子任務 (與 <code>labyrinth.yml</code> 藍圖 Hash 對齊) - 實作、測試、提交 PR (受限於 <code>allowed_paths</code> 路徑護欄) - CI 自動仲裁與進度推進，直到完工。</p>
 <hr>
-</section>
-<section id="進階路徑由人類主導-architect-led" class="level3">
-<h3 class="anchored" data-anchor-id="進階路徑由人類主導-architect-led">🛠️ 進階路徑：由人類主導 (Architect-Led)</h3>
-<p>適合技術背景強大，想自定義架構的使用者。</p>
-<ol type="1">
-<li><strong>手寫藍圖</strong>：直接在根目錄撰寫 <code>labyrinth.yml</code> 作為真值來源。</li>
-<li><strong>協作補全 (Optional)</strong>：喚醒 <strong>Factory Orchestrator</strong>，它會偵測到藍圖，變為 <code>Enhancer</code> 模式協助你補齊技術規格。後續執行編譯與派遣即可。</li>
-</ol>
-</section>
-<section id="工人起飛-ikaros-flight" class="level3">
-<h3 class="anchored" data-anchor-id="工人起飛-ikaros-flight">4. 工人起飛 (Ikaros Flight)</h3>
-<p>迷宮已建好。派遣任何符合協議的 AI Agent 讀取 <code>AGENT_PROTOCOL.md</code>。它們將會依照藍圖指定的路徑安全地實作代碼。</p>
 <hr>
 <blockquote class="blockquote">
 <p>💡 <strong>總結</strong>：Daedal 不是要讓 AI 飛得更高，而是要讓它飛得更穩。透過<strong>權力分離</strong>與 <strong>CI 驅動進度</strong>，將生成的「自由」轉化為工程的「確定性」。</p>
