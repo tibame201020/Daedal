@@ -179,7 +179,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#daedal-的結構哲學" id="toc-daedal-的結構哲學" class="nav-link" data-scroll-target="#daedal-的結構哲學">3. Daedal 的結構哲學</a>
   <ul class="collapse">
   <li><a href="#daedal-結構定義者" id="toc-daedal-結構定義者" class="nav-link" data-scroll-target="#daedal-結構定義者">3.1 Daedal — 結構定義者</a></li>
-  <li><a href="#labyrinth-專案結構" id="toc-labyrinth-專案結構" class="nav-link" data-scroll-target="#labyrinth-專案結構">3.2 Labyrinth — 專案結構</a></li>
+  <li><a href="#labyrinth治理藍圖與執行契約-the-contract" id="toc-labyrinth治理藍圖與執行契約-the-contract" class="nav-link" data-scroll-target="#labyrinth治理藍圖與執行契約-the-contract">3.2 🏰 Labyrinth：治理藍圖與執行契約 (The Contract)</a></li>
   <li><a href="#ikaros-執行者" id="toc-ikaros-執行者" class="nav-link" data-scroll-target="#ikaros-執行者">3.3 Ikaros — 執行者</a></li>
   <li><a href="#knossos-標準調度層-standard-dispatching-layer" id="toc-knossos-標準調度層-standard-dispatching-layer" class="nav-link" data-scroll-target="#knossos-標準調度層-standard-dispatching-layer">3.4 Knossos — 標準調度層 (Standard Dispatching Layer)</a></li>
   <li><a href="#仲裁層-cicd" id="toc-仲裁層-cicd" class="nav-link" data-scroll-target="#仲裁層-cicd">3.5 仲裁層 — CI/CD</a></li>
@@ -266,18 +266,17 @@ ul.task-list li input[type="checkbox"] {
 <p>Daedal 不生成程式碼。 它定義生成的幾何結構。</p>
 <hr>
 </section>
-<section id="labyrinth-專案結構" class="level3">
-<h3 class="anchored" data-anchor-id="labyrinth-專案結構">3.2 Labyrinth — 專案結構</h3>
-<p>每個專案都是一座 Labyrinth。</p>
-<p>它由以下組成：</p>
+<section id="labyrinth治理藍圖與執行契約-the-contract" class="level3">
+<h3 class="anchored" data-anchor-id="labyrinth治理藍圖與執行契約-the-contract">3.2 🏰 Labyrinth：治理藍圖與執行契約 (The Contract)</h3>
+<p>在 3.0 版本中，Labyrinth 採用<strong>二段式治理 (Two-stage Governance)</strong>： 1. <strong>文學化藍圖 (Literate Blueprint - <code>labyrinth.yml</code>)</strong>：為人類專家、架構師設計的高級語言。採用 YAML 格式，專注於任務目標與路徑分配。 2. <strong>執行狀態 (Executable State - <code>.labyrinth/tasks/*.json</code>)</strong>：由 Labyrinth 編譯器產出的機器友善格式。具備原子性、可校驗性，供 Ikaros 工人與 Arbitrator 仲裁者讀取。</p>
+<section id="治理規則-the-first-constitution" class="level4">
+<h4 class="anchored" data-anchor-id="治理規則-the-first-constitution">治理規則 (The First Constitution)</h4>
 <ul>
-<li>任務 DAG（tracker.json）</li>
-<li>規格藍圖（specs/*.yml）</li>
-<li>仲裁流程（CI workflows）</li>
+<li><strong>契約至上 (Contract Supremacy)</strong>：任何代碼異動若偏離 Labyrinth 藍圖定義的路徑與目標，將被仲裁層強制沒收。</li>
+<li><strong>分離平面 (Separation of Planes)</strong>：工人 (Ikaros) 僅能在數據平面 (Data Plane) 運作，嚴禁修改位於控制平面 (Control Plane) 的治理腳本與藍圖。</li>
 </ul>
-<p>Labyrinth 是靜態結構。</p>
-<p>它不思考。 它只約束。</p>
 <hr>
+</section>
 </section>
 <section id="ikaros-執行者" class="level3">
 <h3 class="anchored" data-anchor-id="ikaros-執行者">3.3 Ikaros — 執行者</h3>
@@ -423,7 +422,10 @@ ul.task-list li input[type="checkbox"] {
 <blockquote class="blockquote">
 <p><strong>「Daedal 的終極價值不在於其初始的 Prompt，而在於其運作過程中不斷沉澱的治理經驗擴充庫。」</strong></p>
 </blockquote>
-<hr>
+<section id="治理精修同步與原子性-governance-refinements" class="level4">
+<h4 class="anchored" data-anchor-id="治理精修同步與原子性-governance-refinements">5.3 治理精修：同步與原子性 (Governance Refinements)</h4>
+<p>在實際模擬中，我們發現了 Git 狀態的分散式瓶頸，並已將其冷凝為核心協議的一部分： * <strong>Freshness Check</strong>：Worker 在判定重試前必須執行 1:1 的遠端狀態對齊。 * <strong>Atomic Arbitration</strong>：Arbitrator 的心跳與清理被合併為原子交易。 * <strong>Condensation Registry</strong>：所有邏輯瑕疵均會自動轉化為 <code>extensions/experiential/</code> 下的規約。</p>
+</section>
 </section>
 </section>
 <section id="為何需要這種架構" class="level2">

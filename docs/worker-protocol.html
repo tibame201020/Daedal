@@ -222,7 +222,7 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>本協議由 <strong>Task Dispatcher</strong> 編寫。Ikaros 在 <strong>Labyrinth</strong> 中的每一步飛行，都必須遵循 <code>tracker.json</code> 的狀態約束。</p>
+<p>本協議由 <strong>Task Dispatcher</strong> 編寫。Ikaros 在 <strong>Labyrinth</strong> 中的每一步飛行，都必須遵循 <code>.labyrinth/tasks/</code> 中的狀態邊界，並確保其與 <code>labyrinth.yml</code> 藍圖同步。</p>
 </div>
 </div>
 <p>Ikaros 的完整生命週期：</p>
@@ -231,20 +231,18 @@ Important
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">graph LR
-    Read[讀取 Labyrinth] --&gt; Lock{互斥鎖檢查}
-    Lock -- 可領取 --&gt; Branch[切 Branch]
+<pre class="mermaid mermaid-js">graph TD
+    Read[🔍 讀取分配任務] --&gt; Sync{🛡️ 藍圖 Hash 校驗}
+    Sync -- "✅ 匹配" --&gt; Lock{分支互斥檢查}
+    Sync -- "❌ 斷層" --&gt; Die((🛑 停止執行))
+    Lock -- 可領取 --&gt; Branch[切分支實作]
     Lock -- CI 失敗 --&gt; Recover[Recover &amp; Retry]
-    Lock -- 鎖定中 --&gt; Skip[跳過]
-    Branch --&gt; Spec[載入 Specs]
-    Spec --&gt; Impl[實作功能]
-    Recover --&gt; Branch
-    Impl --&gt; Test[驗證品質]
-    Test --&gt; PR[提交 PR]
+    Branch --&gt; Impl[實作代碼]
+    Impl --&gt; PR[提交 PR]
     PR --&gt; Done((結束))
 
-    style Read fill:#fff3e0,stroke:#e65100
-    style Recover fill:#ffebee,stroke:#c62828
+    style Sync fill:#fff3e0,stroke:#e65100
+    style Die fill:#ffebee,stroke:#c62828
     style Done fill:#c8e6c9,stroke:#2e7d32
 </pre>
 </div>

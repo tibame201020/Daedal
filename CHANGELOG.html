@@ -174,7 +174,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#changelog" id="toc-changelog" class="nav-link active" data-scroll-target="#changelog">Changelog</a>
   <ul class="collapse">
-  <li><a href="#unreleased---2026-02-25" id="toc-unreleased---2026-02-25" class="nav-link" data-scroll-target="#unreleased---2026-02-25">[Unreleased] - 2026-02-25</a>
+  <li><a href="#unreleased---2026-02-26" id="toc-unreleased---2026-02-26" class="nav-link" data-scroll-target="#unreleased---2026-02-26">[Unreleased] - 2026-02-26</a>
   <ul class="collapse">
   <li><a href="#architecture-6-role-responsibility-segregation" id="toc-architecture-6-role-responsibility-segregation" class="nav-link" data-scroll-target="#architecture-6-role-responsibility-segregation">🏗️ Architecture: 6-Role Responsibility Segregation</a></li>
   <li><a href="#cicd" id="toc-cicd" class="nav-link" data-scroll-target="#cicd">🔧 CI/CD</a></li>
@@ -195,8 +195,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="changelog" class="level1">
 <h1>Changelog</h1>
 <p>All notable changes to this project will be documented in this file.</p>
-<section id="unreleased---2026-02-25" class="level2">
-<h2 class="anchored" data-anchor-id="unreleased---2026-02-25">[Unreleased] - 2026-02-25</h2>
+<section id="unreleased---2026-02-26" class="level2">
+<h2 class="anchored" data-anchor-id="unreleased---2026-02-26">[Unreleased] - 2026-02-26</h2>
+<p>### 🏰 Labyrinth 3.0: Literate Architecture Leap - <strong>文學化藍圖 (Literate Blueprint)</strong>：引入 <code>labyrinth.yml</code> 作為真值來源 (Source of Truth)。架構師專注於意圖定義，而非底層實務。 - <strong>二段式治理 (Two-stage Governance)</strong>：將 YAML 藍圖編譯為分佈式任務 JSON，實現「人類願景」與「機器執行態」的徹底分離。 - <strong>分佈式任務狀態</strong>：將 <code>tracker.json</code> 拆分為 <code>.labyrinth/tasks/*.json</code>，消除大規模併發下的 Git 衝突。 - <strong>架構師導航器 (Navigator/Enhancer)</strong>：<code>factory-orchestrator</code> 支援對手寫藍圖的尊重與補全，將主導權還給開發者。 - <strong>同步守衛 (Sync Guard)</strong>：Worker 新增藍圖 Hash 校驗，拒絕執行與願景脫鉤的過時任務。 - <strong>物理路徑護欄 (Path Guards)</strong>：CI 強制禁止 Worker 修改治理核心組件。</p>
+<p>## [0.2.0] - 2026-02-25</p>
 <section id="architecture-6-role-responsibility-segregation" class="level3">
 <h3 class="anchored" data-anchor-id="architecture-6-role-responsibility-segregation">🏗️ Architecture: 6-Role Responsibility Segregation</h3>
 <ul>

@@ -219,15 +219,17 @@ ul.task-list li input[type="checkbox"] {
 <li>執行 <code>git branch --show-current</code> 與 <code>git remote -v</code>。</li>
 <li><strong>禁止猜測</strong>：若當前分支與目標 <code>{BASE_BRANCH}</code> 不符，或遠端路徑異常，必須先修正環境而非盲目執行。</li>
 </ul></li>
-<li><strong>讀取 <code>.{{AGENT_NAME}}/tracker.json</code></strong>。</li>
-<li>🛡️ <strong>Labyrinth 心跳校驗 (Heartbeat Check)</strong>：
+<li><strong>讀取 <code>.{{AGENT_NAME}}/tasks/</code> 中的目標任務檔案</strong>。</li>
+<li>🛡️ <strong>文學化對齊校驗 (Literate Sync Check)</strong>：
 <ul>
-<li>讀取 <code>.metadata.last_arbitration</code>。</li>
-<li>與當前系統時間對比。若差距 &gt; 4 小時（或 4 倍的 <code>arbitration_interval</code>），<strong>停止執行</strong>並回報：「Labyrinth 停更，治理系統已癱瘓 (Arbitrator Paralysis)」。</li>
+<li>檢查 <code>labyrinth.yml</code> 的主版本號或 Hash。</li>
+<li>若任務檔案中的 <code>metadata.blueprint_hash</code> 與當前藍圖不符，<strong>停止執行</strong>。</li>
+<li><strong>理由</strong>：防止執行過時的「影子任務」，確保工人始終與人類架構師的最新願景對齊。</li>
 </ul></li>
-<li>找到 <code>current_phase</code> 中第一個 <code>status == "pending"</code> 的任務。</li>
+<li>🛡️ <strong>Labyrinth 心跳校驗 (Heartbeat Check)</strong>：</li>
+<li>按優先級找到第一個 <code>status == "pending"</code> 的任務檔案。</li>
 <li>🛡️ <strong>健康檢查</strong>：若該任務的 <code>attempts</code> &gt;= 5，視為「持續性死鎖」，<strong>停止執行</strong>並回報人類。</li>
-<li>若沒有 <code>pending</code> 任務，回報「所有任務已完成或正在等待 CI bump phase」並終止。</li>
+<li>若沒有 <code>pending</code> 任務，回報「所有任務已完成」並終止。</li>
 </ol>
 </section>
 <section id="step-2-互斥鎖檢查與分支建立-branch-as-lock-checkout" class="level2">
@@ -278,7 +280,7 @@ ul.task-list li input[type="checkbox"] {
 </tr>
 </tbody>
 </table>
-<p><strong>CI 失敗恢復流程 (Refined Recovery)：</strong> 1. 讀取任務的 <code>attempts</code> 次數： - <strong>若 <code>attempts</code> &lt; 3</strong>：視為可能之 Flaky 或輕微錯誤。 - <strong>動作</strong>: 在當前分支執行 <code>git commit --allow-empty -m "fix: retry CI (warm recovery)" &amp;&amp; git push</code>。 - <strong>目標</strong>: 原地重試，保留代碼資產。 - <strong>若 <code>attempts</code> &gt;= 3</strong>：視為方向性失敗或死鎖。 - <strong>動作</strong>: 執行「冷啟動恢復」： 1. 關閉 PR：<code>gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code> 2. 刪除遠端分支：<code>git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code> 3. 停止並由 Arbitrator 標註失敗。</p>
+<p><strong>CI 失敗恢復流程 (Refined Recovery)：</strong> 1. 🛡️ <strong>強制同步與驗證 (Freshness Check)</strong>： - 執行 <code>git fetch origin {{BASE_BRANCH}}</code>。 - 讀取 <code>origin/{{BASE_BRANCH}}:.{{AGENT_NAME}}/tracker.json</code> 中的 <code>attempts</code>。 - <strong>禁令</strong>：禁止使用 Feature Branch 本地緩存的 <code>tracker.json</code> 進行判定。 2. 讀取任務的 <code>attempts</code> 次數： - <strong>若 <code>attempts</code> &lt; 3</strong>：視為可能之 Flaky 或輕微錯誤。 - <strong>動作</strong>: 在當前分支執行 <code>git commit --allow-empty -m "fix: retry CI (warm recovery)" &amp;&amp; git push</code>。 - <strong>目標</strong>: 原地重試，保留代碼資產。 - <strong>若 <code>attempts</code> &gt;= 3</strong>：視為方向性失敗或死鎖。 - <strong>動作</strong>: 執行「冷啟動恢復」： 1. 關閉 PR：<code>gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code> 2. 刪除遠端分支：<code>git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}</code> 3. 停止並由 Arbitrator 標註失敗。</p>
 <blockquote class="blockquote">
 <p>⚠️ <strong>attempts 遞增由 <code>cleanup-stale-tasks.yml</code> (Arbitrator) 統一負責。</strong> Worker 無權直接 push 至 <code>{BASE_BRANCH}</code>，因此不得自行修改 tracker.json 的 attempts。 Arbitrator 每小時掃描後自動遞增 attempts 並推送至 main，確保「單一寫入點 (Single Writer)」。</p>
 </blockquote>
