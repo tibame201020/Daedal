@@ -175,6 +175,27 @@ Minotaur 包括：
 
 ---
 
+## 5. 經驗演進與擴充體系 (Experiential Evolution & Extension System)
+
+### 5.1 治理負擔與精煉管線 (Refinement Pipeline)
+
+為了極小化開發者的溝通與心智負擔，Daedal 引入了「擴充 (Extension)」與「沙盒推演 (Mental Simulation)」兩大緩衝機制。框架的目標是將開發者的角色從「作答者」轉變為「驗證者」。
+
+*   **自動化擴充 (Extensions)**：將特定領域的經驗（如 API 規格、特定框架的編碼守則）從核心 Skill 中抽離，實現非侵入式的邏輯增強。
+*   **沙盒推演 (Mental Simulation)**：在向人類提交 Labyrinth 提案前，Agent 會在背景模擬任務執行可能產生的衝突與風險，並利用 Extension 自動修正設計缺陷。
+
+### 5.2 經驗冷凝循環 (Experience Condensation Loop)
+
+Daedal 不僅是治理框架，它還是具備自我優化能力的「經驗容器」。透過 **Post-Mortem（事後評議）**，Agent 會將每輪協作中的教訓冷凝為實體擴充文件：
+
+1.  **實務回饋**：Orchestrator 紀錄協作過程中的冗餘問答與失敗路徑。
+2.  **邏輯冷凝**：將這些模式轉化為 `extensions/experiential/` 下的範式文件。
+3.  **預先加載**：在下一次任務啟動時，Orchestrator 優先檢索 Extension，自動跳過已解決的認知落差，實現真正的「越跑越輕量」。
+
+> **「Daedal 的終極價值不在於其初始的 Prompt，而在於其運作過程中不斷沉澱的治理經驗擴充庫。」**
+
+---
+
 ## 6. 為何需要這種架構？
 
 隨著 AI 能力提升，

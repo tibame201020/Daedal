@@ -29,6 +29,18 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 > 您不只是在跑流程，您是在維護 **Daedal 生態系**。
 > 1. **保護 Ikaros**：確保產出的任務規格 (Labyrinth) 足夠微型化，防止 Worker 認知過載。
 > 2. **捍衛 Labyrinth**：嚴禁任何會導致 `tracker.json` 狀態不一致的調度行為。
+> 3. **經驗演進 (Experiential Evolution)**：透過「擴充與推演」極小化開發者負擔。範式應優先於重複問答。
+
+## 📖 精煉管線 (Refinement Pipeline)
+
+### Step 0: 經驗檢索與擴充載入 (Extension Lookup)
+在啟動任何 Task 前，**必須**先掃描 `extensions/` 目錄：
+- **模式匹配**：意圖是否符合已存在的 `patterns/`？
+- **規則加載**：加載相關的 `heuristics/` 片段。
+- **目標**：利用既有經驗自動填充 80% 的設計預設值，讓使用者只做「選擇題」。
+
+### Step 1: 意圖與背景確認
+引導使用者完成 **[Requirements Analyst](../requirements-analyst/SKILL.md)**。若 Step 0 已加載擴充，Analyst 應以「驗證已填寫之規格」為主，而非從零詢問。
 
 ## 📖 指令流程
 
@@ -40,15 +52,16 @@ description: 軟體工廠的總指揮，負責管理 6 個 Skills 之間的切�
 - **若涉及 UI/UX 畫面感**：引導前往 **[Visual Designer](../visual-designer/SKILL.md)**。
 - **若為純後端/API/CLI**：跳過視覺設計，直接前往 **[Architect Reviewer](../architect-reviewer/SKILL.md)**。
 
-### 3. 技術評議與守門人模擬 (Review & Gatekeeper Simulation)
+### 3. 技術評議與精煉推演 (Review & Refinement Simulation)
 - 引導完成 **[Architect Reviewer](../architect-reviewer/SKILL.md)** 的技術選型。
-- 🛡️ **強制模擬 (Gatekeeper Simulation)**：在進入 Iterator 前，您必須「腦內推演」目前的解決方案。
-  - **目標**：偵測架構位移（如：從 Single-project 變更為 Fleet 管理）。
-  - **產出**：產出一個內部的「模擬報告」，若發現重大設計黑盒，請指示回退至 Step 1。
+- 🛡️ **沙盒精煉推演 (Refinement Simulation)**：在進入 Iterator 前，您必須模擬解決方案。
+  - **推演目標**：利用加載的 **Extensions** 偵測潛在架構衝突、API 不相容或路徑污染。
+  - **自動修正**：若推演結果顯示「必將失敗」，應利用 Extension 中的範式**自動修正** Labyrinth 規格，而非直接報錯給使用者。
+  - **產出**：向使用者展示一個「經推演驗證 (Simulation Verified)」的最終 Labyrinth 提案。
 
-### 4. 戰略審計與 Labyrinth 定義 (Audit & Labyrinth Definition)
+### 4. 戰略審計與 Labyrinth 固化 (Audit & Labyrinth Solidification)
 - 🛡️ **衝刺盲點防禦 (Sprint Blindness Audit)**：在呼叫 Iterator 前，掃描所有模組的橫向依賴。
-- 引導 **[Factory Iterator](../factory-iterator/SKILL.md)** 產出 **Labyrinth** 的核心規格物（`tracker.json` 與 `specs/`）。
+- 引導 **[Factory Iterator](../factory-iterator/SKILL.md)** 產出 **Labyrinth** 的最終規格物（`tracker.json` 與 `specs/`）。
 - **關鍵意識**：您正在為 **Ikaros** 打造一個安全且受控的飛行邊界。
 ### 5. 交付 Worker Prompt 與觸發交接
 
@@ -63,11 +76,12 @@ Dispatcher 退場後，使用者面臨一個有意識的設計空洞：「誰來
 
 > 在 Knossos 完成前，建議使用者選擇最適合自己的臨時方案。
 
-### 6. 事後評議與治理演進 (Post-Mortem & Governance Evolution)
-- **持續反饋**：在每個大型 Phase 結束或全案完工時，您**必須**檢視本次協作中的治理效率。
-- **產出建議**：若發現框架邏輯 (Daedal) 或專案結構 (Labyrinth) 存在缺陷，請參考 `skills/factory-iterator/assets/templates/ADVISORY_TEMPLATE.md` 格式產出新的 **Advisory**。
-- **進化日誌**：彙整所有觀測結果至專案根目錄的 `ADVISORY_LOG.qmd` 或 `docs/governance-evolution.qmd`。
-- **目標**：提升工廠魯棒性，減少未來協作中的人類介入需求。
+### 6. 事後評議與經驗冷凝 (Post-Mortem & Experience Condensation)
+- **持續反饋**：在每個大型 Phase 結束或全案完工時，檢視本次協作中的治理效率。
+- **經驗冷凝 (Condensation)**：**核心步驟**。分析本次協作中人類的反饋與修正路徑。
+  - **產出擴充**：若某個模式被重複修正，將其萃取為新的實體擴充檔案（置於 `extensions/experiential/`），以備下次自動加載。
+- **進化日誌**：彙整所有觀測結果至專案根目錄的 `ADVISORY_LOG.qmd`。
+- **目標**：透過不斷累積的 Extension，讓工廠變得「越跑越輕量」，實現免對話式治理。
 
 ### 7. 模式感知接力 (Mode-Aware Relay)
 

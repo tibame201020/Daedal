@@ -1,0 +1,19 @@
+pattern_id: auth-standard-v1
+description: 標準 JWT 認證體系，包含 Login, Register 與 Middleware 平面。
+target_labyrinth:
+  phase_id: auth_foundation
+  tasks:
+    - id: auth_setup
+      title: "建立 JWT 認證基礎設施"
+      allowed_paths: ["src/auth/*", "src/middleware/*"]
+      spec_content: |
+        - 實作 /api/login 端點
+        - 實作 /api/register 端點
+        - 實作 JWT Verify Middleware
+    - id: auth_test
+      title: "認證流程整合測試"
+      depends_on: ["auth_setup"]
+      allowed_paths: ["tests/auth/*"]
+heuristics:
+  - "禁止在認證邏輯中硬編碼 Secret"
+  - "密碼必須經過 Argon2 或 Bcrypt 雜湊"
