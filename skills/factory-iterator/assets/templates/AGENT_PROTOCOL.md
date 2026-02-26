@@ -45,12 +45,16 @@
 | `OPEN` + CI 通過或進行中 | 🔒 鎖定中 | 跳過此任務，等待合併 |
 | `OPEN` + CI **失敗** | 🔁 失敗恢復 | 執行以下恢復流程 ⬇️ |
 
-**CI 失敗恢復流程：**
-```
-1. 關閉失敗的 PR：gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
-2. 刪除遠端分支：git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}
-3. 跳過此任務，嘗試下一個 pending 任務
-```
+**CI 失敗恢復流程 (Refined Recovery)：**
+1. 讀取任務的 `attempts` 次數：
+   - **若 `attempts` < 3**：視為可能之 Flaky 或輕微錯誤。
+     - **動作**: 在當前分支執行 `git commit --allow-empty -m "fix: retry CI (warm recovery)" && git push`。
+     - **目標**: 原地重試，保留代碼資產。
+   - **若 `attempts` >= 3**：視為方向性失敗或死鎖。
+     - **動作**: 執行「冷啟動恢復」：
+       1. 關閉 PR：`gh pr close {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
+       2. 刪除遠端分支：`git push origin --delete {{AGENT_NAME}}/{{BASE_BRANCH}}/task-{task_id}`
+       3. 停止並由 Arbitrator 標註失敗。
 
 > ⚠️ **attempts 遞增由 `cleanup-stale-tasks.yml` (Arbitrator) 統一負責。**
 > Worker 無權直接 push 至 `{{BASE_BRANCH}}`，因此不得自行修改 tracker.json 的 attempts。

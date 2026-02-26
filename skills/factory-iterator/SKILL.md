@@ -22,9 +22,12 @@ description: 純粹的「任務規格產出器」。負責建廠部署、任務�
 - **組立式 CI 配置**：根據 Architect Reviewer 評選的技術棧，**組合**對應的 CI 片段。
     - *原則：不再讓 Agent 去「編輯」Yaml 邏輯，而是將標準測試片段「注入」進模板位置。*
 
-### Step 2: 邏輯規格拆解 (Labyrinth Specification)
-- **任務拆解與模組化**：根據 `RFP.md` 產出高內聚、低耦合的任務清單。
-- **視覺規範注入**：將 Design Tokens 寫入任務的 `spec_ref` 檔案。
+### Step 2: 任務拆解與 DAG 建立 (Task Decomposition)
+- **微型化拆解**：將需求分解為 3-5 個原子任務（每個任務 ≤ 300 行異動）。
+- **依賴管理**：建立 `depends_on` 鏈條，防止併發導致的代碼衝突。
+- **🛡️ 邊界正義 (Path Justice Check)**：產出 `allowed_paths` 時，**必須**包含所有涉及的模組路徑。
+    - **禁令**：嚴禁產出空的或不足以完成任務的 `allowed_paths`。若不確定，寧可給予寬鬆的目錄邊界（如 `src/**`），也不要讓 Worker 因路徑約束而死鎖。
+- **產出 `tracker.json`**。
 - **共通規範**：拆解為符合「單檔 300 行內」的微型任務。
 - **🟢 CREATE**：關注環境搭建、初始核心邏輯。
 - **🟡 CONTINUE / 🔴 MAINTAIN**：
