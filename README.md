@@ -164,6 +164,24 @@ Daedal 不是取代工程師。
 
 ---
 
+# 🚀 快速上手 (Quick Start)
+
+Daedal 3.0 採用「文學化架構」，讓專業架構師能直接掌控大局：
+
+### Step 1: 撰寫文學化藍圖
+在專案根目錄建立 `labyrinth.yml`（可參考範本 `skills/factory-iterator/assets/templates/labyrinth-template.yml`），定義你的 Phase 與 Task 高階目標。
+
+### Step 2: 喚醒 Orchestrator 進行補全
+使用你的 AI 助手（如 Cursor）呼叫 **Factory Orchestrator** 技能。它會偵測到藍圖，進入 `Enhancer` 模式，協助你補全技術細節與驗收標準。
+
+### Step 3: 編譯 Labyrinth
+確認規格後，由 **Factory Iterator** 將 `labyrinth.yml` 編譯為原子化的執行狀態 (`.labyrinth/tasks/*.json`)，並自動配置 CI 仲裁護欄。
+
+### Step 4: 派遣 Ikaros 工人
+Labyrinth 建構完成。現在你可以派遣任何符合協議的 Agent 進入專案，它們會遵循 `AGENT_PROTOCOL.md` 與藍圖 Hash 校驗，在絕對安全的軌道上為你生成代碼。
+
+---
+
 # 當前狀態
 
 Early-stage framework.

@@ -11,40 +11,57 @@ subtitle: "Enterprise-grade AI Production Line Pattern"
 
 為了防止大型 AI 專案常見的**幻覺崩潰**與**結構失控**，Daedal 將職責嚴格拆分為五個獨立角色：
 
-::::::: grid
+:::::::: grid
 ::: g-col-6
 ### 🧠 Daedal (框架)
+
 定義工廠的規則與協議。它是幾何學，負責定義邊界，但不生成代碼。
 :::
 
 ::: g-col-6
 ### 🏰 Labyrinth (專案結構)
+
 由 `tracker.json` 與 CI 構成的任務迷宮。它是工人必須遵循的物理路徑。
 :::
 
 ::: g-col-6
 ### 🕊️ Ikaros (執行者)
+
 所有 Worker Agent 的統稱。它們擁有生成力與飛行能力，但受限於迷宮結構。
 :::
 
 ::: g-col-6
 ### 🏛️ Knossos (調度中心)
+
 人類俯瞰迷宮的 Dashboard。負責進度觀測、手動與自動觸發點火。
 :::
 
 ::: g-col-6
 ### ⚖️ 仲裁層 (CI/CD)
+
 整個系統的物理法則。**Merge 是唯一合法的狀態轉移**。測試失敗即無法推進。
 :::
-:::::::
+::::::::
 
-## 🚀 快速開始
+## 🚀 快速上手 (Quick Start)
 
-1.  **閱讀全景藍圖**：瞭解 [五大階段編排](docs/FACTORY_WORKFLOW.qmd)。
+Daedal 3.0 採用「文學化架構 (Literate Architecture)」，一切從藍圖開始：
 
-2.  **啟動編排器**：執行 `factory-orchestrator` 技能進行探索。
+### 1. 撰寫專案藍圖 (Source of Truth)
 
-3.  **學習工人協議**：深入瞭解 [Ikaros 的飛行準則](docs/worker-protocol.qmd)。
+建立或修改根目錄下的 `labyrinth.yml`。這是你與 AI 之間的執行契約。 （參考：`skills/factory-iterator/assets/templates/labyrinth-template.yml`）
+
+### 2. 人機協作補全 (Enhancer Mode)
+
+使用 IDE 喚醒 **Factory Orchestrator** 技能。 它會偵測到你的 `labyrinth.yml`，進入「Enhancer 模式」，協助你補全技術規格與路徑護欄。
+
+### 3. 編譯為執行態 (Labyrinth Compilation)
+
+設計確認後，由 **Factory Iterator** 將 `labyrinth.yml` 「編譯」為分布式的任務狀態 (`.labyrinth/tasks/*.json`)，並部署 CI 護欄。
+
+### 4. 工人起飛 (Ikaros Flight)
+
+迷宮已建好。派遣任何符合協議的 AI Agent 讀取 `AGENT_PROTOCOL.md`。它們將會依照藍圖指定的路徑安全地實作代碼。
 
 ------------------------------------------------------------------------
 
