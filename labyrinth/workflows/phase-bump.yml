@@ -1,6 +1,11 @@
 name: Phase Auto-Bump
-
-# 🔄 此 Workflow 在 PR 合併（push to main）後觸發，確保 Phase 推進不會與 PR merge 競爭。
+# ─────────────────────────────────────────────────────────────
+# 觸發條件：tracker.json 被 push 到 BASE_BRANCH（PR 合併後）
+# 職責：檢查當前 Phase 是否全部完成 → 自動推進到下一個 Phase
+#
+# 與 auto-merge.yml 分離的原因：
+# 避免 Phase Bump commit 與 Squash Merge 競爭 tracker.json 的時序問題。
+# ─────────────────────────────────────────────────────────────
 
 on:
   push:
@@ -31,23 +36,24 @@ jobs:
           CURRENT_PHASE=$(jq -r '.current_phase' $TRACKER)
           echo "Current Phase: $CURRENT_PHASE"
 
-          # 檢查當前 Phase 是否所有任務皆已 completed
-          # ⚠️ jq 的 `all` 對空陣列回傳 true，必須先檢查 length > 0
+          # ⚠️  jq 的 all 對空陣列回傳 true，必須先確認 length > 0
           ALL_DONE=$(jq -r --arg cp "$CURRENT_PHASE" '
             .phases[] | select(.name == $cp) | .tasks |
             if length > 0 then map(.status == "completed") | all else false end
           ' $TRACKER)
 
           if [ "$ALL_DONE" == "true" ]; then
-            echo "All tasks in $CURRENT_PHASE are completed!"
+            echo "All tasks in '$CURRENT_PHASE' completed."
 
             NEXT_PHASE=$(jq -r --arg cp "$CURRENT_PHASE" '
               (.phases | map(.name) | index($cp)) as $idx |
-              if $idx != null and $idx + 1 < (.phases | length) then .phases[$idx + 1].name else "" end
+              if $idx != null and $idx + 1 < (.phases | length)
+              then .phases[$idx + 1].name
+              else "" end
             ' $TRACKER)
 
             if [ -n "$NEXT_PHASE" ]; then
-              echo "Bumping phase to: $NEXT_PHASE"
+              echo "Bumping phase: $CURRENT_PHASE → $NEXT_PHASE"
               jq --arg np "$NEXT_PHASE" '.current_phase = $np' $TRACKER > tmp.json && mv tmp.json $TRACKER
 
               git config user.name "github-actions[bot]"
@@ -56,8 +62,8 @@ jobs:
               git commit -m "chore: auto-bump phase to $NEXT_PHASE [skip ci]"
               git push
             else
-              echo "🎉 All phases completed! Project is done."
+              echo "🎉 All phases completed. Labyrinth is done."
             fi
           else
-            echo "Phase $CURRENT_PHASE still has pending tasks."
+            echo "Phase '$CURRENT_PHASE' still has pending tasks."
           fi

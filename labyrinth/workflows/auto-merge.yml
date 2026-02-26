@@ -1,0 +1,102 @@
+name: Ikaros Auto-Merge
+# ─────────────────────────────────────────────────────────────
+# 觸發條件：PR 被標記為 auto-merge 且來自指定 Bot
+# 職責：驗證 tracker 狀態 → 執行 CI → 自動合併
+#
+# ⚠️  初始化前必須完成：
+#   1. 在 GitHub repo 建立 Label：auto-merge
+#   2. 在 repo Settings > Secrets 新增：PAT_TOKEN（需要 repo + workflow 權限）
+#   3. 替換下方所有 {{PLACEHOLDER}} 為實際值
+#   4. 替換 CI Steps 為實際技術棧的測試指令
+# ─────────────────────────────────────────────────────────────
+
+on:
+  pull_request:
+    types: [labeled, synchronize, reopened, ready_for_review]
+    branches:
+      - '{{BASE_BRANCH}}'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.user.login == '{{BOT_USERNAME}}' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ── Guard 1: Labyrinth 結構驗證 ──────────────────────────
+      - name: Verify Labyrinth Structure
+        run: |
+          if [ ! -f ".{{AGENT_NAME}}/tracker.json" ]; then
+            echo "::error::Labyrinth structure not found. Blocking merge."
+            exit 1
+          fi
+          echo "Labyrinth structure verified."
+
+      # ── Guard 2: Task Status Guard ───────────────────────────
+      - name: Verify Task Completion in Tracker
+        run: |
+          set -x
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          TASK_ID=$(echo "$BRANCH_NAME" | sed 's|.*/task-||' || echo "")
+
+          if [ -z "$TASK_ID" ]; then
+            echo "::warning::Could not extract task ID from branch '$BRANCH_NAME'. Skipping check."
+          else
+            TRACKER_PATH=".{{AGENT_NAME}}/tracker.json"
+            TASK_STATUS=$(jq -r --arg tid "$TASK_ID" \
+              '.phases[].tasks[] | select(.id == $tid) | .status' \
+              "$TRACKER_PATH" 2>/dev/null || echo "not_found")
+
+            echo "Task '$TASK_ID' status: $TASK_STATUS"
+
+            if [ "$TASK_STATUS" != "completed" ]; then
+              echo "::error::Task '$TASK_ID' is '$TASK_STATUS', expected 'completed'."
+              exit 1
+            fi
+          fi
+
+      # ── CI Steps: 替換為實際技術棧 ──────────────────────────
+      # ⚠️  以下為範例，必須根據專案技術棧替換。
+      # ⚠️  Phase 1 允許跳過（尚未初始化），Phase 2 起必須通過。
+
+      - name: Backend Tests
+        run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
+          # 範例：Maven
+          if [ -f "backend/pom.xml" ]; then
+            cd backend && ./mvnw clean test
+          elif [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+            echo "::error::Backend missing after Phase 1."
+            exit 1
+          else
+            echo "Phase 1: Skipping backend tests."
+          fi
+
+      - name: Frontend Tests
+        run: |
+          CURRENT_PHASE=$(jq -r '.current_phase' .{{AGENT_NAME}}/tracker.json)
+          # 範例：NPM
+          if [ -f "frontend/package.json" ]; then
+            cd frontend && npm ci && npm run build
+          elif [[ "$CURRENT_PHASE" != "Phase 1: Setup" ]]; then
+            echo "::error::Frontend missing after Phase 1."
+            exit 1
+          else
+            echo "Phase 1: Skipping frontend tests."
+          fi
+
+      # ── Auto Merge ───────────────────────────────────────────
+      - name: Auto-merge PR
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+          token: ${{ secrets.PAT_TOKEN }}

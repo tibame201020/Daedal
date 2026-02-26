@@ -1,0 +1,53 @@
+# Daedal Task Spec Schema
+# Version: 2.0
+# 每個 specs/tasks/{id}.yml 必須符合此規格。
+# Knossos 在驗證 Labyrinth 時會逐一校驗。
+
+# ─── 必填欄位 ────────────────────────────────────────────────
+
+# [必填] 任務唯一識別碼，必須與 tracker.json 中的 id 完全一致
+id: "task_X"
+
+# [必填] 任務標題，簡潔描述這個任務做什麼
+title: "任務標題"
+
+# [必填] 客觀具體的目標描述，說明完成後的狀態
+objective: "實作 OOO 功能，使系統能夠 XXX"
+
+# [必填] 驗收標準，Ikaros 逐條自我檢查，CI 通過才算完成
+acceptance_criteria:
+  - "建立 XXX 模組並通過單元測試"
+  - "API 回應時間 < 200ms"
+  - "[禁令] 不得修改 YYY 模組的現有介面"
+
+# [必填] 成功指標，量化定義「完成」
+success_criteria:
+  - "測試覆蓋率 ≥ 80%"
+  - "所有 acceptance_criteria 逐條通過"
+
+# [必填] 治理邊界
+grounding:
+  # [必填] Ikaros 允許修改的路徑（glob 格式），必須與 tracker.json 中的 allowed_paths 一致
+  allowed_paths:
+    - "src/modules/target_module/**"
+    - "tests/modules/target_module/**"
+
+# ─── 選填欄位 ────────────────────────────────────────────────
+
+# [選填] 負面測試案例，描述應被阻擋或妥善處理的異常情境
+negative_test_cases:
+  - "輸入 null 時應回傳 400 而非崩潰"
+  - "並發請求時不得出現 Race Condition"
+
+# [選填] 視覺要求，若此任務涉及 UI
+visual_requirements:
+  layout_spec: "左側導航 + 中央主表"
+  wireframe_refs:
+    - "docs/wireframes/dashboard.png"
+
+# [選填] 風險控制
+risk:
+  # LOW / MEDIUM / HIGH
+  collision_risk: "LOW"
+  # 若此任務的路徑與其他任務重疊，需說明
+  collision_warning: ""

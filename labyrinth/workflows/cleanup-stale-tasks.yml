@@ -1,0 +1,114 @@
+name: Ikaros Task Arbitrator
+# ─────────────────────────────────────────────────────────────
+# 觸發條件：每小時一次（cron），或手動觸發
+# 職責：掃描所有 Ikaros 分支 → 清理失效狀態 → 遞增 attempts
+#
+# 單一寫入點原則：attempts 只由此 Arbitrator 修改。
+# Ikaros 無權直接修改 BASE_BRANCH 上的 tracker.json。
+# ─────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  arbitrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Main
+        uses: actions/checkout@v4
+        with:
+          ref: {{BASE_BRANCH}}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Detect and Arbitrate Tasks
+        shell: bash
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull --rebase origin {{BASE_BRANCH}}
+
+          NEED_PUSH=false
+          BRANCHES_TO_DELETE=()
+
+          branches=$(git branch -r \
+            | grep "origin/{{AGENT_NAME}}/{{BASE_BRANCH}}/task-" \
+            | sed 's/origin\///')
+
+          for branch in $branches; do
+            task_id=$(echo $branch | sed 's|.*/task-||')
+            echo "🕵️ Analyzing: $branch (Task: $task_id)"
+
+            pr_data=$(gh pr list \
+              --head "$branch" --state all \
+              --json state,statusCheckRollup \
+              --jq '.[0]' 2>/dev/null)
+            pr_status=$(echo "$pr_data" | jq -r '.state // empty')
+
+            SHOULD_CLEANUP=false
+
+            if [[ "$pr_status" == "CLOSED" ]]; then
+              echo "⚠️  Task $task_id: CLOSED PR found."
+              SHOULD_CLEANUP=true
+
+            elif [[ "$pr_status" == "OPEN" ]]; then
+              ci_failed=$(echo "$pr_data" | jq -r '
+                [.statusCheckRollup[]?
+                  | select(.conclusion == "FAILURE" or .conclusion == "ERROR")]
+                | length > 0
+              ')
+              if [[ "$ci_failed" == "true" ]]; then
+                echo "⚠️  Task $task_id: OPEN PR with CI failure. Closing."
+                gh pr close "$branch" \
+                  --comment "🤖 Arbitrator: CI failed. Closing for retry." || true
+                SHOULD_CLEANUP=true
+              else
+                echo "ℹ️  Task $task_id: OPEN PR, CI passing or pending. Skipping."
+              fi
+
+            elif [[ -z "$pr_status" ]]; then
+              last_commit_time=$(git log -1 --format="%ct" "origin/$branch" 2>/dev/null || echo 0)
+              current_time=$(date +%s)
+              diff_hours=$(( (current_time - last_commit_time) / 3600 ))
+              if [[ $diff_hours -ge 2 ]]; then
+                echo "⚠️  Task $task_id: Phantom branch (${diff_hours}h old)."
+                SHOULD_CLEANUP=true
+              else
+                echo "ℹ️  Task $task_id: Phantom branch recent (${diff_hours}h). Waiting."
+              fi
+            fi
+
+            if [[ "$SHOULD_CLEANUP" == "true" ]]; then
+              jq --arg id "$task_id" \
+                '(.phases[].tasks[] | select(.id == $id)).attempts += 1' \
+                .{{AGENT_NAME}}/tracker.json > tmp.json \
+                && mv tmp.json .{{AGENT_NAME}}/tracker.json
+              BRANCHES_TO_DELETE+=("$branch")
+              NEED_PUSH=true
+            fi
+          done
+
+          if [[ "$NEED_PUSH" == "true" ]]; then
+            echo "🔄 Committing tracker update..."
+            git add .{{AGENT_NAME}}/tracker.json
+            git commit -m "chore(arbitrator): cleanup stale tasks and sync attempts"
+
+            if git push origin {{BASE_BRANCH}} --force-with-lease; then
+              echo "✅ Tracker updated. Purging stale branches..."
+              for b in "${BRANCHES_TO_DELETE[@]}"; do
+                git push origin --delete "$b" \
+                  || echo "⚠️  Failed to delete $b (may already be deleted)"
+              done
+              echo "✅ Arbitration complete."
+            else
+              echo "❌ Race condition: push failed. Will retry next cycle."
+              exit 1
+            fi
+          else
+            echo "✅ No stale tasks found."
+          fi

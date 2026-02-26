@@ -1,0 +1,23 @@
+id: "task_1"
+title: "任務標題"
+objective: "客觀具體的目標描述"
+
+acceptance_criteria:
+  - "實作 XXX 並通過測試"
+  - "[禁令] 不得修改 YYY"
+
+success_criteria:
+  - "測試覆蓋率 ≥ 80%"
+  - "所有 acceptance_criteria 通過"
+
+grounding:
+  allowed_paths:
+    - "src/modules/example/**"
+    - "tests/modules/example/**"
+
+negative_test_cases:
+  - "輸入 null 時應回傳 400"
+
+risk:
+  collision_risk: "LOW"
+  collision_warning: ""

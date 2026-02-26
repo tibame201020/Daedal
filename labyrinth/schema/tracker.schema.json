@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://daedal.dev/schema/tracker.json",
+  "title": "Daedal Labyrinth Tracker",
+  "description": "Labyrinth 的狀態機。定義專案的 Phase 結構與任務 DAG。",
+  "type": "object",
+  "required": ["project", "agent_name", "base_branch", "current_phase", "phases"],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "type": "string",
+      "minLength": 1,
+      "description": "專案名稱"
+    },
+    "agent_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Ikaros 的 Agent 名稱，對應 GitHub Bot 帳號（如 jules-agent）"
+    },
+    "base_branch": {
+      "type": "string",
+      "minLength": 1,
+      "description": "主線分支名稱（如 main）"
+    },
+    "current_phase": {
+      "type": "string",
+      "minLength": 1,
+      "description": "當前執行中的 Phase 名稱，必須對應 phases 陣列中某個 phase 的 name"
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Phase 陣列，按照執行順序排列",
+      "items": {
+        "type": "object",
+        "required": ["phase_id", "name", "tasks"],
+        "additionalProperties": false,
+        "properties": {
+          "phase_id": {
+            "type": "string",
+            "pattern": "^phase_[0-9]+$",
+            "description": "Phase 唯一識別碼，格式：phase_1、phase_2..."
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Phase 名稱（如 Phase 1: Setup）"
+          },
+          "tasks": {
+            "type": "array",
+            "minItems": 1,
+            "description": "此 Phase 的任務清單",
+            "items": {
+              "type": "object",
+              "required": ["id", "title", "status", "attempts", "depends_on", "allowed_paths", "spec_ref"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^task_[a-z0-9_]+$",
+                  "description": "任務唯一識別碼，格式：task_1、task_2_1..."
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "任務標題"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": ["pending", "completed"],
+                  "description": "任務狀態。pending: 待執行，completed: 已完成（由 Ikaros 在提 PR 前更新）"
+                },
+                "attempts": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "失敗重試次數。由 Arbitrator（cleanup-stale-tasks.yml）統一遞增。達到 5 次時 Ikaros 熔斷。"
+                },
+                "depends_on": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^task_[a-z0-9_]+$"
+                  },
+                  "description": "前置依賴的任務 ID 清單。空陣列表示無依賴。"
+                },
+                "allowed_paths": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": "Ikaros 允許修改的路徑清單（glob 格式，如 src/auth/**）。嚴禁飛出此範圍。"
+                },
+                "spec_ref": {
+                  "type": "string",
+                  "pattern": "^specs/tasks/.+\\.yml$",
+                  "description": "對應的任務規格檔案路徑，格式：specs/tasks/{id}.yml"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

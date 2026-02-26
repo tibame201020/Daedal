@@ -1,0 +1,31 @@
+{
+  "project": "YOUR_PROJECT_NAME",
+  "agent_name": "YOUR_AGENT_NAME",
+  "base_branch": "main",
+  "current_phase": "Phase 1: Setup",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Phase 1: Setup",
+      "tasks": [
+        {
+          "id": "task_1",
+          "title": "任務名稱",
+          "status": "pending",
+          "attempts": 0,
+          "depends_on": [],
+          "allowed_paths": [
+            "src/modules/example/**",
+            "tests/modules/example/**"
+          ],
+          "spec_ref": "specs/tasks/task_1.yml"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Phase 2: Implementation",
+      "tasks": []
+    }
+  ]
+}

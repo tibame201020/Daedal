@@ -1,174 +1,141 @@
 # Daedal
 
-### The Structured AI Software Factory
+**讓 Ikaros 在 Labyrinth 中飛行的協議規範。**
 
-在 AI Coding Agent 爆發的時代，
-問題已經不是「能不能寫程式」，
-而是——**能不能可控地推進專案**。
+---
 
-Daedal 是一套結構化 AI 軟體工廠框架，
-將生成式 AI 納入可驗證、可治理的工程流程。
+## 什麼是 Daedal？
 
-它不是更強的 Agent。
-它是讓 Agent 不失控的系統。
+Daedal 是一套協議規範，定義了如何讓 AI Agent（Ikaros）在結構化的專案環境（Labyrinth）中，可靠、可預測、可驗證地將專案迭代完成。
+
+它不是流程工具，不是 AI 助手，不是代碼生成器。
+
+**它是法律。** Knossos 是執法者。Ikaros 是在法律框架內行動的個體。
+
+---
+
+## 生態系
+
+```
+Daedal      定義規範          本 repo：Protocol、Schema、CI workflows
+Labyrinth   承載結構          每個專案內的 tracker.json + specs + CI
+Knossos     塔台（執法者）    驗證 Labyrinth、持續監控、觸發 Ikaros、可介入
+Ikaros      飛行者            任何符合協議的 AI Agent（Jules、Devin、Cursor...）
+CI          物理法則          無情仲裁，任何人都無法繞過
+```
+
+**Knossos 是必要核心，不是可選組件。**
+Labyrinth 必須通過 Knossos 驗證，Ikaros 才能起飛。
+
+---
+
+## 核心承諾
+
+> 只要你的 Labyrinth 符合 Daedal 規範，並通過 Knossos 驗證，
+> 你就可以放心讓 Ikaros 飛，直到專案完工。
+
+**你不需要監控每一個 PR。**
+**你不需要手動推進 Phase。**
+**你不需要知道 Ikaros 在做什麼。**
+
+CI 是裁判。沒有通過 CI 的 Merge，就沒有進度推進。
 
 ---
 
 ## 為什麼需要 Daedal？
 
-AI Agent 可以：
+AI Agent 能寫程式。但在長期專案中，它們會：
 
-* 產生大量程式碼
-* 快速重構模組
-* 連續自動迭代
+- 破壞依賴順序
+- 產生不可回溯的修改
+- 繞過測試直接合併
+- 在大型專案中失去結構感
 
-但它們常常：
-
-* 破壞依賴順序
-* 產生不可回溯的修改
-* 合併錯誤代碼
-* 在大型專案中失去結構
-
-Daedal 解決的不是「生成能力」，
-而是「生成治理」。
+Daedal 解決的不是生成能力，而是**生成治理**。
 
 ---
 
-# Daedal 生態系統
+## Repo 結構
 
-Daedal 並不是單一工具。
-它是一個角色分離的體系。
-
----
-
-## 🧠 Daedal — 框架本身
-
-定義整套工廠的規則與協議。
-
-* 任務必須是 DAG
-* 狀態必須透過 Git 推進
-* 合併必須經 CI 驗證
-* Worker 不得越權
-
-Daedal 是幾何學。
-它定義邊界。
-
----
-
-## 🏗 Labyrinth — 被建造的專案結構
-
-每個使用 Daedal 初始化的專案，
-都會生成一個「Labyrinth」。
-
-它包含：
-
-* `tracker.json`（任務狀態圖）
-* `specs/*.yml`（驗收標準）
-* CI workflows（自動仲裁）
-
-Labyrinth 是專案的骨架。
-Worker 只能沿著結構行走。
+```
+Daedal/
+├── protocol/                    # Ikaros 飛行協議
+│   ├── IKAROS_PROTOCOL.md       # Ikaros 每次甦醒執行的完整步驟
+│   └── rules/                   # 預設規則（可複製到 Labyrinth）
+│       ├── git-workflow.md
+│       └── coding-style.md
+│
+└── labyrinth/                   # Labyrinth 規格定義
+    ├── schema/                  # Knossos 用來驗證的 Schema
+    │   ├── tracker.schema.json  # tracker.json 的完整 JSON Schema
+    │   └── spec.schema.yml      # 任務規格書的格式規範
+    ├── templates/               # 空白模板，照著填就對
+    │   ├── tracker.json
+    │   └── task_spec.yml
+    └── workflows/               # CI 仲裁層模板
+        ├── auto-merge.yml       # PR 驗證 + 自動合併
+        ├── phase-bump.yml       # Phase 自動推進
+        └── cleanup-stale-tasks.yml  # 每小時仲裁（Arbitrator）
+```
 
 ---
 
-## 🏛 Knossos — 調度中心（Dashboard）
+## 如何使用
 
-Knossos 是人類俯瞰迷宮的地方。
+### 1. 制定你的 Labyrinth
 
-它提供：
+複製 `labyrinth/templates/tracker.json`，填入你的專案資訊、Phase 結構與任務 DAG。
 
-* 任務進度可視化
-* PR 與 CI 狀態
-* 手動或排程 Trigger
-* 日誌與執行紀錄
+每個任務對應一份 `specs/tasks/{id}.yml`，格式參考 `labyrinth/templates/task_spec.yml`。
 
-Knossos 不寫程式。
-它觀測與觸發。
+**Labyrinth 可以用任何方式產生：** 手工撰寫、LLM 對話輔助、Knossos UI 引導——Daedal 不在乎來源，只在乎格式。
 
----
+### 2. 通過 Knossos 驗證
 
-## 🕊 Ikaros — Worker Agents
+將你的 Labyrinth 接入 Knossos，Knossos 會驗證：
 
-Ikaros 是所有外部 AI Agent 的統稱。
+- `tracker.json` 符合 `tracker.schema.json`
+- 每個 `spec_ref` 指向的檔案實際存在且格式正確
+- CI workflows 的佔位符全部填入
+- GitHub repo 的必要設定（PAT_TOKEN、auto-merge label）已就緒
 
-可以是：
+**全部通過後，Ikaros 才能起飛。**
 
-* Jules
-* Devin
-* Cursor Agent
-* 任何符合協議的執行者
+### 3. 放飛 Ikaros
 
-Ikaros 可以生成。
-但它無法決定專案是否前進。
+Knossos 觸發 Ikaros（手動或 Cron 排程），Ikaros 遵循 `IKAROS_PROTOCOL.md` 自主執行：
 
----
+- 讀取 Labyrinth 狀態
+- 領取任務、切 branch、實作、提 PR
+- CI 自動驗收、合併、推進 Phase
 
-## ⚖ 仲裁層（CI/CD）
+循環直到 Labyrinth 全部完工。
 
-這是整個系統的物理法則。
+### 4. 人類的角色
 
-* 測試失敗 → 無法合併
-* 驗收未通過 → 狀態不推進
-* PR 不乾淨 → 退回修正
-
-在 Daedal 中：
-
-> 沒有 Merge，就沒有完成。
+- **介入**：透過 Knossos 觀測狀態、暫停排程、手動 Accept PR、強制 Retry
+- **熔斷**：當某個任務 `attempts >= 5`，Ikaros 自動停止並等待人類介入
+- **無需監控**：正常狀態下，你只需要等待 Knossos 通知「完工」
 
 ---
 
-# 核心價值
+## 物理法則（不可繞過）
 
-Daedal 建立三件事：
-
-### 1️⃣ 可預測性
-
-任務順序由 DAG 決定，而不是 Agent 猜測。
-
-### 2️⃣ 可驗證性
-
-每次推進都必須通過 CI。
-
-### 3️⃣ 權力分離
-
-設計、執行、觀測、仲裁彼此分離。
-
-這使得 AI 不再是失控的加速器，
-而是可治理的生產力。
+1. **Merge 才是進度** — 沒有通過 CI 的 PR 不能合併，狀態不推進
+2. **Ikaros 不越界** — 所有變更必須在 `allowed_paths` 範圍內
+3. **Arbitrator 是唯一寫入者** — `attempts` 只由 `cleanup-stale-tasks.yml` 修改
+4. **Knossos 是守門人** — 未通過驗證的 Labyrinth，Ikaros 不起飛
 
 ---
 
-# 我們的立場
+## Knossos
 
-AI 不需要更多自由。
+Knossos 是 Daedal 生態系的第一個完成品，本身也用 Daedal 建造（dogfood）。
 
-它需要更好的結構。
-
-Daedal 不是取代工程師。
-它讓工程流程在 AI 時代仍然成立。
+→ [Knossos repo](https://github.com/your-username/Knossos)（建造中）
 
 ---
 
-# 適用場景
+## CHANGELOG
 
-* 自動化專案迭代
-* 長期無人值守開發
-* 多 Agent 協作
-* 需要強 CI 控制的專案
-* 企業級 AI 開發流程實驗
-
----
-
-# 當前狀態
-
-Early-stage framework.
-正在持續演進與驗證。
-
----
-
-# 簡單一句話
-
-> Daedal 是一套將生成式 AI 納入確定性工程流程的控制框架。
-
-不是飛得更高。
-而是飛得更穩。
+→ [CHANGELOG.md](CHANGELOG.md)
