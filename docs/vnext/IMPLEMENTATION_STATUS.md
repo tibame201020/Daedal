@@ -13,9 +13,16 @@ Date: 2026-10-23 (Asia/Taipei). **VS1–VS5 are implemented as a bounded, test-b
 - A complete fixture crosses store reconstruction, real protected file creation, actual Node test execution, externally provided source review, child + parent acceptance, source Project change, local reference refresh, re-verification and external test-file mutation.
 - Synthetic regression cases also reject Paperclip ownership duplication and Browser Harness core modification despite green unit tests; this is **not** a general semantic code-review engine.
 
+## Domain Contract & Code Review remediation
+
+- `decompose`, `relate` and `reviseGoal` enforce explicit Actor / expected revision / Decision Risk with recorded revisions; relevant callbacks recheck freshness before committing. Parent composition and content have distinct CAS fields.
+- Discovery candidates do not modify effective relations. Acceptance requires a trusted independent provenance check, then a separately auditable accepted revision. Restored snapshots validate Candidate and Accepted Knowledge integrity; experimental snapshot schema is now v2.
+- The public `labyrinth.mjs` entrypoint delegates to small original-domain components. Source-size regression checks enforce <=300 lines per `src/*.mjs` and <=50 lines per declared top-level function; a read-only snapshot query view replaces mutable `read()`.
+- `npm test` enforces >=80% aggregate line/branch/function coverage in CI. See [Domain Contract closeout](DOMAIN_CONTRACT_CLOSEOUT_20261023.md) and the initial independent [acceptance review](ACCEPTANCE_REVIEW_20261023.md).
+
 ## Fresh remote verification
 
-At code-and-docs HEAD `37631d776c9d5598c91c6ef5b1028ccf80b15e47`, GitHub Actions `Daedal vNext Contract Tests` run **39822500172**, job **119977140139**, completed / success; raw job output: **50 tests, 50 pass, 0 fail**. A later documentation-only commit requires a new HEAD readback.
+Code-and-docs commit `38ca9f3a929ebfcd0b63b8f8f2dc598ed269317a`: GitHub Actions `Daedal vNext Contract Tests` run **39841010543**, job **120041698314**, completed / success; raw job output: **66 tests / 66 pass / 0 fail / 0 skip**, line **99.73%**, branch **89.96%**, function **97.46%** overall. Subsequent documentation-only commits require their own HEAD/CI readback.
 
 ## Remaining production acceptance gates
 

@@ -31,3 +31,7 @@ Snapshot schema is now **2** because Candidate and Accepted Knowledge indexes an
 ## Remaining distinct product/deployment gates
 
 Authenticated callers/approvers/reviewers, real external source-provenance attestation, model or human independent semantic Code/Spec QC, OS-level write isolation, native Paperclip/Browser Harness E2E, durable backup/restore and explicit original-v2 migration acceptance are separate from this local Domain Contract closeout. Do not treat synthetic test review as external product acceptance or automatically merge/release.
+
+## Remote verification receipt
+
+At commit `38ca9f3a929ebfcd0b63b8f8f2dc598ed269317a`, GitHub Actions run `39841010543` (job `120041698314`) completed SUCCESS: **66/66 tests PASS, zero failures/skips**, aggregate Line 99.73%, Branch 89.96%, Function 97.46%. This supersedes the initial local-contract blockers, not the separate production integration/security gates.
