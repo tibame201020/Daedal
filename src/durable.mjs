@@ -7,14 +7,7 @@ const hash = text => createHash('sha256').update(text).digest('hex');
 const clone = value => structuredClone(value);
 const valid = value => typeof value === 'string' && value.length > 0;
 
-/** Host-only, local durable store. A per-directory lock serializes its synchronous transactions.
- * Not a cryptographic authentication or network/distributed storage implementation.
- */
-export function createFileSnapshotStore({ directory }) {
-  const root = realpathSync(directory);
-  const statePath = join(root, 'labyrinth-state.json');
-  const lockPath = join(root, '.labyrinth-write-lock');
-  const readEnvelope = () => {
+function readEnvelope(statePath) {
     if (!existsSync(statePath)) return { revision: 0, snapshot: null };
     const stat = lstatSync(statePath);
     if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('corrupt state file type');
@@ -28,13 +21,9 @@ export function createFileSnapshotStore({ directory }) {
       projectId: record.projectId, snapshot: record.snapshot }));
     if (actual !== record.sha256 || record.snapshot.projectId !== record.projectId) throw new Error('state checksum mismatch');
     return { revision: record.revision, snapshot: record.snapshot };
-  };
-  const restore = (seed, ports, stored) => {
-    if (!seed || !valid(seed.projectId)) throw new Error('project seed required');
-    if (stored.snapshot && stored.snapshot.projectId !== seed.projectId) throw new Error('state project mismatch');
-    return createLabyrinth(seed, { ...ports, ...(stored.snapshot ? { initialSnapshot: stored.snapshot } : {}) });
-  };
-  const write = (revision, snapshot) => {
+}
+
+function writeEnvelope(root, statePath, revision, snapshot) {
     const body = { format: 1, revision, projectId: snapshot.projectId, snapshot };
     const data = JSON.stringify({ ...body, sha256: hash(JSON.stringify(body)) });
     const tmp = join(root, '.labyrinth-' + randomUUID() + '.tmp');
@@ -51,13 +40,38 @@ export function createFileSnapshotStore({ directory }) {
       if (fd !== undefined) closeSync(fd);
       if (existsSync(tmp)) unlinkSync(tmp);
     }
+}
+
+function readonlyMap(map) {
+  return Object.freeze({
+        projectId: map.projectId,
+        navigate: (...args) => map.navigate(...args),
+        inspectReference: (...args) => map.inspectReference(...args),
+        checkCapability: (...args) => map.checkCapability(...args),
+        contractStatus: (...args) => map.contractStatus(...args),
+        proofs: (...args) => map.proofs(...args),
+        history: (...args) => map.history(...args),
+        revisions: () => map.revisions()
+  });
+}
+
+/** Host-only, local durable store: a per-directory writer lock serializes transactions. */
+export function createFileSnapshotStore({ directory }) {
+  const root = realpathSync(directory);
+  const statePath = join(root, 'labyrinth-state.json');
+  const lockPath = join(root, '.labyrinth-write-lock');
+  const restore = (seed, ports, stored) => {
+    if (!seed || !valid(seed.projectId)) throw new Error('project seed required');
+    if (stored.snapshot && stored.snapshot.projectId !== seed.projectId) throw new Error('state project mismatch');
+    return createLabyrinth(seed, { ...ports, ...(stored.snapshot ? { initialSnapshot: stored.snapshot } : {}) });
   };
   return Object.freeze({
     statePath,
     read(seed, ports, operation) {
       if (typeof operation !== 'function') throw new Error('trusted read operation required');
-      const map = restore(seed, ports, readEnvelope());
-      const result = operation(map);
+      const map = restore(seed, ports, readEnvelope(statePath));
+      const readonly = readonlyMap(map);
+      const result = operation(readonly);
       if (result && typeof result.then === 'function') throw new Error('async operation unsupported');
       return clone(result);
     },
@@ -65,13 +79,13 @@ export function createFileSnapshotStore({ directory }) {
       if (typeof operation !== 'function') throw new Error('trusted transaction required');
       try { mkdirSync(lockPath, { mode: 0o700 }); } catch { throw new Error('concurrent state transaction or lock recovery required'); }
       try {
-        const before = readEnvelope();
+        const before = readEnvelope(statePath);
         if (expectedRevision !== undefined && expectedRevision !== before.revision) throw new Error('revision conflict');
         const map = restore(seed, ports, before);
         const result = operation(map);
         if (result && typeof result.then === 'function') throw new Error('async operation unsupported');
         const snapshot = map.exportSnapshot();
-        write(before.revision + 1, snapshot);
+        writeEnvelope(root, statePath, before.revision + 1, snapshot);
         return { revision: before.revision + 1, result: clone(result) };
       } finally { rmdirSync(lockPath); }
     },

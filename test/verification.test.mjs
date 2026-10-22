@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { createLabyrinth } from '../src/labyrinth.mjs';
@@ -24,7 +25,7 @@ function fixture({ mutateSource, mutateReview, provider, verifier } = {}) {
     return mutateReview ? mutateReview(result, input) : result;
   } };
   const map = createLabyrinth(seed, { evidenceProvider, independentVerifier });
-  map.decompose({ id: 'feature', parentId: 'project', outcome: 'Connect native issue', acceptance: ['Native issue readback'], boundary: { allow: ['adapter.integration'] } });
+  decompose(map, { id: 'feature', parentId: 'project', outcome: 'Connect native issue', acceptance: ['Native issue readback'], boundary: { allow: ['adapter.integration'] } });
   return { map, calls, contract: () => map.issueContract('feature'), verify(contract = map.issueContract('feature'), evidenceRefs = ['artifact', 'test']) { return map.verifyGoal({ contract, evidenceRefs }); } };
 }
 
@@ -115,8 +116,8 @@ test('stale revision and unknown relationship block proof acceptance', () => {
   f.map.reviseGoal({ id: 'feature', expectedVersion: 1, actor: 'worker', change: { outcome: 'Updated scope' }, decision: { door: 'two-way', blastRadius: 'local', evidenceConfidence: 'high' } });
   assert.throws(() => f.verify(contract), /stale/);
   const unknown = fixture();
-  unknown.map.decompose({ id: 'external', parentId: 'project', outcome: 'Unknown dependency', acceptance: ['Proved'], boundary: { allow: ['adapter.integration'] } });
-  unknown.map.relate({ fromId: 'feature', toId: 'external', type: 'unknown' });
+  decompose(unknown.map, { id: 'external', parentId: 'project', outcome: 'Unknown dependency', acceptance: ['Proved'], boundary: { allow: ['adapter.integration'] } });
+  relate(unknown.map, { fromId: 'feature', toId: 'external', type: 'unknown' });
   assert.throws(() => unknown.verify(), /unresolved/);
 });
 
@@ -129,7 +130,7 @@ test('later relevant revision reclassifies accepted proof as needs-reverificatio
 
 test('unrelated sibling revision does not invalidate accepted feature proof', () => {
   const f = fixture(); f.verify();
-  f.map.decompose({ id: 'sibling', parentId: 'project', outcome: 'Sibling', acceptance: ['Sibling done'], boundary: { allow: ['adapter.integration'] } });
+  decompose(f.map, { id: 'sibling', parentId: 'project', outcome: 'Sibling', acceptance: ['Sibling done'], boundary: { allow: ['adapter.integration'] } });
   f.map.reviseGoal({ id: 'sibling', expectedVersion: 1, actor: 'worker', change: { outcome: 'Sibling v2' }, decision: { door: 'two-way', blastRadius: 'local', evidenceConfidence: 'high' } });
   assert.equal(f.map.navigate('feature').goal.status, 'completed');
   assert.equal(f.map.navigate('project').goal.status, 'pending');
@@ -157,7 +158,7 @@ test('parent separately passes native integration acceptance, and later composit
   assert.equal(result.verdict, 'pass');
   assert.equal(f.calls.reviews.at(-1).context.acceptance[0], 'Native E2E');
   assert.equal(f.map.navigate('project').goal.status, 'completed');
-  f.map.decompose({ id: 'new-child', parentId: 'project', outcome: 'New integration', acceptance: ['Verify new integration'] });
+  decompose(f.map, { id: 'new-child', parentId: 'project', outcome: 'New integration', acceptance: ['Verify new integration'] });
   assert.equal(f.map.navigate('feature').goal.status, 'completed');
   assert.equal(f.map.navigate('project').goal.status, 'needs-reverification');
   assert.equal(f.map.proofs('project').length, 1);

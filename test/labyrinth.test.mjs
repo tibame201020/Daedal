@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import { strict as assert } from 'node:assert';
 import { createLabyrinth } from '../src/labyrinth.mjs';
@@ -7,7 +8,7 @@ const seed = (decisionGate) => createLabyrinth({
   acceptance: ['Native E2E succeeds'],
   boundary: { allow: ['adapter.integration', 'provider.implementation'], deny: ['paperclip.issue.lifecycle', 'harness.core'] }
 }, { decisionGate });
-const add = (map, id, parentId = 'project', boundary) => map.decompose({
+const add = (map, id, parentId = 'project', boundary) => decompose(map, {
   id, parentId, outcome: `Deliver ${id}`, acceptance: [`Verify ${id}`], ...(boundary ? { boundary } : {})
 });
 
@@ -55,7 +56,7 @@ test('unrelated Goal contract remains current after a scoped revision', () => {
 
 test('dependency pin makes a consumer stale when provider goal changes, not all goals', () => {
   const map = seed(); add(map, 'A'); add(map, 'B'); add(map, 'C');
-  map.relate({ fromId: 'B', toId: 'A', type: 'depends_on' });
+  relate(map, { fromId: 'B', toId: 'A', type: 'depends_on' });
   const b = map.issueContract('B'); const c = map.issueContract('C');
   map.reviseGoal({ id: 'A', expectedVersion: 1, actor: 'agent', change: { outcome: 'A v2' }, decision: { door: 'two-way', blastRadius: 'local', evidenceConfidence: 'high' } });
   assert.equal(map.contractStatus(b).status, 'stale');
@@ -64,7 +65,7 @@ test('dependency pin makes a consumer stale when provider goal changes, not all 
 
 test('unknown dependency cannot be presumed safe and leaves unrelated goal current', () => {
   const map = seed(); add(map, 'A'); add(map, 'B'); add(map, 'C');
-  map.relate({ fromId: 'B', toId: 'A', type: 'unknown' });
+  relate(map, { fromId: 'B', toId: 'A', type: 'unknown' });
   assert.equal(map.contractStatus(map.issueContract('B')).status, 'unresolved');
   assert.equal(map.contractStatus(map.issueContract('C')).status, 'current');
 });

@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createLabyrinth } from '../src/labyrinth.mjs';
@@ -9,7 +10,7 @@ import { join } from 'node:path';
 const seed = projectId => ({ projectId, id: 'root', outcome: 'Deliver native integration',
   acceptance: ['Integration independently verified'],
   boundary: { allow: ['adapter.integration'], deny: ['native.ownership'] } });
-const add = (map,id='feature') => map.decompose({ id, parentId:'root', outcome:'Use native capability',
+const add = (map,id='feature') => decompose(map, { id, parentId:'root', outcome:'Use native capability',
   acceptance:['Real E2E'], boundary:{allow:['adapter.integration']} });
 const port = {
   evidenceProvider: { resolve(ref,{contract}) { return ({ artifact:{kind:'artifact',sha256:'a'.repeat(64),sourceUri:'fixture://real-diff'},
@@ -106,10 +107,11 @@ test('cross-project reference persists and rechecks source after restart rather 
  const store=createFileSnapshotStore({directory:t.directory});
  const args={...port,referenceResolver:resolver};
  store.transact(seed('integration'),args,map=>{add(map,'consumer');return map.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',expectedVersion:1,actor:'agent'});});
- assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(map.issueContract('consumer')).status),'current');
+ const contract=store.transact(seed('integration'),args,map=>map.issueContract('consumer')).result;
+ assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(contract).status),'current');
  source.reviseGoal({id:'cap',expectedVersion:1,actor:'architect',change:{outcome:'new source'},
    decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'high'}});
- assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(map.issueContract('consumer')).status),'stale');
+ assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(contract).status),'stale');
  assert.equal(source.navigate('cap').goal.outcome,'new source');
  }finally{t.cleanup();}
 });
@@ -152,4 +154,12 @@ test('source changes during independent refresh decision cannot commit a now-sta
    decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'low'}}),/reference became stale/);
  assert.equal(integration.navigate('consumer').references[0].revision,original.revision);
  assert.equal(integration.navigate('consumer').goal.version,2);
+});
+
+test('snapshot read callback cannot mutate the effective graph through a read operation',()=>{
+ const t=temp();try {
+ const store=createFileSnapshotStore({directory:t.directory});
+ assert.throws(()=>store.read(seed('p'),port,map=>decompose(map,{id:'unexpected',parentId:'root',outcome:'change',acceptance:['fake']})),/not a function|readonly|read-only/);
+ assert.deepEqual(store.read(seed('p'),port,map=>map.navigate('root').children),[]);
+ }finally{t.cleanup();}
 });

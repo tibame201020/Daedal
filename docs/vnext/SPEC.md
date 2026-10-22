@@ -25,7 +25,7 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 - Bootstrap: authorized Goal Seed, progressively discovered candidates with provenance and explicit unknowns.
 - Graph: recursive Goal decomposition, typed traceable relationships and effective inherited boundaries.
 - Navigate: fixed mandatory context plus optional retrieved candidates; ability to trace a Goal to the Project intent.
-- Revise: transactional, version-checked changes; gate higher-risk changes and all acceptance revisions; calculate targeted impact.
+- Revise: transactional, version-checked changes including decomposition and typed relations; gate higher-risk changes and all acceptance revisions; calculate targeted impact. Source discoveries are non-authoritative until independent provenance checks and accepted revision.
 - Work: issue a revision-pinned contract and detect current/stale/unresolved status; a later trusted adapter negotiates actual enforcement.
 - Proof: origin-verifiable receipt and independent verifier, followed by explicit Goal state transition.
 - Reconcile: preserve unaffected evidence and invalidate only affected contracts/proof.

@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createLabyrinth } from '../src/labyrinth.mjs';
@@ -7,10 +8,10 @@ const seed = projectId => ({ projectId, id: 'root', outcome: 'Project',
   acceptance: ['Independent integration'], boundary: { allow: ['integration'] } });
 function fixture() {
   const source = createLabyrinth(seed('source'));
-  source.decompose({ id: 'interface', parentId: 'root', outcome: 'Generic interface', acceptance: ['Contract exists'] });
+  decompose(source, { id: 'interface', parentId: 'root', outcome: 'Generic interface', acceptance: ['Contract exists'] });
   const consumer = createLabyrinth(seed('consumer'),
     { referenceResolver: createProjectResolver({ getProject: id => id === 'source' ? source : null }) });
-  consumer.decompose({ id: 'feature', parentId: 'root', outcome: 'Consume interface', acceptance: ['Verified'] });
+  decompose(consumer, { id: 'feature', parentId: 'root', outcome: 'Consume interface', acceptance: ['Verified'] });
   consumer.attachReference({ fromId: 'feature', sourceProjectId: 'source', sourceGoalId: 'interface',
     expectedVersion: 1, actor: 'worker' });
   return { source, consumer, contract: consumer.issueContract('feature') };
@@ -19,12 +20,12 @@ function fixture() {
 test('Q17 unrelated source sibling must not stale pinned interface consumer', () => {
   const { source, consumer, contract } = fixture();
   assert.equal(consumer.contractStatus(contract).status, 'current');
-  source.decompose({ id: 'unrelated', parentId: 'root', outcome: 'Another capability', acceptance: ['Exists'] });
+  decompose(source, { id: 'unrelated', parentId: 'root', outcome: 'Another capability', acceptance: ['Exists'] });
   assert.equal(consumer.contractStatus(contract).status, 'current');
 });
 test('referenced interface child composition change must stale its consumer', () => {
   const { source, consumer, contract } = fixture();
-  source.decompose({ id: 'required-child', parentId: 'interface', outcome: 'New interface requirement', acceptance: ['Exists'] });
+  decompose(source, { id: 'required-child', parentId: 'interface', outcome: 'New interface requirement', acceptance: ['Exists'] });
   assert.equal(consumer.contractStatus(contract).status, 'stale');
 });
 test('source ancestor goal revision must stale its consumer', () => {

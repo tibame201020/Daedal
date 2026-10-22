@@ -31,3 +31,7 @@ Not delivered: authenticated human approvals, independent Agent 3 deployment, MC
 ## Legacy migration gate (proposal, not performed)
 
 The original v2 `tracker.json`, Ikaros Protocol and CI templates remain untouched. A later migration should first import old Phase/Task/spec references **as discovery candidates**, reconcile Product Goals and boundaries, pin original sources, and independently re-evaluate historical `completed` status. A tracker flag or merged PR is not automatically an accepted Goal proof. Run a shadow comparison before changing existing automation or deprecating the legacy protocol; require explicit, verified migration acceptance.
+
+## Experimental snapshot schema
+
+Snapshot schema v2 stores discovery candidates and accepted knowledge alongside versioned goals and proofs. Earlier experimental vNext schema-1 snapshots fail closed; original v2 tracker remains untouched. No automatic migration or completed-status promotion.

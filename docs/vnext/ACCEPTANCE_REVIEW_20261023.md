@@ -43,3 +43,7 @@
 | Full Minimum Complete Daedal production acceptance | **WITHHOLD** |
 
 Next: TDD for `decompose`/`relate` transaction receipts/CAS, discovery provenance/acceptance, split oversized `createLabyrinth`, enforce CI coverage, then independent genuine external E2E/security acceptance. Historical flags and synthetic review keyword tests must not be promoted to a completed product goal. Do not merge/release on the basis of this local verification alone.
+
+## Subsequent remediation (2026-10-23)
+
+The two local review blockers under Standards/Spec — direct decompose/relate map mutation without CAS/Decision audit and Discovery promotion without independent source verification — have been addressed in the additive work on this same Draft PR. `labyrinth.mjs` has been split by original Domain responsibility, with source-size regression checks and CI coverage thresholds. See [Domain Contract closeout](DOMAIN_CONTRACT_CLOSEOUT_20261023.md). This historical review remains the initial verdict; subsequent source, test and CI evidence supersede its listed local blockers but **does not** constitute a production-hosted acceptance.

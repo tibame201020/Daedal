@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -17,7 +18,7 @@ test('durable multi-session Goal lifecycle: real protected write/test/review, pa
  mkdirSync(join(workspaceRoot,'src','provider'),{recursive:true});mkdirSync(join(workspaceRoot,'test'));mkdirSync(stateDir);
  try {
   const source=createLabyrinth(seed('source-harness'));
-  source.decompose({id:'interface',parentId:'project',outcome:'Published generic interface',
+  decompose(source, {id:'interface',parentId:'project',outcome:'Published generic interface',
    acceptance:['Generic interface exists'],boundary:{allow:['provider.implementation']}});
   const referenceResolver=createProjectResolver({getProject:id=>id==='source-harness'?source:null});
   const projectSeed=seed('integration');
@@ -31,7 +32,7 @@ test('durable multi-session Goal lifecycle: real protected write/test/review, pa
   };
   let store=createFileSnapshotStore({directory:stateDir});
   const stage1=store.transact(projectSeed,ports,map=>{
-   map.decompose({id:'feature',parentId:'project',outcome:'Provider adapter obeys generic harness',
+   decompose(map, {id:'feature',parentId:'project',outcome:'Provider adapter obeys generic harness',
     acceptance:['Real native readback'],boundary:{allow:['provider.implementation']}});
    const ref=map.attachReference({fromId:'feature',sourceProjectId:'source-harness',sourceGoalId:'interface',
     expectedVersion:1,actor:'worker'});

@@ -1,3 +1,4 @@
+import { decompose, relate } from '../test-support/domain-fixtures.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
@@ -17,7 +18,7 @@ function setup(source) {
     evidenceProvider: { resolve(...args) { return liveEvidence.resolve(...args); } },
     independentVerifier: { review(input) { return liveVerifier.review(input); } },
   });
-  map.decompose({ id: 'feature', parentId: 'project', outcome: 'Implement provider adapter',
+  decompose(map, { id: 'feature', parentId: 'project', outcome: 'Implement provider adapter',
     acceptance: ['Native readback'], boundary: { allow: ['provider.implementation'] } });
   const contract = map.issueContract('feature');
   assert.equal(contract.enforcement, 'advisory'); // Contract itself never asserts control over external tools.
