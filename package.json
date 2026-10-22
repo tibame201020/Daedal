@@ -1,0 +1,9 @@
+{
+  "name": "daedal-protocol-vnext",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-test-coverage --test --test-coverage-lines=80 --test-coverage-branches=80 --test-coverage-functions=80"
+  },
+  "engines": {"node": ">=22"}
+}
