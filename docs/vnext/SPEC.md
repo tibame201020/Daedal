@@ -1,6 +1,6 @@
 # Daedal vNext — Minimum Complete Daedal
 
-Status: Accepted product baseline, **partially implemented** as of 2026-10-22. See [implementation status](IMPLEMENTATION_STATUS.md). This is an implementation clarification of original Daedal, not a different product.
+Status: Accepted product baseline, **partially implemented** as of 2026-10-23. See [implementation status](IMPLEMENTATION_STATUS.md). This is an implementation clarification of original Daedal, not a different product.
 
 ## Purpose
 
@@ -37,7 +37,7 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 - **VS2**: Local revision transaction, scoped dependency pinning and staleness/unknown impact checks.
 - **VS3**: In-memory trusted-host Evidence Provider/independent verification ports, revision-scoped proof and separate parent-completion tests (synthetic fixtures implemented; live trusted adapters pending, see [verification contract](VERIFICATION_CONTRACT.md)).
 - **VS4**: Bounded local protected `writeNewFile` adapter with Enforced-versus-Advisory scope, real on-disk artifact hashing and Node test execution, actual source-bound external independent-review port (implemented as a local demonstration; synthetic review policy only; see [protected seam](PROTECTED_LOCAL_SEAM.md)). Production transport identity, general semantic review and OS isolation remain open.
-- **VS5**: Persistence, cross-project versioned read-only references, complete real end-to-end lifecycle and migration decision.
+- **VS5**: Trusted local snapshot persistence, source/version-pinned cross-project read-only projections and a real local file/test/review + restart/reconciliation fixture (bounded demonstration implemented; see [durability/reference contract](DURABILITY_AND_REFERENCES.md)). Authenticated multi-session service, OS isolation, independent production semantic QC, remote disaster recovery, genuine external-product E2E and approved legacy migration remain pending.
 
 ## Regression fixtures
 
@@ -54,4 +54,4 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 
 ## Delivery constraints
 
-Use a test-first public seam and run unit/contract tests in GitHub Actions. Store no personal identity, session, credential, private repo artifact, or unsanitized evidence in fixtures/receipts. Retain original v2 tracker/protocol/workflow until an explicit, verified migration. Do not call VS1–VS4 tests a deployed authenticated Knossos, general semantic reviewer, full filesystem security boundary, or complete product.
+Use a test-first public seam and run unit/contract tests in GitHub Actions. Store no personal identity, session, credential, private repo artifact, or unsanitized evidence in fixtures/receipts. Retain original v2 tracker/protocol/workflow until an explicit, verified migration. Do not call VS1–VS5 local contract/E2E tests a deployed authenticated Knossos, general semantic reviewer, full filesystem security boundary, or production-accepted product.
