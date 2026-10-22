@@ -29,7 +29,8 @@ function validateGoal({ id, outcome, acceptance, boundary = {} }) {
 
 export function createLabyrinth(seed, { decisionGate, evidenceProvider, independentVerifier, referenceResolver, initialSnapshot } = {}) {
   requireText(seed.projectId, 'projectId');
-  const root = { ...validateGoal(seed), parentId: null, version: 1, compositionVersion: 1, status: 'pending' };
+  const bootstrapSeed = validateGoal(seed);
+  const root = { ...bootstrapSeed, parentId: null, version: 1, compositionVersion: 1, status: 'pending' };
   const nodes = new Map([[root.id, root]]);
   const edges = [];
   const past = new Map([[root.id, []]]);
@@ -97,7 +98,10 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
     const n = get(id);
     const projection = { projectId: seed.projectId, goalId: id, outcome: n.outcome,
       acceptance: clone(n.acceptance), boundary: effectiveBoundary(id),
-      lineage: lineage(id).map(x => ({ id: x.id, version: x.version, compositionVersion: x.compositionVersion })) };
+      // Ancestor goal revisions matter; an unrelated sibling's composition does not.
+      // The referenced Goal's own child composition remains part of its accepted surface.
+      lineage: lineage(id).map(x => ({ id: x.id, version: x.version,
+        ...(x.id === id ? { compositionVersion: x.compositionVersion } : {}) })) };
     return { ...projection, revision: createHash('sha256').update(JSON.stringify(projection)).digest('hex') };
   };
   const liveReference = ref => {
@@ -216,7 +220,7 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
     },
     exportSnapshot() {
       // Trusted host only: this contains pending contracts and proof metadata, not an agent-facing export.
-      return clone({ schemaVersion: 1, projectId: seed.projectId, rootId: root.id,
+      return clone({ schemaVersion: 1, projectId: seed.projectId, rootId: root.id, bootstrapSeed: clone(bootstrapSeed),
         nodes: [...nodes.values()], edges, references,
         past: [...past], changes, issuedContracts: [...issuedContracts], acceptedProofs: [...acceptedProofs] });
     },
@@ -351,6 +355,7 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
   if (initialSnapshot !== undefined) {
     const state = clone(initialSnapshot);
     if (!state || state.schemaVersion !== 1 || state.projectId !== seed.projectId || state.rootId !== root.id ||
+        !isDeepStrictEqual(state.bootstrapSeed, bootstrapSeed) ||
         !Array.isArray(state.nodes) || !Array.isArray(state.edges) || !Array.isArray(state.references) ||
         !Array.isArray(state.past) || !Array.isArray(state.changes) || !Array.isArray(state.issuedContracts) ||
         !Array.isArray(state.acceptedProofs)) throw new Error('invalid snapshot identity or schema');
