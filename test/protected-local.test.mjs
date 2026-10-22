@@ -97,6 +97,7 @@ test('failing real test output remains failed despite successful artifact read',
   writeFileSync(join(f.root,'test','feature.test.mjs'),"import {test} from 'node:test'; import assert from 'node:assert/strict'; test('red',()=>assert.equal(1,2));\n");
   const provider=createLocalEvidenceProvider({workspaceRoot:f.root,artifactPath:'src/provider/feature.mjs',testPath:'test/feature.test.mjs',projectId:'synthetic-project',goalId:'feature',implementerId:'worker'});
   assert.equal(provider.resolve('test',{contract:f.valid}).passed,false);
+ }finally{f.cleanup();}
 });
 
 test('source mutation during review cannot be accepted, even if reviewer returned pass',()=>{
