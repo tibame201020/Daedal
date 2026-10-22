@@ -304,8 +304,9 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
       if (review.verdict === 'fail') return { verdict: 'fail', goalState: statusFor(contract.goalId),
         findings: clone(review.findings ?? []) };
       const receipt = { projectId: seed.projectId, goalId: contract.goalId, contract: clone(contract),
-        sources: evidence.map(({ reference, kind, sourceUri, sha256, sourceRevision }) =>
-          ({ reference, kind, sourceUri, sha256, sourceRevision })),
+        sources: evidence.map(({ reference, kind, sourceUri, sha256, sourceRevision, testSourceSha256 }) =>
+          ({ reference, kind, sourceUri, sha256, sourceRevision,
+            ...(testSourceSha256 ? { testSourceSha256 } : {}) })),
         implementerId: evidence[0].implementerId, reviewerId: review.reviewerId, reviewReceipt: review.reviewReceipt,
         criterionResults: clone(review.criterionResults), verdict: 'pass' };
       const proofs = acceptedProofs.get(contract.goalId) ?? [];
