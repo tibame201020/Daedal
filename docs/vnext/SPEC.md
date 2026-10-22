@@ -36,7 +36,7 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 - **VS1**: Goal Seed, recursive decomposition, inherited capability constraints and mandatory navigation.
 - **VS2**: Local revision transaction, scoped dependency pinning and staleness/unknown impact checks.
 - **VS3**: In-memory trusted-host Evidence Provider/independent verification ports, revision-scoped proof and separate parent-completion tests (synthetic fixtures implemented; live trusted adapters pending, see [verification contract](VERIFICATION_CONTRACT.md)).
-- **VS4**: Real protected adapter enforcing-vs-advisory demonstration and semantic code/scope review.
+- **VS4**: Bounded local protected `writeNewFile` adapter with Enforced-versus-Advisory scope, real on-disk artifact hashing and Node test execution, actual source-bound external independent-review port (implemented as a local demonstration; synthetic review policy only; see [protected seam](PROTECTED_LOCAL_SEAM.md)). Production transport identity, general semantic review and OS isolation remain open.
 - **VS5**: Persistence, cross-project versioned read-only references, complete real end-to-end lifecycle and migration decision.
 
 ## Regression fixtures
@@ -54,4 +54,4 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 
 ## Delivery constraints
 
-Use a test-first public seam and run unit/contract tests in GitHub Actions. Store no personal identity, session, credential, private repo artifact, or unsanitized evidence in fixtures/receipts. Retain original v2 tracker/protocol/workflow until an explicit, verified migration. Do not call in-memory VS1–VS3 port tests an authenticated verifier, semantic source review, or production security boundary.
+Use a test-first public seam and run unit/contract tests in GitHub Actions. Store no personal identity, session, credential, private repo artifact, or unsanitized evidence in fixtures/receipts. Retain original v2 tracker/protocol/workflow until an explicit, verified migration. Do not call VS1–VS4 tests a deployed authenticated Knossos, general semantic reviewer, full filesystem security boundary, or complete product.
