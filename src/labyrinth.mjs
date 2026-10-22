@@ -149,8 +149,21 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
   const statusFor = id => {
     const proofs = acceptedProofs.get(id) ?? [];
     if (!proofs.length) return 'pending';
-    const state = contractState(proofs.at(-1).contract).status;
-    return state === 'current' ? 'completed' : state === 'stale' ? 'needs-reverification' : 'unresolved';
+    const receipt = proofs.at(-1);
+    const state = contractState(receipt.contract).status;
+    if (state === 'stale') return 'needs-reverification';
+    if (state === 'unresolved') return 'unresolved';
+    if (evidenceProvider && typeof evidenceProvider.freshness === 'function') {
+      let freshness;
+      try { freshness = evidenceProvider.freshness(clone(receipt)); } catch { return 'unresolved'; }
+      if (freshness === 'stale') return 'needs-reverification';
+      if (freshness !== 'current') return 'unresolved';
+    }
+    const children = [...nodes.values()].filter(n => n.parentId === id);
+    const childStates = children.map(child => statusFor(child.id));
+    if (childStates.includes('unresolved')) return 'unresolved';
+    if (childStates.some(value => value !== 'completed')) return 'needs-reverification';
+    return 'completed';
   };
   const self = {
     projectId: seed.projectId,
