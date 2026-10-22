@@ -144,4 +144,4 @@ Knossos 是 Daedal 生態系的第一個完成品，本身也用 Daedal 建造�
 
 ## Daedal vNext (in development)
 
-The original Daedal / Labyrinth / Knossos / Ikaros concept is being refined into an external recursive living Goal Map. This is an **incremental, test-first implementation**, not a silent replacement of the existing v2 protocol or tracker. Read the [vNext decision tree, spec and measured implementation status](docs/vnext/README.md). Run `npm test` with Node 22+ for the new domain contract tests. No independent completion or production enforcement is claimed yet.
+The original Daedal / Labyrinth / Knossos / Ikaros concept is being refined into an external recursive living Goal Map. This is an **incremental, test-first implementation**, not a silent replacement of the existing v2 protocol or tracker. Read the [vNext decision tree, spec and measured implementation status](docs/vnext/README.md). Run `npm test` with Node 22+ for the new domain contract tests. VS3 demonstrates in-memory evidence-backed completion; VS4 demonstrates one bounded, real protected file-operation seam. Neither is a deployed authenticated independent verifier or general production enforcement layer.
