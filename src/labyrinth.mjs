@@ -203,6 +203,9 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
         if (!review || review.accepted !== true || !isText(review.receipt)) throw new Error('decision gate rejected');
         if (decision.door === 'one-way' && decision.blastRadius === 'project' && review.humanApproved !== true) throw new Error('human approval required');
       }
+      // The resolver or decision callback may have changed the source or current map synchronously.
+      if (get(fromId).version !== expectedVersion || link.revision !== expectedRevision ||
+          liveReference(after).status !== 'current') throw new Error('reference became stale during decision');
       const old = clone(current);
       past.get(fromId).push(old);
       Object.assign(link, after);
