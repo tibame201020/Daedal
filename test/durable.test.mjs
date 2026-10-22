@@ -133,3 +133,23 @@ test('refreshing a live reference requires matching local and source CAS revisio
  assert.equal(integration.contractStatus(integration.issueContract('consumer')).status,'current');
  assert.equal(integration.revisions().at(-1).type,'refresh-reference');
 });
+
+test('source changes during independent refresh decision cannot commit a now-stale source revision',()=>{
+ const source=createLabyrinth(seed('source'));add(source,'cap');
+ const resolver=createProjectResolver({getProject:id=>id==='source'?source:null});
+ const integration=createLabyrinth(seed('integration'),{referenceResolver:resolver,
+   decisionGate(){source.reviseGoal({id:'cap',expectedVersion:2,actor:'architect',
+     change:{outcome:'v3 during decision'},decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'high'}});
+     return {accepted:true,receipt:'fixture://review',reviewer:'qc'};
+   }});
+ add(integration,'consumer');
+ const original=integration.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',
+   expectedVersion:1,actor:'agent'});
+ source.reviseGoal({id:'cap',expectedVersion:1,actor:'architect',
+   change:{outcome:'v2'},decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'high'}});
+ assert.throws(()=>integration.refreshReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',
+   expectedVersion:2,expectedRevision:original.revision,actor:'agent',
+   decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'low'}}),/reference became stale/);
+ assert.equal(integration.navigate('consumer').references[0].revision,original.revision);
+ assert.equal(integration.navigate('consumer').goal.version,2);
+});
