@@ -68,15 +68,29 @@ export function createLocalEvidenceProvider({ workspaceRoot, artifactPath, testP
       // Recheck the source on every read; do not accept caller-provided digest or exit status.
       safePath(root, artifactPath, { mustExist: true }); safePath(root, testPath, { mustExist: true });
       const before = digest(readFileSync(artifact));
+      const testBefore = digest(readFileSync(testFile));
       if (reference === 'artifact') return { reference, kind: 'artifact', sourceUri: `workspace:${artifactPath}`, sha256: before,
         sourceRevision: before, implementerId, projectId, goalId, contractId: contract.contractId, verified: true, passed: true };
       // Node's outer test runner sets NODE_TEST_CONTEXT; nested test runs must not inherit it.
       const env = { ...process.env }; delete env.NODE_TEST_CONTEXT;
       const result = spawnSync(process.execPath, ['--test', testFile], { cwd: root, shell: false, encoding: 'utf8', timeout: timeoutMs, maxBuffer: 1024 * 1024, env });
       const after = digest(readFileSync(artifact));
-      const passed = !result.error && result.status === 0 && before === after;
+      const testAfter = digest(readFileSync(testFile));
+      const passed = !result.error && result.status === 0 && before === after && testBefore === testAfter;
       return { reference, kind: 'test', sourceUri: `workspace-test:${testPath}`, sha256: digest(`${result.status}:${result.stdout ?? ''}:${result.stderr ?? ''}`),
-        sourceRevision: before, implementerId, projectId, goalId, contractId: contract.contractId, verified: !result.error, passed };
+        sourceRevision: before, testSourceSha256: testBefore, implementerId, projectId, goalId, contractId: contract.contractId, verified: !result.error, passed };
+    },
+    freshness(receipt) {
+      if (!receipt || receipt.projectId !== projectId || receipt.goalId !== goalId || !Array.isArray(receipt.sources)) return 'unresolved';
+      const a = receipt.sources.find(x => x.kind === 'artifact' && x.sourceUri === `workspace:${artifactPath}`);
+      const t = receipt.sources.find(x => x.kind === 'test' && x.sourceUri === `workspace-test:${testPath}`);
+      if (!a || !t || !/^[a-f0-9]{64}$/i.test(t.testSourceSha256 ?? '')) return 'unresolved';
+      try {
+        const currentArtifact = digest(readFileSync(safePath(root, artifactPath, { mustExist: true })));
+        const currentTest = digest(readFileSync(safePath(root, testPath, { mustExist: true })));
+        return currentArtifact === a.sha256 && currentArtifact === a.sourceRevision &&
+          currentTest === t.testSourceSha256 ? 'current' : 'stale';
+      } catch { return 'unresolved'; }
     },
   });
 }
