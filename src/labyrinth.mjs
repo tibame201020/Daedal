@@ -155,17 +155,47 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
   const self = {
     projectId: seed.projectId,
     inspectReference(id) { return clone(inspectReference(id)); },
-    attachReference({ fromId, sourceProjectId, sourceGoalId }) {
-      get(fromId); requireText(sourceProjectId, 'source project'); requireText(sourceGoalId, 'source goal');
+    attachReference({ fromId, sourceProjectId, sourceGoalId, expectedVersion, actor }) {
+      const current = get(fromId); requireText(actor, 'actor');
+      if (expectedVersion !== current.version) throw new Error('version conflict');
+      requireText(sourceProjectId, 'source project'); requireText(sourceGoalId, 'source goal');
       if (sourceProjectId === seed.projectId) throw new Error('external project reference only');
       if (references.some(r => r.fromId === fromId && r.sourceProjectId === sourceProjectId && r.sourceGoalId === sourceGoalId)) throw new Error('duplicate project reference');
       const live = liveReference({ sourceProjectId, sourceGoalId, revision: null });
       if (live.status === 'unresolved') throw new Error('external source unavailable');
       const link = { fromId, sourceProjectId, sourceGoalId, revision: live.source.revision, type: 'live-reference' };
       references.push(link);
-      const old = get(fromId); past.get(fromId).push(clone(old)); nodes.set(fromId, { ...old, version: old.version + 1 });
-      changes.push({ id: fromId, actor: 'host', type: 'attach-reference', beforeVersion: old.version, afterVersion: old.version + 1,
+      past.get(fromId).push(clone(current)); nodes.set(fromId, { ...current, version: current.version + 1 });
+      changes.push({ id: fromId, actor, type: 'attach-reference', beforeVersion: current.version, afterVersion: current.version + 1,
         sourceProjectId, sourceGoalId, revision: link.revision });
+      return clone(link);
+    },
+    refreshReference({ fromId, sourceProjectId, sourceGoalId, expectedVersion, expectedRevision, actor, decision }) {
+      const current = get(fromId); requireText(actor, 'actor');
+      if (expectedVersion !== current.version) throw new Error('version conflict');
+      const link = references.find(r => r.fromId === fromId && r.sourceProjectId === sourceProjectId && r.sourceGoalId === sourceGoalId);
+      if (!link) throw new Error('unknown project reference');
+      if (expectedRevision !== link.revision) throw new Error('source revision conflict');
+      if (!decision || !['two-way', 'one-way'].includes(decision.door) ||
+          !['local', 'project'].includes(decision.blastRadius) ||
+          !['high', 'low', 'unknown'].includes(decision.evidenceConfidence)) throw new Error('invalid decision risk');
+      const live = liveReference(link);
+      if (live.status === 'unresolved') throw new Error('external source unavailable');
+      if (live.status === 'current') throw new Error('source reference already current');
+      const after = { ...link, revision: live.source.revision };
+      const needsGate = decision.door === 'one-way' || decision.blastRadius !== 'local' || decision.evidenceConfidence !== 'high';
+      if (needsGate) {
+        if (typeof decisionGate !== 'function') throw new Error('independent decision gate required');
+        const review = decisionGate(clone({ projectId: seed.projectId, actor, decision, before: link, after, parent: current.parentId ? context(current.parentId) : null }));
+        if (!review || review.accepted !== true || !isText(review.receipt)) throw new Error('decision gate rejected');
+        if (decision.door === 'one-way' && decision.blastRadius === 'project' && review.humanApproved !== true) throw new Error('human approval required');
+      }
+      const old = clone(current);
+      past.get(fromId).push(old);
+      Object.assign(link, after);
+      nodes.set(fromId, { ...current, version: current.version + 1 });
+      changes.push({ id: fromId, actor, type: 'refresh-reference', beforeVersion: current.version, afterVersion: current.version + 1,
+        sourceProjectId, sourceGoalId, beforeRevision: expectedRevision, revision: after.revision, decision });
       return clone(link);
     },
     exportSnapshot() {
