@@ -37,9 +37,13 @@ test('stale, forged, out-of-scope, traversal and overwrite are denied before tou
  }finally{f.cleanup();}
 });
 
-test('symlink parents and last component are refused by the protected seam',()=>{
+test('symlink parents and last component are refused by the protected seam',(t)=>{
  const f=fresh();try{
-  symlinkSync(f.root,join(f.root,'src/provider/link'));
+  try { symlinkSync(f.root,join(f.root,'src/provider/link')); }
+  catch (error) {
+    if (['EPERM','EACCES','ENOTSUP'].includes(error.code)) { t.skip('host lacks symlink creation privilege'); return; }
+    throw error;
+  }
   assert.throws(()=>f.writer.writeNewFile({contract:f.valid,relativePath:'src/provider/link/escape.mjs',content:'X'}),/symlink/);
   symlinkSync(join(f.root,'test'),join(f.root,'src/provider/linkfile'));
   assert.throws(()=>f.writer.writeNewFile({contract:f.valid,relativePath:'src/provider/linkfile',content:'X'}));
