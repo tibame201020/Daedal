@@ -31,7 +31,7 @@ function setup(source) {
   liveVerifier = createSourceBoundVerifier({ workspaceRoot, artifactPath: 'src/provider/feature.mjs',
     reviewerId: 'independent-qc', reviewSource({ content, context }) {
       // Explicit synthetic scope rule; a real deployment must supply an authenticated independent code reviewer.
-      const drift = content.includes('parallelIssueLifecycle');
+      const drift = content.includes('parallelIssueLifecycle') || content.includes('modifyHarnessCore');
       return { verdict: drift ? 'fail' : 'pass', boundaryReviewed: true,
         findings: drift ? ['duplicate Paperclip native lifecycle'] : [],
         criterionResults: context.acceptance.map(criterion => ({ criterion, passed: !drift })) };
@@ -57,6 +57,15 @@ test('real green test cannot complete Goal when independent source review identi
     const result = f.map.verifyGoal({ contract: f.contract, evidenceRefs: ['artifact', 'test'] });
     assert.equal(result.verdict, 'fail');
     assert.equal(result.findings[0], 'duplicate Paperclip native lifecycle');
+    assert.equal(f.map.navigate('feature').goal.status, 'pending');
+  } finally { f.cleanup(); }
+});
+
+test('green test cannot complete Goal when provider tries to customize generic Browser Harness core', () => {
+  const f = setup("export const nativeIssue = () => 'ok'; export const modifyHarnessCore = true;\n");
+  try {
+    const result = f.map.verifyGoal({ contract: f.contract, evidenceRefs: ['artifact', 'test'] });
+    assert.equal(result.verdict, 'fail');
     assert.equal(f.map.navigate('feature').goal.status, 'pending');
   } finally { f.cleanup(); }
 });
