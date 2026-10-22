@@ -113,3 +113,24 @@ test('source mutation during review cannot be accepted, even if reviewer returne
   assert.throws(()=>verifier.review({contract:f.valid,sources:[artifact],context:{acceptance:['OK']},subject:{sourceRevision:artifact.sourceRevision}}),/changed during review/);
  }finally{f.cleanup();}
 });
+
+test('source/test freshness is checked against actual bytes after acceptance and missing sources remain unresolved',()=>{
+ const f=fresh();try{
+  f.writer.writeNewFile({contract:f.valid,relativePath:'src/provider/feature.mjs',content:'export const v = 1;\n'});
+  writeFileSync(join(f.root,'test','feature.test.mjs'),"import {test} from 'node:test'; test('green',()=>{});\n");
+  const provider=createLocalEvidenceProvider({workspaceRoot:f.root,artifactPath:'src/provider/feature.mjs',
+    testPath:'test/feature.test.mjs',projectId:'synthetic-project',goalId:'feature',implementerId:'worker'});
+  const artifact=provider.resolve('artifact',{contract:f.valid}), testRun=provider.resolve('test',{contract:f.valid});
+  assert.equal(testRun.passed,true);
+  assert.match(testRun.testSourceSha256,/^[a-f0-9]{64}$/);
+  const receipt={projectId:'synthetic-project',goalId:'feature',sources:[artifact,testRun]};
+  assert.equal(provider.freshness(receipt),'current');
+  writeFileSync(join(f.root,'test','feature.test.mjs'),"import {test} from 'node:test'; test('different',()=>{});\n");
+  assert.equal(provider.freshness(receipt),'stale');
+  writeFileSync(join(f.root,'test','feature.test.mjs'),"import {test} from 'node:test'; test('green',()=>{});\n");
+  writeFileSync(join(f.root,'src/provider/feature.mjs'),'export const v = 2;\n');
+  assert.equal(provider.freshness(receipt),'stale');
+  rmSync(join(f.root,'src/provider/feature.mjs'));
+  assert.equal(provider.freshness(receipt),'unresolved');
+ }finally{f.cleanup();}
+});
