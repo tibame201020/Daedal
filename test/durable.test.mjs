@@ -83,8 +83,8 @@ test('cross-project live reference is read-only, pinned, and reports changed or 
  const resolver=createProjectResolver({getProject:id=>online?projects.get(id):null});
  const integration=createLabyrinth(seed('integration'),{referenceResolver:resolver});
  add(integration,'provider');add(integration,'unrelated');
- assert.throws(()=>integration.attachReference({fromId:'provider',sourceProjectId:'integration',sourceGoalId:'root'}),/external|self/);
- const link=integration.attachReference({fromId:'provider',sourceProjectId:'harness',sourceGoalId:'capability'});
+ assert.throws(()=>integration.attachReference({fromId:'provider',sourceProjectId:'integration',sourceGoalId:'root',expectedVersion:1,actor:'agent'}),/external|self/);
+ const link=integration.attachReference({fromId:'provider',sourceProjectId:'harness',sourceGoalId:'capability',expectedVersion:1,actor:'agent'});
  assert.match(link.revision,/^[a-f0-9]{64}$/);
  assert.deepEqual(integration.navigate('provider').references[0].sourceProjectId,'harness');
  assert.equal(integration.checkCapability('provider','native.ownership').allowed,false);
@@ -105,11 +105,31 @@ test('cross-project reference persists and rechecks source after restart rather 
  const resolver=createProjectResolver({getProject:id=>id==='source'?source:null});
  const store=createFileSnapshotStore({directory:t.directory});
  const args={...port,referenceResolver:resolver};
- store.transact(seed('integration'),args,map=>{add(map,'consumer');return map.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap'});});
+ store.transact(seed('integration'),args,map=>{add(map,'consumer');return map.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',expectedVersion:1,actor:'agent'});});
  assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(map.issueContract('consumer')).status),'current');
  source.reviseGoal({id:'cap',expectedVersion:1,actor:'architect',change:{outcome:'new source'},
    decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'high'}});
  assert.equal(store.read(seed('integration'),args,map=>map.contractStatus(map.issueContract('consumer')).status),'stale');
  assert.equal(source.navigate('cap').goal.outcome,'new source');
  }finally{t.cleanup();}
+});
+
+test('refreshing a live reference requires matching local and source CAS revisions, and explicitly records decision',()=>{
+ const source=createLabyrinth(seed('source'));add(source,'cap');
+ const resolver=createProjectResolver({getProject:id=>id==='source'?source:null});
+ const integration=createLabyrinth(seed('integration'),{referenceResolver:resolver});add(integration,'consumer');
+ assert.throws(()=>integration.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',expectedVersion:99,actor:'agent'}),/version conflict/);
+ const old=integration.attachReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',expectedVersion:1,actor:'agent'});
+ source.reviseGoal({id:'cap',expectedVersion:1,actor:'architect',change:{outcome:'new source'},
+   decision:{door:'two-way',blastRadius:'local',evidenceConfidence:'high'}});
+ const decision={door:'two-way',blastRadius:'local',evidenceConfidence:'high'};
+ assert.throws(()=>integration.refreshReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',
+   expectedVersion:1,expectedRevision:old.revision,actor:'agent',decision}),/version conflict/);
+ assert.throws(()=>integration.refreshReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',
+   expectedVersion:2,expectedRevision:'0'.repeat(64),actor:'agent',decision}),/source revision conflict/);
+ const refreshed=integration.refreshReference({fromId:'consumer',sourceProjectId:'source',sourceGoalId:'cap',
+   expectedVersion:2,expectedRevision:old.revision,actor:'agent',decision});
+ assert.notEqual(refreshed.revision,old.revision);
+ assert.equal(integration.contractStatus(integration.issueContract('consumer')).status,'current');
+ assert.equal(integration.revisions().at(-1).type,'refresh-reference');
 });
