@@ -1,3 +1,6 @@
+import { randomUUID } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
+
 /** Daedal vNext vertical slice: project-scoped goals, context, revision pinning.
  * Pure in-memory domain module; not a persistent service or an attested enforcement adapter.
  */
@@ -24,13 +27,15 @@ function validateGoal({ id, outcome, acceptance, boundary = {} }) {
   return { id, outcome, acceptance: strings(acceptance, 'acceptance', true), boundary: validateBoundary(boundary) };
 }
 
-export function createLabyrinth(seed, { decisionGate } = {}) {
+export function createLabyrinth(seed, { decisionGate, evidenceProvider, independentVerifier } = {}) {
   requireText(seed.projectId, 'projectId');
   const root = { ...validateGoal(seed), parentId: null, version: 1, compositionVersion: 1, status: 'pending' };
   const nodes = new Map([[root.id, root]]);
   const edges = [];
   const past = new Map([[root.id, []]]);
   const changes = [];
+  const issuedContracts = new Map();
+  const acceptedProofs = new Map();
   const get = id => {
     const node = nodes.get(id);
     if (!node) throw new Error(`unknown goal: ${id}`);
@@ -91,7 +96,7 @@ export function createLabyrinth(seed, { decisionGate } = {}) {
     const chain = lineage(id);
     return {
       projectId: seed.projectId,
-      goal: clone(get(id)),
+      goal: { ...clone(get(id)), status: statusFor(id) },
       ancestors: clone(chain.slice(0, -1).map(n => ({ id: n.id, outcome: n.outcome, version: n.version, boundary: n.boundary }))),
       children: sorted([...nodes.values()].filter(n => n.parentId === id).map(n => n.id)),
       acceptance: clone(get(id).acceptance),
@@ -99,6 +104,27 @@ export function createLabyrinth(seed, { decisionGate } = {}) {
       relations: clone(edges.filter(e => e.fromId === id)),
       pins: pinSet(id),
     };
+  };
+  const validatedContract = contract => {
+    if (!contract || !isText(contract.contractId) || !issuedContracts.has(contract.contractId) ||
+      !isDeepStrictEqual(contract, issuedContracts.get(contract.contractId))) throw new Error('unknown or altered issued contract');
+    if (contract.projectId !== seed.projectId) throw new Error('foreign project contract');
+    return issuedContracts.get(contract.contractId);
+  };
+  const contractState = contract => {
+    validatedContract(contract);
+    const current = pinSet(contract.goalId);
+    if (!isDeepStrictEqual(contract.pins, current) || get(contract.goalId).version !== contract.goalVersion) {
+      return { status: 'stale', reason: 'relevant goal/relation revision changed' };
+    }
+    if (hasUnknown(current.map(p => p.id))) return { status: 'unresolved', reason: 'unknown dependency' };
+    return { status: 'current' };
+  };
+  const statusFor = id => {
+    const proofs = acceptedProofs.get(id) ?? [];
+    if (!proofs.length) return 'pending';
+    const state = contractState(proofs.at(-1).contract).status;
+    return state === 'current' ? 'completed' : state === 'stale' ? 'needs-reverification' : 'unresolved';
   };
   const self = {
     projectId: seed.projectId,
@@ -131,18 +157,73 @@ export function createLabyrinth(seed, { decisionGate } = {}) {
     },
     issueContract(id) {
       const node = get(id); const pins = pinSet(id);
-      return clone({ projectId: seed.projectId, goalId: id, goalVersion: node.version, pins, boundary: effectiveBoundary(id), enforcement: 'advisory', issuedFor: 'domain-navigation' });
+      const contract = { contractId: randomUUID(), projectId: seed.projectId, goalId: id, goalVersion: node.version,
+        pins, boundary: effectiveBoundary(id), enforcement: 'advisory', issuedFor: 'domain-navigation' };
+      issuedContracts.set(contract.contractId, clone(contract));
+      return clone(contract);
     },
     contractStatus(contract) {
-      if (contract.projectId !== seed.projectId) throw new Error('foreign project contract');
-      const current = pinSet(contract.goalId);
-      const currentPins = JSON.stringify(current);
-      if (JSON.stringify(contract.pins) !== currentPins || get(contract.goalId).version !== contract.goalVersion) {
-        return { status: 'stale', reason: 'relevant goal/relation revision changed' };
-      }
-      if (hasUnknown(current.map(p => p.id))) return { status: 'unresolved', reason: 'unknown dependency' };
-      return { status: 'current' };
+      return contractState(contract);
     },
+    verifyGoal({ contract, evidenceRefs }) {
+      // This synchronous domain seam must only be invoked by a trusted host. It is not an auth boundary.
+      validatedContract(contract);
+      if (!evidenceProvider || typeof evidenceProvider.resolve !== 'function' ||
+          !independentVerifier || typeof independentVerifier.review !== 'function') {
+        throw new Error('trusted evidence provider and independent verifier required');
+      }
+      const current = contractState(contract);
+      if (current.status !== 'current') throw new Error(current.status + ' contract cannot be verified');
+      if (statusFor(contract.goalId) === 'completed') throw new Error('goal already completed');
+      const children = [...nodes.values()].filter(n => n.parentId === contract.goalId);
+      if (children.some(n => statusFor(n.id) !== 'completed')) throw new Error('child goal not completed');
+      if (!Array.isArray(evidenceRefs) || evidenceRefs.length < 2 ||
+          !evidenceRefs.every(isText) || new Set(evidenceRefs).size !== evidenceRefs.length) {
+        throw new Error('evidence references must be distinct strings');
+      }
+      const evidence = evidenceRefs.map(reference => {
+        const record = evidenceProvider.resolve(reference, clone({ contract, context: context(contract.goalId) }));
+        if (!record || record.reference !== reference || record.verified !== true || record.passed !== true ||
+            !['artifact', 'test'].includes(record.kind) || !isText(record.sourceUri) ||
+            !/^[a-f0-9]{64}$/i.test(record.sha256 ?? '') || !isText(record.sourceRevision) ||
+            !isText(record.implementerId) || record.projectId !== seed.projectId ||
+            record.goalId !== contract.goalId || record.contractId !== contract.contractId) {
+          throw new Error('unverifiable evidence or evidence scope mismatch');
+        }
+        return clone(record);
+      });
+      if (!evidence.some(e => e.kind === 'artifact') || !evidence.some(e => e.kind === 'test') ||
+          new Set(evidence.map(e => e.sourceRevision)).size !== 1 ||
+          new Set(evidence.map(e => e.implementerId)).size !== 1) throw new Error('evidence must align to the same implementation revision and actor');
+      const contextSnapshot = context(contract.goalId);
+      const subject = { contractId: contract.contractId, goalVersion: contract.goalVersion,
+        pins: contract.pins, sourceRevision: evidence[0].sourceRevision };
+      const review = independentVerifier.review(clone({ contract, context: contextSnapshot, sources: evidence, subject }));
+      if (!review || !isText(review.reviewerId) || review.reviewerId === evidence[0].implementerId ||
+          !isText(review.reviewReceipt) || !isDeepStrictEqual(review.subject, subject) ||
+          review.codeReviewed !== true || review.boundaryReviewed !== true ||
+          !['pass', 'fail'].includes(review.verdict) || !Array.isArray(review.criterionResults) ||
+          !isDeepStrictEqual(sorted(review.criterionResults.map(c => c.criterion)), contextSnapshot.acceptance) ||
+          review.criterionResults.length !== contextSnapshot.acceptance.length ||
+          review.criterionResults.some(c => typeof c.passed !== 'boolean') ||
+          (review.verdict === 'pass' && review.criterionResults.some(c => !c.passed))) {
+        throw new Error('invalid independent verdict or incomplete review');
+      }
+      // Recheck after host callbacks: an in-process callback can mutate the graph synchronously.
+      if (contractState(contract).status !== 'current' || children.some(n => statusFor(n.id) !== 'completed') ||
+          statusFor(contract.goalId) === 'completed') throw new Error('verification became stale during review');
+      if (review.verdict === 'fail') return { verdict: 'fail', goalState: statusFor(contract.goalId),
+        findings: clone(review.findings ?? []) };
+      const receipt = { projectId: seed.projectId, goalId: contract.goalId, contract: clone(contract),
+        sources: evidence.map(({ reference, kind, sourceUri, sha256, sourceRevision }) =>
+          ({ reference, kind, sourceUri, sha256, sourceRevision })),
+        implementerId: evidence[0].implementerId, reviewerId: review.reviewerId, reviewReceipt: review.reviewReceipt,
+        criterionResults: clone(review.criterionResults), verdict: 'pass' };
+      const proofs = acceptedProofs.get(contract.goalId) ?? [];
+      proofs.push(clone(receipt)); acceptedProofs.set(contract.goalId, proofs);
+      return { verdict: 'pass', goalState: statusFor(contract.goalId), receipt: clone(receipt) };
+    },
+    proofs(id) { get(id); return clone(acceptedProofs.get(id) ?? []); },
     reviseGoal(proposal) {
       const { id, expectedVersion, actor, change, decision } = proposal;
       const old = get(id); requireText(actor, 'actor');
