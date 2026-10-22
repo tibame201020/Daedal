@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 
 /** Daedal vNext vertical slice: project-scoped goals, context, revision pinning.
@@ -27,7 +27,7 @@ function validateGoal({ id, outcome, acceptance, boundary = {} }) {
   return { id, outcome, acceptance: strings(acceptance, 'acceptance', true), boundary: validateBoundary(boundary) };
 }
 
-export function createLabyrinth(seed, { decisionGate, evidenceProvider, independentVerifier } = {}) {
+export function createLabyrinth(seed, { decisionGate, evidenceProvider, independentVerifier, referenceResolver, initialSnapshot } = {}) {
   requireText(seed.projectId, 'projectId');
   const root = { ...validateGoal(seed), parentId: null, version: 1, compositionVersion: 1, status: 'pending' };
   const nodes = new Map([[root.id, root]]);
@@ -36,6 +36,7 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
   const changes = [];
   const issuedContracts = new Map();
   const acceptedProofs = new Map();
+  const references = [];
   const get = id => {
     const node = nodes.get(id);
     if (!node) throw new Error(`unknown goal: ${id}`);
@@ -92,6 +93,28 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
     }));
   };
   const hasUnknown = ids => edges.some(e => e.type === 'unknown' && ids.includes(e.fromId));
+  const inspectReference = id => {
+    const n = get(id);
+    const projection = { projectId: seed.projectId, goalId: id, outcome: n.outcome,
+      acceptance: clone(n.acceptance), boundary: effectiveBoundary(id),
+      lineage: lineage(id).map(x => ({ id: x.id, version: x.version, compositionVersion: x.compositionVersion })) };
+    return { ...projection, revision: createHash('sha256').update(JSON.stringify(projection)).digest('hex') };
+  };
+  const liveReference = ref => {
+    if (!referenceResolver || typeof referenceResolver.inspect !== 'function') return { status: 'unresolved' };
+    let source;
+    try { source = referenceResolver.inspect({ projectId: ref.sourceProjectId, goalId: ref.sourceGoalId }); }
+    catch { return { status: 'unresolved' }; }
+    if (!source || source.projectId !== ref.sourceProjectId || source.goalId !== ref.sourceGoalId ||
+      !/^[a-f0-9]{64}$/i.test(source.revision ?? '')) return { status: 'unresolved' };
+    return { status: source.revision === ref.revision ? 'current' : 'stale', source };
+  };
+  const referenceStatus = ids => {
+    const states = references.filter(r => ids.includes(r.fromId)).map(liveReference);
+    if (states.some(s => s.status === 'stale')) return 'stale';
+    if (states.some(s => s.status === 'unresolved')) return 'unresolved';
+    return 'current';
+  };
   const context = id => {
     const chain = lineage(id);
     return {
@@ -102,6 +125,7 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
       acceptance: clone(get(id).acceptance),
       boundary: effectiveBoundary(id),
       relations: clone(edges.filter(e => e.fromId === id)),
+      references: clone(references.filter(r => r.fromId === id)),
       pins: pinSet(id),
     };
   };
@@ -117,7 +141,9 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
     if (!isDeepStrictEqual(contract.pins, current) || get(contract.goalId).version !== contract.goalVersion) {
       return { status: 'stale', reason: 'relevant goal/relation revision changed' };
     }
-    if (hasUnknown(current.map(p => p.id))) return { status: 'unresolved', reason: 'unknown dependency' };
+    const refStatus = referenceStatus(current.map(p => p.id));
+    if (refStatus === 'stale') return { status: 'stale', reason: 'cross-project source revision changed' };
+    if (refStatus === 'unresolved' || hasUnknown(current.map(p => p.id))) return { status: 'unresolved', reason: 'unknown or unavailable dependency' };
     return { status: 'current' };
   };
   const statusFor = id => {
@@ -128,6 +154,26 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
   };
   const self = {
     projectId: seed.projectId,
+    inspectReference(id) { return clone(inspectReference(id)); },
+    attachReference({ fromId, sourceProjectId, sourceGoalId }) {
+      get(fromId); requireText(sourceProjectId, 'source project'); requireText(sourceGoalId, 'source goal');
+      if (sourceProjectId === seed.projectId) throw new Error('external project reference only');
+      if (references.some(r => r.fromId === fromId && r.sourceProjectId === sourceProjectId && r.sourceGoalId === sourceGoalId)) throw new Error('duplicate project reference');
+      const live = liveReference({ sourceProjectId, sourceGoalId, revision: null });
+      if (live.status === 'unresolved') throw new Error('external source unavailable');
+      const link = { fromId, sourceProjectId, sourceGoalId, revision: live.source.revision, type: 'live-reference' };
+      references.push(link);
+      const old = get(fromId); past.get(fromId).push(clone(old)); nodes.set(fromId, { ...old, version: old.version + 1 });
+      changes.push({ id: fromId, actor: 'host', type: 'attach-reference', beforeVersion: old.version, afterVersion: old.version + 1,
+        sourceProjectId, sourceGoalId, revision: link.revision });
+      return clone(link);
+    },
+    exportSnapshot() {
+      // Trusted host only: this contains pending contracts and proof metadata, not an agent-facing export.
+      return clone({ schemaVersion: 1, projectId: seed.projectId, rootId: root.id,
+        nodes: [...nodes.values()], edges, references,
+        past: [...past], changes, issuedContracts: [...issuedContracts], acceptedProofs: [...acceptedProofs] });
+    },
     decompose({ id, parentId, outcome, acceptance, boundary }) {
       if (nodes.has(id)) throw new Error(`duplicate goal: ${id}`);
       if (!nodes.has(parentId)) throw new Error(`unknown parent: ${parentId}`);
@@ -255,5 +301,76 @@ export function createLabyrinth(seed, { decisionGate, evidenceProvider, independ
     history(id) { get(id); return clone(past.get(id)); },
     revisions() { return clone(changes); },
   };
+  if (initialSnapshot !== undefined) {
+    const state = clone(initialSnapshot);
+    if (!state || state.schemaVersion !== 1 || state.projectId !== seed.projectId || state.rootId !== root.id ||
+        !Array.isArray(state.nodes) || !Array.isArray(state.edges) || !Array.isArray(state.references) ||
+        !Array.isArray(state.past) || !Array.isArray(state.changes) || !Array.isArray(state.issuedContracts) ||
+        !Array.isArray(state.acceptedProofs)) throw new Error('invalid snapshot identity or schema');
+    const restored = new Map();
+    for (const n of state.nodes) {
+      if (!n || !isText(n.id) || restored.has(n.id) || !Number.isSafeInteger(n.version) || n.version < 1 ||
+          !Number.isSafeInteger(n.compositionVersion) || n.compositionVersion < 1 ||
+          !isDeepStrictEqual(validateGoal(n), { id: n.id, outcome: n.outcome, acceptance: n.acceptance, boundary: n.boundary }))
+        throw new Error('invalid or duplicate snapshot goal');
+      restored.set(n.id, n);
+    }
+    if (!restored.has(root.id) || restored.get(root.id).parentId !== null ||
+      [...restored.values()].filter(n => n.parentId === null).length !== 1) throw new Error('invalid snapshot root');
+    for (const n of restored.values()) {
+      const visited = new Set(); let cursor = n;
+      while (cursor.parentId !== null) {
+        if (visited.has(cursor.id) || !restored.has(cursor.parentId)) throw new Error('invalid snapshot parent/cycle');
+        visited.add(cursor.id); cursor = restored.get(cursor.parentId);
+      }
+      let allow; const deny = new Set();
+      const chain = []; cursor = n;
+      while (cursor) { chain.unshift(cursor); cursor = cursor.parentId === null ? null : restored.get(cursor.parentId); }
+      for (const member of chain) {
+        if (allow !== undefined && member.boundary.allow.some(cap => !allow.includes(cap))) throw new Error('snapshot boundary widening');
+        allow = member.boundary.allow; member.boundary.deny.forEach(x => deny.add(x));
+      }
+    }
+    const seenEdges = new Set();
+    for (const e of state.edges) {
+      if (!e || !restored.has(e.fromId) || !restored.has(e.toId) || e.fromId === e.toId ||
+        !['depends_on','unknown'].includes(e.type) || seenEdges.has(e.fromId + '\0' + e.toId)) throw new Error('invalid snapshot relation');
+      seenEdges.add(e.fromId + '\0' + e.toId);
+    }
+    const seenRefs = new Set();
+    for (const r of state.references) {
+      const key = [r?.fromId, r?.sourceProjectId, r?.sourceGoalId].join('\0');
+      if (!r || !restored.has(r.fromId) || !isText(r.sourceProjectId) || r.sourceProjectId === seed.projectId ||
+        !isText(r.sourceGoalId) || !/^[a-f0-9]{64}$/i.test(r.revision ?? '') ||
+        r.type !== 'live-reference' || seenRefs.has(key)) throw new Error('invalid snapshot project reference');
+      seenRefs.add(key);
+    }
+    const mapPairs = (values, label) => {
+      const output = new Map();
+      for (const entry of values) {
+        if (!Array.isArray(entry) || entry.length !== 2 || !isText(entry[0]) || output.has(entry[0])) throw new Error('invalid snapshot ' + label);
+        output.set(entry[0], entry[1]);
+      }
+      return output;
+    };
+    const history = mapPairs(state.past, 'history'), contracts = mapPairs(state.issuedContracts, 'contracts');
+    const proofs = mapPairs(state.acceptedProofs, 'proofs');
+    if (history.size !== restored.size || [...restored.keys()].some(id => !Array.isArray(history.get(id)))) throw new Error('invalid snapshot history');
+    for (const [id, contract] of contracts) {
+      if (!contract || id !== contract.contractId || contract.projectId !== seed.projectId ||
+        !restored.has(contract.goalId) || !Array.isArray(contract.pins) || contract.enforcement !== 'advisory') throw new Error('invalid snapshot contract');
+    }
+    for (const [id, rows] of proofs) {
+      if (!restored.has(id) || !Array.isArray(rows) || rows.some(p => p.goalId !== id || p.projectId !== seed.projectId ||
+        p.verdict !== 'pass' || !p.contract || !isDeepStrictEqual(p.contract, contracts.get(p.contract.contractId))))
+        throw new Error('invalid snapshot proof');
+    }
+    nodes.clear(); for (const [id,n] of restored) nodes.set(id,n);
+    edges.push(...state.edges); references.push(...state.references);
+    past.clear(); for (const [id,rows] of history) past.set(id,rows);
+    changes.push(...state.changes);
+    for (const [id,c] of contracts) issuedContracts.set(id,c);
+    for (const [id,p] of proofs) acceptedProofs.set(id,p);
+  }
   return self;
 }
