@@ -37,3 +37,7 @@ See [VS3 verification](VERIFICATION_CONTRACT.md), [VS4 protected operation](PROT
 ## Risk-Adaptive Quality Evidence (2026-10-27)
 
 A trusted-host optional, additive policy/evidence seam now selects a versioned Review Profile from existing Door × Blast Radius × Evidence Confidence. Required checks yield PASS/BLOCK/UNKNOWN and are pinned to actual source/Goal/Contract/Profile versions. Reports are normalized through a host port; the local file-backed adapter reads actual JSON bytes/source digests and can detect stale or missing reports after completion. Missing policy on restore fails closed for quality-pinned Contracts. Independent Code/Spec review remains mandatory; no actual pstack, CRAP or mutation engine is automatically executed. See [Quality Contract](RISK_ADAPTIVE_QUALITY_EVIDENCE.md). This is **not** authentication, a signed CI attestation or production QC.
+
+### Quality Evidence CI verification — 2026-10-27
+
+At source commit `072a8540e14efc02e63e532c615b55a9d839c22c`, GitHub Actions `Daedal vNext Contract Tests` run `40439559294`, job `121976345092` completed SUCCESS: **81 tests / 81 pass / 0 fail / 0 skip**. Aggregate coverage: Line **99.69%**, Branch **89.99%**, Function **97.86%**. Includes real local JSON report/source re-hashing and actual Node test execution. These are **adapter/contract tests**, not live CRAP, mutation, pstack or production identity attestation.
