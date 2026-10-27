@@ -17,3 +17,7 @@ command = "node node_modules/c8/bin/c8.js --reporter=json --reports-dir=.crapkit
 artifact = ".crapkit/cov/js/coverage-final.json"
 parser = "istanbul"
 scopes = ["src", "test-support"]
+
+[exclude]
+# Tooling scripts and runner config are not product source; the Node test/size gates still cover src/*.mjs.
+globs = ["scripts/**", "stryker.config.mjs"]
