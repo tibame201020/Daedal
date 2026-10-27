@@ -45,3 +45,7 @@ At source commit `072a8540e14efc02e63e532c615b55a9d839c22c`, GitHub Actions `Dae
 ### Native CRAP/Mutation/Review producer pilot — 2026-10-27
 
 Real `crapkit 0.8.1` + `c8 10.1.3` measured per-function CRAP risk; real `StrykerJS 10.1.1` executed mutants in `src/quality-review.mjs`. Raw native JSON ingestion, exact source commit checks and independently host-verified report-origin port are added under `src/quality-native.mjs`; see [native tool runner pilot](NATIVE_QUALITY_RUNNERS_20261027.md). The new advisory CI job runs these pinned external tools. Initial recorded source baseline: CRAP **191 functions / 43 over target**, Mutation **71.32% (189 killed, 76 survived)**. These are not CI PASS signals and no authenticated GitHub PR or independent pstack review has been accepted (UNKNOWN).
+
+#### Native runner CI evidence
+
+Branch commit `6ff0d0fed27e40d81c303a1d57e95e862fdb3607`: GitHub Actions `Daedal vNext Contract Tests` run `40441052507` **86/86 PASS**; `Daedal Native Quality Tools (advisory baseline)` run `40441052567` SUCCESS (crapkit / Stryker / source validator). Its PR merge checkout `051d57931903ab5e09cf0d7a7986989d07a37d72` measured 207 functions, 48 above CRAP target, and 265 mutations with 71.32% score. These measurement **FAIL** results remain advisory, not converted to PASS. Independent PR/pstack review not accepted.

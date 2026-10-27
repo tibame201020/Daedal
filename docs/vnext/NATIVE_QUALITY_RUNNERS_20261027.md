@@ -28,3 +28,13 @@ Invalid/missing native reports, failed tools or mismatched source revisions **fa
 ### Production acceptance still separate
 
 Native PR review verification via trusted GitHub API, authoritative artifact attestations, pstack model-execution identity (including independent reviewer context), OS isolation, full mutation scope and external Paperclip/Browser Harness E2E remain not accepted. A true quality receipt must be verified by the host and remain subject to Daedal's independent Goal/Code/Spec check. The pilot never self-approves or merges the PR.
+
+## Confirmed GitHub Actions pilot — 2026-10-27
+
+Branch source commit `6ff0d0fed27e40d81c303a1d57e95e862fdb3607`: both jobs passed. Mandatory Contract Tests run `40441052507` yielded **86/86 PASS, 0 fail, 0 skip**, with Line 99.63%, Branch 89.57%, Function 97.97%. Separate Native Quality Tools run `40441052567`, job `121981227653`, completed SUCCESS, including **crapkit doctor + coverage**, **StrykerJS mutation**, and the final report/source-SHA validator.
+
+The GitHub PR checkout for native tooling used generated **merge commit** `051d57931903ab5e09cf0d7a7986989d07a37d72` (not the branch HEAD), and the validator bound reports to that actual checked-out revision: **207 functions, 195 measured, 48 over CRAP target (grade F, load 1114.5)**, and **265 Stryker mutants, 189 killed / 76 survived, mutation 71.32%**. Both exceed/fall below the deliberately strict advisory example thresholds and were reported as **FAIL**; only *execution and metric/provenance consistency* passed the pilot job. The baseline figures at the top of this document are from an earlier branch HEAD, not the PR merge checkout.
+
+Initial Linux workflow failures were fixed without disabling validation: crapkit `doctor` required explicit exclusions for quality runner scripts/config; then Stryker's sandbox hit a Python venv `lib64` symlink. The Python venv was moved outside the repository into `RUNNER_TEMP`, leaving both tools independently runnable. Local npm install printed dependency vulnerability/deprecation warnings (including two moderate audit findings), which require dependency review before any production-grade required policy.
+
+**This job is advisory**. It has not generated a cryptographically signed GitHub Actions attestation or supplied independent pstack model reviews. Raw reports stay ephemeral and are not committed. A future host that uses reports for Goal completion must independently verify the CI run identity, checked-out commit, artifact digest, caller/reviewer identity and policy.
