@@ -46,8 +46,24 @@ export function summarizeGitHubReviews(reviews, { sourceRevision, implementerId 
     return UNKNOWN('authenticated review scope missing');
   const applicable = reviews.filter(r => r.commitId === sourceRevision &&
     typeof r.reviewerId === 'string' && r.reviewerId !== implementerId);
-  if (applicable.some(r => r.state === 'CHANGES_REQUESTED')) return { status: 'fail', metrics: { reviewCount: applicable.length } };
-  if (!applicable.some(r => r.state === 'APPROVED')) return UNKNOWN('no independent approval pinned to current commit');
+  const latest = new Map();
+  for (const r of applicable) {
+    if (!['APPROVED', 'CHANGES_REQUESTED', 'DISMISSED'].includes(r.state)) continue;
+    const previous = latest.get(r.reviewerId);
+    if (!previous) { latest.set(r.reviewerId, r); continue; }
+    const time = value => Date.parse(value?.submittedAt ?? value?.submitted_at ?? '');
+    const a = time(previous), b = time(r);
+    const ida = previous.id, idb = r.id;
+    if (!Number.isFinite(a) || !Number.isFinite(b)) return UNKNOWN('ambiguous reviewer chronology');
+    if (a === b && (!Number.isSafeInteger(ida) || !Number.isSafeInteger(idb) || ida === idb))
+      return UNKNOWN('ambiguous reviewer chronology');
+    if (b > a || (a === b && idb > ida)) latest.set(r.reviewerId, r);
+  }
+  const states = [...latest.values()];
+  if (states.some(r => r.state === 'CHANGES_REQUESTED'))
+    return { status: 'fail', metrics: { reviewCount: applicable.length } };
+  if (!states.some(r => r.state === 'APPROVED'))
+    return UNKNOWN('no independent approval pinned to current commit');
   return { status: 'pass', metrics: { reviewCount: applicable.length } };
 }
 /** The pstack methodology asks for separately sourced reviewers; absent a real reviewer, always UNKNOWN. */

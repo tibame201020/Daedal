@@ -67,7 +67,7 @@ function makePins({ get, lineage, descendants, edges }) {
   return { pinSet, hasUnknown };
 }
 
-function makeReferences({ seed, get, effectiveBoundary, lineage, referenceResolver, references }) {
+function makeReferences({ seed, get, effectiveBoundary, lineage, descendants, referenceResolver, references }) {
   const inspectReference = id => {
     const n = get(id);
     const projection = { projectId: seed.projectId, goalId: id, outcome: n.outcome,
@@ -75,7 +75,10 @@ function makeReferences({ seed, get, effectiveBoundary, lineage, referenceResolv
       // Ancestor goal revisions matter; an unrelated sibling's composition does not.
       // The referenced Goal's own child composition remains part of its accepted surface.
       lineage: lineage(id).map(x => ({ id: x.id, version: x.version,
-        ...(x.id === id ? { compositionVersion: x.compositionVersion } : {}) })) };
+        ...(x.id === id ? { compositionVersion: x.compositionVersion } : {}) })),
+      // A referenced Goal is a Surface: relevant descendants carry their own revisions.
+      surface: sorted(descendants(id)).map(goalId => ({ id: goalId, version: get(goalId).version,
+        compositionVersion: get(goalId).compositionVersion })) };
     return { ...projection, revision: createHash('sha256').update(JSON.stringify(projection)).digest('hex') };
   };
   const liveReference = ref => {
@@ -97,15 +100,18 @@ function makeReferences({ seed, get, effectiveBoundary, lineage, referenceResolv
 }
 
 function makeContext({ seed, get, statusFor, lineage, nodes, effectiveBoundary, edges, references,
-  candidates, acceptedKnowledge, pinSet }) {
+  candidates, acceptedKnowledge, pinSet, changes }) {
   const context = id => {
     const chain = lineage(id);
     return {
       projectId: seed.projectId,
       goal: { ...clone(get(id)), status: statusFor(id) },
-      ancestors: clone(chain.slice(0, -1).map(n => ({ id: n.id, outcome: n.outcome, version: n.version, boundary: n.boundary }))),
+      ancestors: clone(chain.slice(0, -1).map(n => ({ id: n.id, outcome: n.outcome,
+        version: n.version, boundary: n.boundary, acceptance: n.acceptance }))),
       children: sorted([...nodes.values()].filter(n => n.parentId === id).map(n => n.id)),
       acceptance: clone(get(id).acceptance),
+      acceptedDecisions: clone(changes.filter(c => c.decision &&
+        chain.some(n => n.id === c.id || n.id === c.parentId || n.id === c.fromId))),
       boundary: effectiveBoundary(id),
       relations: clone(edges.filter(e => e.fromId === id)),
       references: clone(references.filter(r => r.fromId === id)),
@@ -203,14 +209,14 @@ function makeAuthorization(seed, decisionGate) {
 }
 
 export function createGraph({ seed, nodes, edges, references, issuedContracts, acceptedProofs,
-  evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider }) {
+  evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider, changes }) {
   const topology = makeTopology(nodes);
   const pins = makePins({ ...topology, edges });
   const refs = makeReferences({ seed, ...topology, referenceResolver, references });
   const completion = makeCompletion({ ...topology, ...pins, ...refs, issuedContracts,
     seed, acceptedProofs, evidenceProvider, nodes, qualityPolicy, qualityEvidenceProvider });
   const context = makeContext({ seed, ...topology, ...pins, nodes, edges, references,
-    candidates, acceptedKnowledge, statusFor: completion.statusFor });
+    candidates, acceptedKnowledge, statusFor: completion.statusFor, changes });
   return { ...topology, ...pins, ...refs, ...completion, context,
     authorizeMapDecision: makeAuthorization(seed, decisionGate) };
 }

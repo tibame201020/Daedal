@@ -27,7 +27,7 @@ function initializeRuntime(seed, { decisionGate, evidenceProvider, independentVe
   const candidates = new Map();
   const acceptedKnowledge = new Map();
   const graph = createGraph({ seed, nodes, edges, references, issuedContracts, acceptedProofs,
-    evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider });
+    evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider, changes });
 
   if (initialSnapshot !== undefined) restoreSnapshot({
     initialSnapshot, seed, root, bootstrapSeed, nodes, edges, references, past, changes,

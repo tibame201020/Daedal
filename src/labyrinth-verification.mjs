@@ -36,6 +36,14 @@ function reviewSources({ independentVerifier, context, contract, evidence }) {
       }
       return { contextSnapshot, subject, review };
 }
+function requireCurrentSource(evidenceProvider, receipt) {
+  if (typeof evidenceProvider.freshness !== 'function') return;
+  let freshness;
+  try { freshness = evidenceProvider.freshness(clone(receipt)); }
+  catch { freshness = 'unresolved'; }
+  if (freshness !== 'current') throw new Error('evidence became stale or unresolved during review');
+}
+
 export function verifyGoal({ contract, evidenceRefs }, {
   validatedContract, evidenceProvider, independentVerifier, contractState, statusFor, nodes, seed,
   context, acceptedProofs, qualityEvidenceProvider
@@ -81,6 +89,7 @@ export function verifyGoal({ contract, evidenceRefs }, {
             ...(testSourceSha256 ? { testSourceSha256 } : {}) })),
         implementerId: evidence[0].implementerId, reviewerId: review.reviewerId, reviewReceipt: review.reviewReceipt,
         criterionResults: clone(review.criterionResults), verdict: 'pass', ...(quality ? { quality: clone(quality) } : {}) };
+      requireCurrentSource(evidenceProvider, receipt);
       const proofs = acceptedProofs.get(contract.goalId) ?? [];
       proofs.push(clone(receipt)); acceptedProofs.set(contract.goalId, proofs);
       return { verdict: 'pass', goalState: statusFor(contract.goalId), receipt: clone(receipt), ...(quality ? { quality: clone(quality) } : {}) };

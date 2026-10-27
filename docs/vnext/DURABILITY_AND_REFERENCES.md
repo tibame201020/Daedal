@@ -35,3 +35,7 @@ The original v2 `tracker.json`, Ikaros Protocol and CI templates remain untouche
 ## Experimental snapshot schema
 
 Snapshot schema v2 stores discovery candidates and accepted knowledge alongside versioned goals and proofs. Earlier experimental vNext schema-1 snapshots fail closed; original v2 tracker remains untouched. No automatic migration or completed-status promotion.
+
+## Reference Surface revision (2026-10-27)
+
+The source projection now includes descendant Goal revisions and compositions under the selected referenced Goal. A consumer must re-verify when the selected subtree changes, while irrelevant sibling revisions do not cause a global invalidation. Pre-change experimental reference pins can become stale and require a deliberate refresh.

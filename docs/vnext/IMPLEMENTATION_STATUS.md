@@ -49,3 +49,7 @@ Real `crapkit 0.8.1` + `c8 10.1.3` measured per-function CRAP risk; real `Stryke
 #### Native runner CI evidence
 
 Branch commit `6ff0d0fed27e40d81c303a1d57e95e862fdb3607`: GitHub Actions `Daedal vNext Contract Tests` run `40441052507` **86/86 PASS**; `Daedal Native Quality Tools (advisory baseline)` run `40441052567` SUCCESS (crapkit / Stryker / source validator). Its PR merge checkout `051d57931903ab5e09cf0d7a7986989d07a37d72` measured 207 functions, 48 above CRAP target, and 265 mutations with 71.32% score. These measurement **FAIL** results remain advisory, not converted to PASS. Independent PR/pstack review not accepted.
+
+### 2026-10-27 Product drift audit remediation
+
+A code/Spec audit of PR #1 identified three P1 gaps (descendant Live Reference invalidation, mandatory ancestor acceptance/decisions in Navigation, evidence freshness after reviewer callback) and a P2 PR review chronology bug. Targeted RED tests were observed before corrections. See [drift remediation](DRIFT_REMEDIATION_20261027.md). These corrections do not establish independent multi-agent review or solve the artifact SHA-256 versus Git commit SHA native evidence mapping.
