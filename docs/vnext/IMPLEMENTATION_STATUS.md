@@ -33,3 +33,7 @@ Code-and-docs commit `38ca9f3a929ebfcd0b63b8f8f2dc598ed269317a`: GitHub Actions 
 - No merged PR, no release, no v2 `tracker.json` migration and no claim of production readiness.
 
 See [VS3 verification](VERIFICATION_CONTRACT.md), [VS4 protected operation](PROTECTED_LOCAL_SEAM.md) and [VS5 durability/references](DURABILITY_AND_REFERENCES.md). Do not put credentials, personal information, private source snapshots, unredacted logs or host state files in the repository.
+
+## Risk-Adaptive Quality Evidence (2026-10-27)
+
+A trusted-host optional, additive policy/evidence seam now selects a versioned Review Profile from existing Door × Blast Radius × Evidence Confidence. Required checks yield PASS/BLOCK/UNKNOWN and are pinned to actual source/Goal/Contract/Profile versions. Reports are normalized through a host port; the local file-backed adapter reads actual JSON bytes/source digests and can detect stale or missing reports after completion. Missing policy on restore fails closed for quality-pinned Contracts. Independent Code/Spec review remains mandatory; no actual pstack, CRAP or mutation engine is automatically executed. See [Quality Contract](RISK_ADAPTIVE_QUALITY_EVIDENCE.md). This is **not** authentication, a signed CI attestation or production QC.

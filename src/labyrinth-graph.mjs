@@ -1,3 +1,4 @@
+import { selectQualityProfile, sameQualityProfile } from './quality-review.mjs';
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual } from 'node:util';
 import { clone, sorted, isText, requireText, validateBoundary } from './labyrinth-common.mjs';
@@ -116,8 +117,27 @@ function makeContext({ seed, get, statusFor, lineage, nodes, effectiveBoundary, 
   return context;
 }
 
+function checkQualityContract({ contract, qualityPolicy, qualityEvidenceProvider,
+  seed, get, current, effectiveBoundary }) {
+    if (!!contract.qualityProfile !== !!qualityPolicy) {
+      return { status: contract.qualityProfile ? 'unresolved' : 'stale', reason: 'quality policy unavailable or introduced' };
+    }
+    if (contract.qualityProfile) {
+      if (typeof qualityEvidenceProvider?.resolve !== 'function') return { status: 'unresolved', reason: 'quality evidence unavailable' };
+      let active;
+      try {
+        const goal = get(contract.goalId);
+        active = selectQualityProfile(qualityPolicy, { projectId: seed.projectId, goal: clone(goal),
+          pins: current, boundary: effectiveBoundary(contract.goalId) });
+      } catch { return { status: 'unresolved', reason: 'quality policy selection failed' }; }
+      if (!sameQualityProfile(active, contract.qualityProfile))
+        return { status: 'stale', reason: 'quality profile revision changed' };
+    }
+    return null;
+}
+
 function makeCompletion({ issuedContracts, seed, pinSet, get, referenceStatus, hasUnknown,
-  acceptedProofs, evidenceProvider, nodes }) {
+  acceptedProofs, evidenceProvider, nodes, qualityPolicy, qualityEvidenceProvider, effectiveBoundary }) {
   const validatedContract = contract => {
     if (!contract || !isText(contract.contractId) || !issuedContracts.has(contract.contractId) ||
       !isDeepStrictEqual(contract, issuedContracts.get(contract.contractId))) throw new Error('unknown or altered issued contract');
@@ -133,6 +153,9 @@ function makeCompletion({ issuedContracts, seed, pinSet, get, referenceStatus, h
     const refStatus = referenceStatus(current.map(p => p.id));
     if (refStatus === 'stale') return { status: 'stale', reason: 'cross-project source revision changed' };
     if (refStatus === 'unresolved' || hasUnknown(current.map(p => p.id))) return { status: 'unresolved', reason: 'unknown or unavailable dependency' };
+    const quality = checkQualityContract({ contract, qualityPolicy, qualityEvidenceProvider,
+      seed, get, current, effectiveBoundary });
+    if (quality) return quality;
     return { status: 'current' };
   };
   const statusFor = id => {
@@ -145,6 +168,12 @@ function makeCompletion({ issuedContracts, seed, pinSet, get, referenceStatus, h
     if (evidenceProvider && typeof evidenceProvider.freshness === 'function') {
       let freshness;
       try { freshness = evidenceProvider.freshness(clone(receipt)); } catch { return 'unresolved'; }
+      if (freshness === 'stale') return 'needs-reverification';
+      if (freshness !== 'current') return 'unresolved';
+    }
+    if (receipt.quality && typeof qualityEvidenceProvider?.freshness === 'function') {
+      let freshness;
+      try { freshness = qualityEvidenceProvider.freshness(clone(receipt)); } catch { return 'unresolved'; }
       if (freshness === 'stale') return 'needs-reverification';
       if (freshness !== 'current') return 'unresolved';
     }
@@ -174,12 +203,12 @@ function makeAuthorization(seed, decisionGate) {
 }
 
 export function createGraph({ seed, nodes, edges, references, issuedContracts, acceptedProofs,
-  evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge }) {
+  evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider }) {
   const topology = makeTopology(nodes);
   const pins = makePins({ ...topology, edges });
   const refs = makeReferences({ seed, ...topology, referenceResolver, references });
   const completion = makeCompletion({ ...topology, ...pins, ...refs, issuedContracts,
-    seed, acceptedProofs, evidenceProvider, nodes });
+    seed, acceptedProofs, evidenceProvider, nodes, qualityPolicy, qualityEvidenceProvider });
   const context = makeContext({ seed, ...topology, ...pins, nodes, edges, references,
     candidates, acceptedKnowledge, statusFor: completion.statusFor });
   return { ...topology, ...pins, ...refs, ...completion, context,

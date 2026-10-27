@@ -5,6 +5,7 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
+      - 'test-support/**'
       - 'package.json'
       - '.github/workflows/vnext-contract-tests.yml'
       - 'docs/vnext/**'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
+      - 'test-support/**'
       - 'package.json'
       - '.github/workflows/vnext-contract-tests.yml'
       - 'docs/vnext/**'

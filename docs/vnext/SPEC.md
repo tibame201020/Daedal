@@ -55,3 +55,7 @@ Daedal is a protocol for ensuring autonomous engineering work stays connected to
 ## Delivery constraints
 
 Use a test-first public seam and run unit/contract tests in GitHub Actions. Store no personal identity, session, credential, private repo artifact, or unsanitized evidence in fixtures/receipts. Retain original v2 tracker/protocol/workflow until an explicit, verified migration. Do not call VS1–VS5 local contract/E2E tests a deployed authenticated Knossos, general semantic reviewer, full filesystem security boundary, or production-accepted product.
+
+## Quality Review Contract (additive vNext evidence interface)
+
+The risk-scoped, host-selected Review Profile is pinned to the issued Work Contract. Tool-specific check results (unit/integration, PR, Standards/Spec, CRAP, mutation, adversarial review) are **external quality evidence**, not Daedal-owned runners. All required checks must have verified source- and revision-bound PASS; verified failure BLOCKS, missing/invalid/unknown input remains UNKNOWN. Advisory findings remain visible. Quality success never substitutes for Independent Verification of Goal, ancestor boundaries and real Code/Spec. Profile or report/source changes invalidate only affected proof; see [Quality Evidence Contract](RISK_ADAPTIVE_QUALITY_EVIDENCE.md).

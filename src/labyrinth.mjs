@@ -7,12 +7,13 @@ import { verifyGoal } from './labyrinth-verification.mjs';
 import { attachReference, refreshReference } from './labyrinth-references.mjs';
 import { discover, acceptDiscovery } from './labyrinth-knowledge.mjs';
 import { decompose, relate, reviseGoal } from './labyrinth-mutations.mjs';
+import { selectQualityProfile } from './quality-review.mjs';
 
 /** Daedal vNext vertical slice: project-scoped goals, context, revision pinning.
  * Pure in-memory domain module; not a persistent service or an attested enforcement adapter.
  */
 
-function initializeRuntime(seed, { decisionGate, evidenceProvider, independentVerifier, referenceResolver, knowledgeVerifier, initialSnapshot } = {}) {
+function initializeRuntime(seed, { decisionGate, evidenceProvider, independentVerifier, referenceResolver, knowledgeVerifier, qualityPolicy, qualityEvidenceProvider, initialSnapshot } = {}) {
   requireText(seed.projectId, 'projectId');
   const bootstrapSeed = validateGoal(seed);
   const root = { ...bootstrapSeed, parentId: null, version: 1, compositionVersion: 1, status: 'pending' };
@@ -26,7 +27,7 @@ function initializeRuntime(seed, { decisionGate, evidenceProvider, independentVe
   const candidates = new Map();
   const acceptedKnowledge = new Map();
   const graph = createGraph({ seed, nodes, edges, references, issuedContracts, acceptedProofs,
-    evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge });
+    evidenceProvider, referenceResolver, decisionGate, candidates, acceptedKnowledge, qualityPolicy, qualityEvidenceProvider });
 
   if (initialSnapshot !== undefined) restoreSnapshot({
     initialSnapshot, seed, root, bootstrapSeed, nodes, edges, references, past, changes,
@@ -34,20 +35,24 @@ function initializeRuntime(seed, { decisionGate, evidenceProvider, independentVe
   });
   return { seed, root, bootstrapSeed, nodes, edges, past, changes, issuedContracts, acceptedProofs,
     references, candidates, acceptedKnowledge, graph, decisionGate, evidenceProvider,
-    independentVerifier, knowledgeVerifier };
+    independentVerifier, knowledgeVerifier, qualityPolicy, qualityEvidenceProvider };
 }
 
-function issueWorkContract(id, { get, pinSet, effectiveBoundary, issuedContracts, seed }) {
+function issueWorkContract(id, { get, pinSet, effectiveBoundary, issuedContracts, seed, qualityPolicy }) {
   const node = get(id); const pins = pinSet(id);
+  const boundary = effectiveBoundary(id);
+  const qualityProfile = selectQualityProfile(qualityPolicy, { projectId: seed.projectId,
+    goal: clone(node), pins: clone(pins), boundary });
   const contract = { contractId: randomUUID(), projectId: seed.projectId, goalId: id, goalVersion: node.version,
-    pins, boundary: effectiveBoundary(id), enforcement: 'advisory', issuedFor: 'domain-navigation' };
+    pins, boundary, enforcement: 'advisory', issuedFor: 'domain-navigation',
+    ...(qualityProfile ? { qualityProfile } : {}) };
   issuedContracts.set(contract.contractId, clone(contract));
   return clone(contract);
 }
 
 function createFacade({ seed, root, bootstrapSeed, nodes, edges, past, changes,
   issuedContracts, acceptedProofs, references, candidates, acceptedKnowledge, graph,
-  decisionGate, evidenceProvider, independentVerifier, knowledgeVerifier }) {
+  decisionGate, evidenceProvider, independentVerifier, knowledgeVerifier, qualityPolicy, qualityEvidenceProvider }) {
   const { get, effectiveBoundary, validateChildBoundary, pinSet, inspectReference, liveReference, context,
     validatedContract, contractState, statusFor, authorizeMapDecision } = graph;
   return {
@@ -81,13 +86,13 @@ function createFacade({ seed, root, bootstrapSeed, nodes, edges, past, changes,
       const b = effectiveBoundary(id);
       return { allowed: b.allow.includes(capability) && !b.deny.includes(capability), capability, boundary: b };
     },
-    issueContract(id) { return issueWorkContract(id, { get, pinSet, effectiveBoundary, issuedContracts, seed }); },
+    issueContract(id) { return issueWorkContract(id, { get, pinSet, effectiveBoundary, issuedContracts, seed, qualityPolicy }); },
     contractStatus(contract) {
       return contractState(contract);
     },
     verifyGoal(args) {
       return verifyGoal(args, { validatedContract, evidenceProvider, independentVerifier,
-        contractState, statusFor, nodes, seed, context, acceptedProofs });
+        contractState, statusFor, nodes, seed, context, acceptedProofs, qualityEvidenceProvider });
     },
     proofs(id) { get(id); return clone(acceptedProofs.get(id) ?? []); },
     reviseGoal(args) { return reviseGoal(args, { get, validateChildBoundary, effectiveBoundary, decisionGate, seed, context, past, nodes, changes }); },

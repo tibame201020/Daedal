@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from 'node:util';
 import { clone, sorted, isText } from './labyrinth-common.mjs';
+import { evaluateQualityEvidence } from './quality-review.mjs';
 
 function resolveSources({ evidenceRefs, evidenceProvider, contract, seed, context }) {
       const evidence = evidenceRefs.map(reference => {
@@ -37,7 +38,7 @@ function reviewSources({ independentVerifier, context, contract, evidence }) {
 }
 export function verifyGoal({ contract, evidenceRefs }, {
   validatedContract, evidenceProvider, independentVerifier, contractState, statusFor, nodes, seed,
-  context, acceptedProofs
+  context, acceptedProofs, qualityEvidenceProvider
 }) {
       // This synchronous domain seam must only be invoked by a trusted host. It is not an auth boundary.
       validatedContract(contract);
@@ -55,19 +56,32 @@ export function verifyGoal({ contract, evidenceRefs }, {
         throw new Error('evidence references must be distinct strings');
       }
       const evidence = resolveSources({ evidenceRefs, evidenceProvider, contract, seed, context });
+      const quality = contract.qualityProfile ? evaluateQualityEvidence({
+        profile: contract.qualityProfile, contract, sourceRevision: evidence[0].sourceRevision,
+        provider: qualityEvidenceProvider,
+      }) : null;
+      if (quality && quality.status !== 'pass') return {
+        verdict: quality.status, goalState: statusFor(contract.goalId), quality,
+      };
       const { contextSnapshot, subject, review } = reviewSources({ independentVerifier, context, contract, evidence });
+      // Evidence and policy can change while independent review runs: never commit an old PASS.
+      if (quality) {
+        const now = evaluateQualityEvidence({ profile: contract.qualityProfile, contract,
+          sourceRevision: evidence[0].sourceRevision, provider: qualityEvidenceProvider });
+        if (now.status !== 'pass' || !isDeepStrictEqual(now, quality)) throw new Error('quality evidence changed during review');
+      }
       // Recheck after host callbacks: an in-process callback can mutate the graph synchronously.
       if (contractState(contract).status !== 'current' || children.some(n => statusFor(n.id) !== 'completed') ||
           statusFor(contract.goalId) === 'completed') throw new Error('verification became stale during review');
       if (review.verdict === 'fail') return { verdict: 'fail', goalState: statusFor(contract.goalId),
-        findings: clone(review.findings ?? []) };
+        findings: clone(review.findings ?? []), ...(quality ? { quality: clone(quality) } : {}) };
       const receipt = { projectId: seed.projectId, goalId: contract.goalId, contract: clone(contract),
         sources: evidence.map(({ reference, kind, sourceUri, sha256, sourceRevision, testSourceSha256 }) =>
           ({ reference, kind, sourceUri, sha256, sourceRevision,
             ...(testSourceSha256 ? { testSourceSha256 } : {}) })),
         implementerId: evidence[0].implementerId, reviewerId: review.reviewerId, reviewReceipt: review.reviewReceipt,
-        criterionResults: clone(review.criterionResults), verdict: 'pass' };
+        criterionResults: clone(review.criterionResults), verdict: 'pass', ...(quality ? { quality: clone(quality) } : {}) };
       const proofs = acceptedProofs.get(contract.goalId) ?? [];
       proofs.push(clone(receipt)); acceptedProofs.set(contract.goalId, proofs);
-      return { verdict: 'pass', goalState: statusFor(contract.goalId), receipt: clone(receipt) };
+      return { verdict: 'pass', goalState: statusFor(contract.goalId), receipt: clone(receipt), ...(quality ? { quality: clone(quality) } : {}) };
 }

@@ -31,3 +31,9 @@ Daedal preserves project intention, functional/system boundaries, and verifiable
 **Unknown Impact**: Unresolved possible effect; neither PASS nor FAIL.
 
 **Impact Reconciliation**: Re-evaluation of affected work and proof while retaining demonstrated unaffected results.
+
+**Review Profile**: Host-selected, versioned list of mandatory and advisory checks for a Work Contract, chosen from its assessed change risk. Not a new Goal authority.
+
+**Quality Evidence**: Original-report-referenced, revision/contract/profile-bound evidence from an external method (unit, CRAP, mutation, PR, Spec or adversarial review). A tool's green signal is not a Goal verdict.
+
+**Quality Unknown / Block**: Missing or unverified required evidence is Unknown; verified failing required evidence is Block. Neither permits Goal completion.
