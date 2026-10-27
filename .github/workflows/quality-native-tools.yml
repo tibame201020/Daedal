@@ -43,13 +43,13 @@ jobs:
       - name: Install pinned standalone analysis tools (no runtime dependency)
         run: |
           npm install --no-save --no-package-lock --no-audit --no-fund @stryker-mutator/core@10.1.1 c8@10.1.3
-          python -m venv .quality-venv
-          .quality-venv/bin/python -m pip install crapkit==0.8.1
+          python -m venv "$RUNNER_TEMP/daedal-quality-venv"
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m pip install crapkit==0.8.1
       - name: Run real crapkit + Istanbul function coverage
         run: |
           mkdir -p reports/quality
-          .quality-venv/bin/python -m crapkit doctor
-          .quality-venv/bin/python -m crapkit coverage --json > reports/quality/crapkit.json
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m crapkit doctor
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m crapkit coverage --json > reports/quality/crapkit.json
       - name: Run real StrykerJS mutation (one production source module)
         run: node node_modules/@stryker-mutator/core/bin/stryker.js run
       - name: Validate native report shapes, source SHA and advisory metrics

@@ -3,6 +3,7 @@ export default {
   testRunner: 'command',
   commandRunner: { command: 'node --test test/quality-review.test.mjs' },
   coverageAnalysis: 'off',
+  ignorePatterns: ['.crapkit/**', '.quality-venv/**', '.quality-python/**', 'reports/quality/**'],
   concurrency: 2,
   reporters: ['json', 'clear-text'],
   jsonReporter: { fileName: 'reports/mutation/mutation.json' },
