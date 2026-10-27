@@ -1,0 +1,19 @@
+[crapkit]
+target = 6
+
+[[scope]]
+name = "src"
+paths = ["src"]
+languages = ["javascript"]
+
+[[scope]]
+name = "test-support"
+paths = ["test-support"]
+languages = ["javascript"]
+
+[[lane]]
+name = "js"
+command = "node node_modules/c8/bin/c8.js --reporter=json --reports-dir=.crapkit/cov/js node --test"
+artifact = ".crapkit/cov/js/coverage-final.json"
+parser = "istanbul"
+scopes = ["src", "test-support"]

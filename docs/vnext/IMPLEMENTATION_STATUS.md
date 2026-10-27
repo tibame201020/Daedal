@@ -41,3 +41,7 @@ A trusted-host optional, additive policy/evidence seam now selects a versioned R
 ### Quality Evidence CI verification — 2026-10-27
 
 At source commit `072a8540e14efc02e63e532c615b55a9d839c22c`, GitHub Actions `Daedal vNext Contract Tests` run `40439559294`, job `121976345092` completed SUCCESS: **81 tests / 81 pass / 0 fail / 0 skip**. Aggregate coverage: Line **99.69%**, Branch **89.99%**, Function **97.86%**. Includes real local JSON report/source re-hashing and actual Node test execution. These are **adapter/contract tests**, not live CRAP, mutation, pstack or production identity attestation.
+
+### Native CRAP/Mutation/Review producer pilot — 2026-10-27
+
+Real `crapkit 0.8.1` + `c8 10.1.3` measured per-function CRAP risk; real `StrykerJS 10.1.1` executed mutants in `src/quality-review.mjs`. Raw native JSON ingestion, exact source commit checks and independently host-verified report-origin port are added under `src/quality-native.mjs`; see [native tool runner pilot](NATIVE_QUALITY_RUNNERS_20261027.md). The new advisory CI job runs these pinned external tools. Initial recorded source baseline: CRAP **191 functions / 43 over target**, Mutation **71.32% (189 killed, 76 survived)**. These are not CI PASS signals and no authenticated GitHub PR or independent pstack review has been accepted (UNKNOWN).
