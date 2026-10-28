@@ -57,3 +57,7 @@ A code/Spec audit of PR #1 identified three P1 gaps (descendant Live Reference i
 ### 2026-10-28 — CI Provenance pilot
 
 A TDD-verified bridge binds a local tracked source artifact SHA-256 to the tested Git Commit and original Git blob; PR Merge SHA is deliberately distinguished from PR Head. The Native Quality workflow uploads the original reports + exact-source Evidence Bundle and requests GitHub OIDC/Sigstore attestation and CLI verification **on trusted push runs only**. New source binding tests cover modified/untracked/unsafe source, wrong commit, forge attempts and stale reports. See [provenance contract](QUALITY_PROVENANCE_20261028.md). The host still needs a fully verified attestation/source mapping implementation for autonomous Goal acceptance; do not promote a signed bundle directly to PASS.
+
+#### Signed native quality evidence — verified CI, 2026-10-28
+
+At implementation HEAD `a217ed960501f3be8b5c11e9fe3a15513c2c02c9`, Contract Tests run `40633666546` PASS (97/97) and Native Quality run `40633666518` SUCCESS, including signed Sigstore GitHub artifact attestation and `gh attestation verify` on the exact manifest bytes. Artifact ID `12791804292`; manifest SHA-256 `eb1d0086cf1ba4d2a26a5f878f95cd69d78db6d309d124881e7aefd90bfb5b43`. Quality scores remain advisory FAIL. This authenticates CI manifest origin, not independent semantic correctness or native product acceptance. Details in [Quality Provenance](QUALITY_PROVENANCE_20261028.md).
