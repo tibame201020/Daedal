@@ -66,3 +66,7 @@ Deployment with authenticated tool provenance, independent real Code/Spec review
 ## CI validation receipt
 
 Code commit `072a8540e14efc02e63e532c615b55a9d839c22c` — GitHub Actions run `40439559294` (job `121976345092`): **81/81 tests pass**, 0 fail/skip, overall Line 99.69% / Branch 89.99% / Function 97.86%. The required/advisory tri-state Gate, source/Profile pinning, freshness checks, and independent semantic veto were exercised. This is not an attested run of external CRAP/mutation/pstack tools.
+
+## Source identity bridge (2026-10-28)
+
+Native quality reports are pinned to the tested Git Commit; local Goal evidence is pinned to the source artifact SHA-256. A host may map the two only by verifying original tracked source bytes against that exact Git tree, plus a trusted report/CI origin. PR Merge SHA is **not** the Branch Head SHA. See [CI provenance](QUALITY_PROVENANCE_20261028.md).

@@ -9,3 +9,5 @@ The in-memory domain seam is `src/labyrinth.mjs`; `src/protected-local.mjs` cove
 ## Review follow-up
 
 The Q11/Q13/Q17/Q19 drift findings and PR review chronology are documented in [drift remediation](DRIFT_REMEDIATION_20261027.md). These are local domain fixes, not a signed multi-agent approval.
+
+**CI source and report provenance:** [Quality Provenance — 2026-10-28](QUALITY_PROVENANCE_20261028.md). Signed provenance is distinct from independent Goal/Spec verification.

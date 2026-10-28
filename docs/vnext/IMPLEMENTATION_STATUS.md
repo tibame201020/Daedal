@@ -53,3 +53,7 @@ Branch commit `6ff0d0fed27e40d81c303a1d57e95e862fdb3607`: GitHub Actions `Daedal
 ### 2026-10-27 Product drift audit remediation
 
 A code/Spec audit of PR #1 identified three P1 gaps (descendant Live Reference invalidation, mandatory ancestor acceptance/decisions in Navigation, evidence freshness after reviewer callback) and a P2 PR review chronology bug. Targeted RED tests were observed before corrections. See [drift remediation](DRIFT_REMEDIATION_20261027.md). These corrections do not establish independent multi-agent review or solve the artifact SHA-256 versus Git commit SHA native evidence mapping.
+
+### 2026-10-28 — CI Provenance pilot
+
+A TDD-verified bridge binds a local tracked source artifact SHA-256 to the tested Git Commit and original Git blob; PR Merge SHA is deliberately distinguished from PR Head. The Native Quality workflow uploads the original reports + exact-source Evidence Bundle and requests GitHub OIDC/Sigstore attestation and CLI verification **on trusted push runs only**. New source binding tests cover modified/untracked/unsafe source, wrong commit, forge attempts and stale reports. See [provenance contract](QUALITY_PROVENANCE_20261028.md). The host still needs a fully verified attestation/source mapping implementation for autonomous Goal acceptance; do not promote a signed bundle directly to PASS.

@@ -96,10 +96,16 @@ export function createNativeQualityReportProvider({ retrieve, verifyOrigin, limi
             !raw.tool || !raw.toolVersion) return null;
         const origin = verifyOrigin({ runId: raw.runId, reportSha256: hash(raw.bytes),
           reportUri: raw.reportUri, sourceRevision, projectId: contract.projectId });
-        if (origin?.trusted !== true || origin.commitSha !== sourceRevision ||
-            origin.reportSha256 !== hash(raw.bytes)) return null;
+        if (origin?.trusted !== true || !validSha(origin.commitSha) || origin.reportSha256 !== hash(raw.bytes)) return null;
+        // Report generation identifies a Git commit. Local Goal evidence can instead identify
+        // a file digest only when the trusted host proves that file was in the tested Git tree.
+        const bridged = origin.commitSha !== sourceRevision;
+        if (bridged && (!/^[a-f0-9]{64}$/i.test(sourceRevision) ||
+          origin.sourceMappingVerified !== true || origin.sourceRevision !== sourceRevision ||
+          !/^[a-f0-9]{40}$/i.test(origin.gitBlobSha ?? '') ||
+          typeof origin.relativePath !== 'string' || !origin.relativePath)) return null;
         const json = JSON.parse(raw.bytes);
-        if (checkId === 'crap' && json.commit !== sourceRevision) return null;
+        if (checkId === 'crap' && json.commit !== origin.commitSha) return null;
         let assessed;
         if (checkId === 'pr') assessed = summarizeGitHubReviews(json, { sourceRevision,
           implementerId: origin.implementerId });

@@ -25,6 +25,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 jobs:
   native-quality:
@@ -54,3 +56,41 @@ jobs:
         run: node node_modules/@stryker-mutator/core/bin/stryker.js run
       - name: Validate native report shapes, source SHA and advisory metrics
         run: node scripts/quality/validate-native.mjs reports/quality/crapkit.json reports/mutation/mutation.json docs/vnext/QUALITY_TOOL_POLICY.example.json
+      - name: Build exact-source native evidence bundle
+        env:
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/quality/build-evidence-bundle.mjs \
+            reports/quality/crapkit.json \
+            reports/mutation/mutation.json \
+            docs/vnext/QUALITY_TOOL_POLICY.example.json \
+            reports/quality/native-evidence.json \
+            src/quality-review.mjs
+      - name: Preserve original reports and quality manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: daedal-native-evidence
+          path: |
+            reports/quality/crapkit.json
+            reports/quality/native-evidence.json
+            reports/mutation/mutation.json
+          if-no-files-found: error
+          retention-days: 7
+      # Only trusted push executions can request OIDC signing; PR checks stay read-only.
+      - name: Sign quality evidence manifest via GitHub OIDC / Sigstore
+        if: github.event_name == 'push'
+        uses: actions/attest@v4
+        with:
+          subject-path: reports/quality/native-evidence.json
+          create-storage-record: false
+      - name: Verify signed quality evidence manifest
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh attestation verify reports/quality/native-evidence.json \
+            --repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/quality-native-tools.yml" \
+            --source-digest "$GITHUB_SHA" \
+            --source-ref "$GITHUB_REF" \
+            --deny-self-hosted-runners
