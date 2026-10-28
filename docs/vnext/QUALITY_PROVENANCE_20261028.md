@@ -32,7 +32,7 @@ The builder rejects stale CRAP commit, invalid/incomplete report, changed source
 
 ## GitHub Actions provenance
 
-The pre-existing `Daedal Native Quality Tools` job now generates and uploads the original reports + Evidence Bundle with a seven-day artifact retention period. On trusted `push` events only, it requests a GitHub Sigstore OIDC attestation using `actions/attest@v4` and then performs `gh attestation verify`, restricted to the exact repository, signing workflow, source commit, source ref and hosted runner. PR runs keep read-only, unsigned quality measurement.
+The pre-existing `Daedal Native Quality Tools` job now generates and uploads the original reports + Evidence Bundle with a seven-day artifact retention period. On repository-owned `push` or same-repository `pull_request` events, it requests a GitHub Sigstore OIDC attestation using `actions/attest@v4` and then performs `gh attestation verify`, restricted to the exact repository, signing workflow, source commit, source ref and hosted runner. External fork PRs remain unsigned; same-repo PR attestations prove workflow provenance, not independent approval.
 
 A signed manifest attests **which GitHub Actions workflow signed the manifest bytes**, not whether an agent's original Goal intent is correct, whether the raw reports are good, or whether an untrusted workflow can author malicious report data. The independent host must still verify signer identity, bundle subject digest, GitHub run/source context, source mapping and report contents before supplying an authoritative `verifyOrigin` response. Consult GitHub's warning about workflow-controlled predicate metadata.
 

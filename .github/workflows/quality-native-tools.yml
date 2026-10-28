@@ -76,21 +76,25 @@ jobs:
             reports/mutation/mutation.json
           if-no-files-found: error
           retention-days: 7
-      # Only trusted push executions can request OIDC signing; PR checks stay read-only.
+      # Only same-repository workflows receive signing rights; fork PRs never sign.
+      # An attestation certifies provenance, not independent Goal/Spec approval.
       - name: Sign quality evidence manifest via GitHub OIDC / Sigstore
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         uses: actions/attest@v4
         with:
           subject-path: reports/quality/native-evidence.json
           create-storage-record: false
       - name: Verify signed quality evidence manifest
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh attestation verify reports/quality/native-evidence.json \
-            --repo "$GITHUB_REPOSITORY" \
+          args=(--repo "$GITHUB_REPOSITORY" \
             --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/quality-native-tools.yml" \
-            --source-digest "$GITHUB_SHA" \
-            --source-ref "$GITHUB_REF" \
-            --deny-self-hosted-runners
+            --deny-self-hosted-runners)
+          # A PR's source OIDC revision may identify its HEAD, not the synthetic merge tree.
+          # The signed *subject bytes* include the exact tested merge Commit and PR HEAD.
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            args+=(--source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF")
+          fi
+          gh attestation verify reports/quality/native-evidence.json "${args[@]}" 
