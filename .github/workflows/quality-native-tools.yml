@@ -97,4 +97,4 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
             args+=(--source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF")
           fi
-          gh attestation verify reports/quality/native-evidence.json "${args[@]}" 
+          gh attestation verify reports/quality/native-evidence.json "${args[@]}"
