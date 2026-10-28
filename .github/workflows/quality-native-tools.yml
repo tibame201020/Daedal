@@ -1,0 +1,100 @@
+name: Daedal Native Quality Tools (advisory baseline)
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'test-support/**'
+      - 'scripts/quality/**'
+      - 'crapkit.toml'
+      - 'stryker.config.mjs'
+      - 'docs/vnext/QUALITY_TOOL_POLICY.example.json'
+      - '.github/workflows/quality-native-tools.yml'
+  push:
+    branches: [main, 'feat/vnext-*']
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'test-support/**'
+      - 'scripts/quality/**'
+      - 'crapkit.toml'
+      - 'stryker.config.mjs'
+      - 'docs/vnext/QUALITY_TOOL_POLICY.example.json'
+      - '.github/workflows/quality-native-tools.yml'
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  native-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned standalone analysis tools (no runtime dependency)
+        run: |
+          npm install --no-save --no-package-lock --no-audit --no-fund @stryker-mutator/core@10.1.1 c8@10.1.3
+          python -m venv "$RUNNER_TEMP/daedal-quality-venv"
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m pip install crapkit==0.8.1
+      - name: Run real crapkit + Istanbul function coverage
+        run: |
+          mkdir -p reports/quality
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m crapkit doctor
+          "$RUNNER_TEMP/daedal-quality-venv/bin/python" -m crapkit coverage --json > reports/quality/crapkit.json
+      - name: Run real StrykerJS mutation (one production source module)
+        run: node node_modules/@stryker-mutator/core/bin/stryker.js run
+      - name: Validate native report shapes, source SHA and advisory metrics
+        run: node scripts/quality/validate-native.mjs reports/quality/crapkit.json reports/mutation/mutation.json docs/vnext/QUALITY_TOOL_POLICY.example.json
+      - name: Build exact-source native evidence bundle
+        env:
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          node scripts/quality/build-evidence-bundle.mjs \
+            reports/quality/crapkit.json \
+            reports/mutation/mutation.json \
+            docs/vnext/QUALITY_TOOL_POLICY.example.json \
+            reports/quality/native-evidence.json \
+            src/quality-review.mjs
+      - name: Preserve original reports and quality manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: daedal-native-evidence
+          path: |
+            reports/quality/crapkit.json
+            reports/quality/native-evidence.json
+            reports/mutation/mutation.json
+          if-no-files-found: error
+          retention-days: 7
+      # Only same-repository workflows receive signing rights; fork PRs never sign.
+      # An attestation certifies provenance, not independent Goal/Spec approval.
+      - name: Sign quality evidence manifest via GitHub OIDC / Sigstore
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        uses: actions/attest@v4
+        with:
+          subject-path: reports/quality/native-evidence.json
+          create-storage-record: false
+      - name: Verify signed quality evidence manifest
+        if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=(--repo "$GITHUB_REPOSITORY" \
+            --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/quality-native-tools.yml" \
+            --deny-self-hosted-runners)
+          # A PR's source OIDC revision may identify its HEAD, not the synthetic merge tree.
+          # The signed *subject bytes* include the exact tested merge Commit and PR HEAD.
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            args+=(--source-digest "$GITHUB_SHA" --source-ref "$GITHUB_REF")
+          fi
+          gh attestation verify reports/quality/native-evidence.json "${args[@]}"

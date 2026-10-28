@@ -128,3 +128,15 @@ _site/
 
 /.quarto/
 **/*.quarto_ipynb
+
+# crapkit
+.crapkit/
+coverage/
+
+# External quality-tool reports and isolated dependencies (never commit raw artifacts)
+.crapkit/
+.stryker-tmp/
+.quality-python/
+.quality-venv/
+reports/mutation/
+reports/quality/

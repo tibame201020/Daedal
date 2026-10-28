@@ -1,0 +1,36 @@
+name: Daedal vNext Contract Tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'test-support/**'
+      - 'package.json'
+      - '.github/workflows/vnext-contract-tests.yml'
+      - 'docs/vnext/**'
+      - 'GLOSSARY.md'
+  push:
+    branches: [main, 'feat/vnext-*']
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'test-support/**'
+      - 'package.json'
+      - '.github/workflows/vnext-contract-tests.yml'
+      - 'docs/vnext/**'
+      - 'GLOSSARY.md'
+
+permissions:
+  contents: read
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Daedal vNext public seam
+        run: npm test

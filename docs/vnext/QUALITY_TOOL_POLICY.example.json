@@ -1,0 +1,4 @@
+{
+  "crap": { "mode": "advisory", "limits": { "maxOverTarget": 0 } },
+  "mutation": { "mode": "advisory", "limits": { "minMutationScore": 80 } }
+}
